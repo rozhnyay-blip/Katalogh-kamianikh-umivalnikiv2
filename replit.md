@@ -1,15 +1,15 @@
-# FORMA STONE
+# SKALA — Kamenné umývadlá
 
-Адаптивний український каталог умивальників із натурального каменю з каруселями фото, збереженням виробів і формою заявки.
+Slovak-language natural stone washbasin catalog with a private owner portal for product and photo management.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- Use managed workflows `artifacts/api-server: API Server` and `artifacts/stone-washbasins: web` for previews.
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Runtime configuration: database connection, managed Clerk keys, App Storage configuration, and server-only `OWNER_EMAIL`. Do not put values into source files.
 
 ## Stack
 
@@ -22,30 +22,32 @@
 
 ## Where things live
 
-- `artifacts/stone-washbasins/src/App.tsx` — каталог, каруселі, збереження та форма замовлення
-- `artifacts/stone-washbasins/src/index.css` — візуальна система та адаптивні стилі
-- `artifacts/stone-washbasins/public/images/` — локальні зображення виробів
+- `artifacts/stone-washbasins/src/` — public catalog, owner portal, authentication pages, Slovak UI
+- `artifacts/api-server/src/` — authenticated product, storage and enquiry endpoints
+- `lib/api-spec/openapi.yaml` — API source of truth
+- `lib/db/src/schema/` — database schema
 
 ## Architecture decisions
 
-- Перший реліз працює без бекенду: збережені вироби зберігаються в `localStorage`, а заявка підтверджується локально.
-- Каталог використовує локальні зображення, щоб прев’ю не залежало від зовнішніх CDN.
-- Візуальна мова свідомо відділена від сайту-референсу: власний бренд FORMA STONE і українські тексти.
+- The owner is the verified Clerk account matching server-only `OWNER_EMAIL`, never the first registered visitor. Public registration must not grant management permissions.
+- Product data and enquiries persist in PostgreSQL. Photo bytes persist in App Storage; only paths/metadata go into PostgreSQL.
+- Favorites are browser-local; catalog changes are shared across visitors.
+- No invented stock, prices, contact details or product images. The user rejected the original demo products. Keep an honest empty state until actual owner photos are uploaded.
 
 ## Product
 
-- Перегляд колекції натуральних умивальників.
-- Перегортання до 10 фото в кожній картці товару стрілками.
-- Збереження виробів у браузері з видимим підтвердженням.
-- Форма заявки з валідацією імені, телефону та Gmail.
+- Public browsing, saved items, per-product carousels (up to 10 photos), and enquiries with name, phone and email.
+- Owner-only product editing, availability management, photo upload/removal/reordering and enquiry inbox.
 
 ## User preferences
 
-- Інтерфейс і тексти — українською мовою.
+- All site content, auth, owner UI, validation and accessibility labels must be Slovak. Chat language is independent of the site's language.
+- Instagram: https://www.instagram.com/skala_sk_/
 
 ## Gotchas
 
-- Для запуску вебартефакту потрібні змінні `PORT` і `BASE_PATH`, їх додає workflow.
+- Workflows provide `PORT` and `BASE_PATH`. Do not create duplicate workflows or hardcode service ports in browser code.
+- Clerk development and production accounts are separate. The configured owner must authenticate and verify their email in each environment they use.
 
 ## Pointers
 
