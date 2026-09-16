@@ -14,4 +14,5 @@ export const GetStorageObjectWidth = {
   NUMBER_960: 960,
   NUMBER_1440: 1440,
   NUMBER_1920: 1920,
+  NUMBER_3840: 3840,
 } as const;

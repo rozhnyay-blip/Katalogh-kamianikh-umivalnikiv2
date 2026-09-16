@@ -1,6 +1,6 @@
 import sharp from "sharp";
 
-export const IMAGE_VARIANT_WIDTHS = [480, 960, 1440, 1920] as const;
+export const IMAGE_VARIANT_WIDTHS = [480, 960, 1440, 1920, 3840] as const;
 export type ImageVariantWidth = (typeof IMAGE_VARIANT_WIDTHS)[number];
 
 export const MAX_VARIANT_DECODE_PIXELS = 60_000_000;

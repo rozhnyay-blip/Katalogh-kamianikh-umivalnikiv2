@@ -307,7 +307,7 @@ paths:
           description: Optional responsive image width. When omitted, the verified original is streamed unchanged.
           schema:
             type: integer
-            enum: [480, 960, 1440, 1920]
+            enum: [480, 960, 1440, 1920, 3840]
       responses:
         "200":
           description: Verified original content streamed unchanged, or a
