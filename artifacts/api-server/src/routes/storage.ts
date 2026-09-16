@@ -18,6 +18,11 @@ import {
   validateOwnedProductImages,
   ImageAssetValidationError,
 } from "../lib/imageAssets";
+import {
+  getOrCreateImageVariant,
+  parseImageVariantWidth,
+  VariantOverloadedError,
+} from "../lib/imageVariants";
 import { safeGenerationNumber } from "../lib/imageValidation";
 import { parseUploadRequest, validateImagePath } from "../lib/validation";
 
@@ -80,6 +85,12 @@ router.post(
 router.get(
   "/storage/objects/*path",
   async (req: Request, res: Response) => {
+    const requestedWidth = parseImageVariantWidth(req.query["width"]);
+    if (requestedWidth === null) {
+      sendError(res, 400, API_ERRORS.invalidImageWidth);
+      return;
+    }
+
     const raw = req.params.path;
     const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
     const objectPath = `/objects/${wildcardPath || ""}`;
@@ -117,6 +128,48 @@ router.get(
       const pinnedFile = file.bucket.file(file.name, {
         generation: safeGenerationNumber(verified.generation),
       });
+
+      if (requestedWidth !== undefined) {
+        let variant: Buffer;
+        try {
+          variant = await getOrCreateImageVariant({
+            objectPath,
+            verifiedGeneration: verified.generation,
+            width: requestedWidth,
+            readPinnedSource: async () => {
+              const [source] = await pinnedFile.download({
+                validation: false,
+              });
+              if (source.length !== verified.size) {
+                throw new Error("Pinned image size changed");
+              }
+              return source;
+            },
+          });
+        } catch (error) {
+          if (error instanceof VariantOverloadedError) {
+            sendError(res, 503, API_ERRORS.imageVariantOverloaded);
+            return;
+          }
+          logFailure(req, "serve_storage_variant", error);
+          sendError(res, 500, API_ERRORS.imageVariantUnavailable);
+          return;
+        }
+
+        res.status(200);
+        res.setHeader("Content-Type", "image/webp");
+        res.setHeader("Content-Length", String(variant.length));
+        res.setHeader("X-Content-Type-Options", "nosniff");
+        res.setHeader(
+          "Cache-Control",
+          referenced
+            ? "public, max-age=3600, immutable"
+            : "private, no-store",
+        );
+        res.end(variant);
+        return;
+      }
+
       res.status(200);
       res.setHeader("Content-Type", verified.contentType);
       res.setHeader("Content-Length", String(verified.size));

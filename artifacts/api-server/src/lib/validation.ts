@@ -1,4 +1,5 @@
 import {
+  AppendProductPhotosBody,
   CreateOrderBody,
   CreateProductBody,
   RequestUploadUrlBody,
@@ -30,6 +31,10 @@ export type ValidatedProduct = {
 
 export type ValidatedProductUpdate = Partial<ValidatedProduct> & {
   hasChanges: boolean;
+};
+
+export type ValidatedProductPhotos = {
+  images: string[];
 };
 
 export function parsePositiveIntegerParam(value: unknown): number | null {
@@ -135,6 +140,42 @@ export function parseProductUpdate(value: unknown): ValidatedProductUpdate | nul
   }
 
   return update;
+}
+
+export function parseProductPhotosInput(
+  value: unknown,
+): ValidatedProductPhotos | null {
+  if (
+    !value ||
+    typeof value !== "object" ||
+    Array.isArray(value) ||
+    Object.keys(value).some((key) => key !== "images")
+  ) {
+    return null;
+  }
+  const parsed = AppendProductPhotosBody.safeParse(value);
+  if (!parsed.success) {
+    return null;
+  }
+  const images = validateImagePaths(parsed.data.images);
+  return images ? { images } : null;
+}
+
+/**
+ * Merge append-only photo paths without changing their order. Returning null
+ * means the product's ten-image limit would be exceeded.
+ */
+export function mergeProductImages(
+  currentImages: readonly string[],
+  incomingImages: readonly string[],
+): string[] | null {
+  const merged = [...currentImages];
+  for (const image of incomingImages) {
+    if (!merged.includes(image)) {
+      merged.push(image);
+    }
+  }
+  return merged.length <= 10 ? merged : null;
 }
 
 export function validateImagePath(value: string): boolean {

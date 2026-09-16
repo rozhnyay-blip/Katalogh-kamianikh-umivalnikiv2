@@ -10,6 +10,11 @@ export const API_ERRORS = {
   uploadNotFound: "Súbor sa nenašiel.",
   forbiddenOrigin: "Neplatná požiadavka z iného pôvodu.",
   tooManyRequests: "Príliš veľa požiadaviek.",
+  invalidImageWidth: "Neplatná šírka obrázka.",
+  imageVariantUnavailable: "Variant obrázka sa nepodarilo vytvoriť.",
+  imageVariantOverloaded:
+    "Spracovanie variantu obrázka je momentálne preťažené.",
+  productPhotosLimit: "Produkt môže mať najviac 10 fotografií.",
   internal: "Nastala interná chyba.",
 } as const;
 

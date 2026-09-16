@@ -7,6 +7,8 @@
  */
 
 export * from './errorEnvelope';
+export * from './getStorageObjectParams';
+export * from './getStorageObjectWidth';
 export * from './healthStatus';
 export * from './order';
 export * from './orderInput';
@@ -14,6 +16,7 @@ export * from './orderReceipt';
 export * from './ownerStatus';
 export * from './product';
 export * from './productInput';
+export * from './productPhotosInput';
 export * from './productUpdate';
 export * from './uploadUrlRequest';
 export * from './uploadUrlRequestContentType';

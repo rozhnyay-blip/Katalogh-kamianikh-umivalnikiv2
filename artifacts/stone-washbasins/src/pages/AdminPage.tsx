@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, ChangeEvent } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth, useClerk } from '@clerk/react';
 import { Redirect } from 'wouter';
 import { 
@@ -9,7 +9,6 @@ import {
   useCreateProduct,
   useUpdateProduct,
   useDeleteProduct,
-  useRequestUploadUrl,
   type Product,
   type Order
 } from '@workspace/api-client-react';
@@ -17,6 +16,10 @@ import { LogOut, Plus, Edit2, Trash2, X, UploadCloud, GripVertical, Check } from
 import { queryClient } from '../lib/queryClient';
 import { getListProductsQueryKey, getListOrdersQueryKey } from '@workspace/api-client-react';
 import { useFocusScope } from '../hooks/useFocusScope';
+import { useLongPress } from '../hooks/useLongPress';
+import { usePhotoUpload } from '../hooks/usePhotoUpload';
+import { PhotoPickerSheet } from '../components/PhotoPickerSheet';
+import { ProductImage } from '../components/ProductImage';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 
@@ -36,7 +39,7 @@ export function AdminPage() {
   
   const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [isAdding, setIsAdding] = useState(false);
+  const [isAdding, setIsAdding] = useState(() => new URLSearchParams(window.location.search).get('new') === '1');
 
   if (!isLoaded || statusLoading) return <div className="flex items-center justify-center min-h-[100dvh]">Načítavam...</div>;
   if (statusError) return <div className="flex flex-col gap-4 items-center justify-center min-h-[100dvh]"><p>Prístup sa nepodarilo overiť. Skúste to znova.</p><button className="button-primary" onClick={() => retryStatus()}>Skúsiť znova</button><a href={basePath || '/'}>Späť do katalógu</a></div>;
@@ -249,14 +252,15 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
   
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
-  const requestUploadUrl = useRequestUploadUrl();
-  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
-  const isUploading = uploadProgress !== null;
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { upload, progress: uploadProgress, error: photoError, clearError, failedFiles, discardFailed } = usePhotoUpload();
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const isUploading = Boolean(uploadProgress);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const isSaving = createProduct.isPending || updateProduct.isPending;
-  useFocusScope(modalRef, onClose, isUploading || isSaving);
+  useFocusScope(modalRef, onClose, isUploading || isSaving, !pickerOpen);
+  const openPicker = () => { if (!isSaving && !isUploading) { clearError(); setPickerOpen(true); } };
+  const photoPress = useLongPress(openPicker, !isSaving && !isUploading);
 
   const handleField = (field: string, value: string | boolean) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -313,70 +317,10 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
     }
   };
 
-  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-    
-    if (form.images.length + files.length > 10) {
-      alert('Maximum je 10 fotografií na produkt.');
-      return;
-    }
-
-    setUploadProgress({ current: 0, total: files.length });
-    let uploadedCount = 0;
-    const newImages = [...form.images];
-    
-    for (const file of files) {
-      if (file.size > 10 * 1024 * 1024) {
-        alert(`Súbor ${file.name} je príliš veľký (max 10MB)`);
-        setUploadProgress(prev => prev ? { ...prev, current: prev.current + 1 } : null);
-        continue;
-      }
-      
-      const type = file.type;
-      if (type === 'image/heic' || type === 'image/heif') {
-        alert(`HEIC formát nie je podporovaný. Prosím, nahrajte JPEG, PNG alebo WEBP. (${file.name})`);
-        setUploadProgress(prev => prev ? { ...prev, current: prev.current + 1 } : null);
-        continue;
-      }
-      
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(type)) {
-        alert(`Nepodporovaný formát. Iba JPEG, PNG a WEBP. (${file.name})`);
-        setUploadProgress(prev => prev ? { ...prev, current: prev.current + 1 } : null);
-        continue;
-      }
-
-      try {
-        const { uploadURL, objectPath } = await requestUploadUrl.mutateAsync({
-          data: {
-            name: file.name,
-            size: file.size,
-            contentType: type as "image/jpeg" | "image/png" | "image/webp"
-          }
-        });
-
-        const res = await fetch(uploadURL, {
-          method: 'PUT',
-          body: file,
-          headers: { 'Content-Type': type }
-        });
-
-        if (res.ok) {
-          newImages.push(objectPath);
-          uploadedCount++;
-        } else {
-          throw new Error('Upload failed');
-        }
-      } catch (err) {
-        alert(`Nepodarilo sa nahrať súbor ${file.name}`);
-      }
-      
-      setUploadProgress(prev => prev ? { ...prev, current: prev.current + 1 } : null);
-    }
-    
-    setForm(prev => ({ ...prev, images: newImages }));
-    setUploadProgress(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+  const handleFiles = async (files: File[]) => {
+    const result = await upload(files, 10 - form.images.length);
+    setForm(prev => ({ ...prev, images: [...prev.images, ...result.paths] }));
+    if (!result.failed) setPickerOpen(false);
   };
 
   const removeImage = (index: number) => {
@@ -443,27 +387,20 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
           <button 
             type="button" 
             className="upload-zone" 
-            onClick={() => !isUploading && fileInputRef.current?.click()}
+            onClick={openPicker}
             disabled={isUploading || isSaving || form.images.length >= 10}
             style={{ opacity: (isUploading || form.images.length >= 10) ? 0.5 : 1 }}
           >
             <UploadCloud size={32} className="text-muted-foreground" />
-            <span className="text-sm font-semibold">{isUploading ? `Nahrávam (${uploadProgress?.current}/${uploadProgress?.total})...` : 'Kliknite pre pridanie fotografií'}</span>
-            <span className="text-xs text-muted-foreground">JPEG, PNG, WEBP do 10MB</span>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileChange} 
-              multiple 
-              accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-              disabled={isUploading || isSaving}
-            />
+            <span className="text-sm font-semibold">{isUploading ? uploadProgress : 'Pridať fotografiu'}</span>
+            <span className="text-xs text-muted-foreground">Galéria alebo fotoaparát · plná kvalita originálu</span>
           </button>
 
-          <div className="upload-grid">
+          <p className="photo-quality-note">Podržte prst na fotografii, ak chcete pridať ďalšiu. Nový produkt zverejníte tlačidlom Uložiť produkt.</p>
+          <div className="upload-grid photo-press-target" {...photoPress}>
             {form.images.map((img, i) => (
               <div key={img} className="upload-item">
-                <img src={getImageUrl(img)} alt={`Fotografia ${i+1}`} />
+                <ProductImage path={img} alt={`Fotografia ${i+1}`} sizes="160px" />
                 <button type="button" className="remove-btn" aria-label={`Odstrániť fotografiu ${i + 1}`} onClick={() => removeImage(i)} disabled={isUploading || isSaving} style={{ opacity: (isUploading || isSaving) ? 0.5 : 1 }}><X size={14}/></button>
                 {i === 0 ? (
                   <div className="cover-badge">HLAVNÁ</div>
@@ -487,6 +424,19 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
           </div>
         </div>
       </form>
+      {pickerOpen && <PhotoPickerSheet
+        title={form.name || 'Nové umývadlo'}
+        remaining={10 - form.images.length}
+        onFiles={handleFiles}
+        onClose={() => {
+          if (failedFiles.length && !window.confirm('Zahodiť fotografie, ktoré sa ešte nepodarilo nahrať?')) return;
+          discardFailed();
+          setPickerOpen(false);
+        }}
+        progress={uploadProgress}
+        error={photoError}
+        onRetryUpload={failedFiles.length ? () => void handleFiles(failedFiles) : undefined}
+      />}
     </div>
   );
 }

@@ -5,13 +5,14 @@ export function useFocusScope<T extends HTMLElement>(
   ref: RefObject<T | null>,
   onClose: () => void,
   busy = false,
+  active = true,
 ) {
   const latest = useRef({ onClose, busy });
   latest.current = { onClose, busy };
 
   useEffect(() => {
     const container = ref.current;
-    if (!container) return undefined;
+    if (!container || !active) return undefined;
     const previous = document.activeElement as HTMLElement | null;
     const controls = () => Array.from(container.querySelectorAll<HTMLElement>(
       'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -44,5 +45,5 @@ export function useFocusScope<T extends HTMLElement>(
       document.removeEventListener('keydown', handleKey);
       previous?.focus();
     };
-  }, [ref]);
+  }, [ref, active]);
 }

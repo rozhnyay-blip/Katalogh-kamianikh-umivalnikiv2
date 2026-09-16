@@ -2,13 +2,17 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  mergeProductImages,
   parseOrderInput,
   parseProductInput,
+  parseProductPhotosInput,
   parseUploadRequest,
   validateImagePath,
 } from "./validation";
 
 const imagePath = "/objects/uploads/123e4567-e89b-12d3-a456-426614174000";
+const secondImagePath =
+  "/objects/uploads/123e4567-e89b-12d3-a456-426614174001";
 
 test("product validation trims bounded text and accepts catalog fields", () => {
   const product = parseProductInput({
@@ -55,6 +59,37 @@ test("product validation rejects duplicate, remote, and overlong image/text inpu
   );
   assert.equal(validateImagePath("https://example.test/image.png"), false);
   assert.equal(validateImagePath("/tmp/image.png"), false);
+});
+
+test("append photo validation and merge are idempotent and enforce ten images", () => {
+  assert.deepEqual(parseProductPhotosInput({ images: [imagePath] }), {
+    images: [imagePath],
+  });
+  assert.equal(
+    parseProductPhotosInput({ images: [imagePath, imagePath] }),
+    null,
+  );
+  assert.equal(
+    parseProductPhotosInput({ images: ["https://example.test/photo.png"] }),
+    null,
+  );
+
+  assert.deepEqual(mergeProductImages([imagePath], [imagePath]), [imagePath]);
+  assert.deepEqual(
+    mergeProductImages([imagePath], [secondImagePath, imagePath]),
+    [imagePath, secondImagePath],
+  );
+  assert.equal(
+    mergeProductImages(
+      Array.from(
+        { length: 9 },
+        (_, index) =>
+          `/objects/uploads/123e4567-e89b-12d3-a456-4266141740${index}`,
+      ),
+      [imagePath, secondImagePath],
+    ),
+    null,
+  );
 });
 
 test("order validation requires 7 to 15 decimal digits in the phone", () => {

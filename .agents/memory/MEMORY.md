@@ -1,1 +1,2 @@
 - [Catalog dependency cache](catalog-dependency-cache.md) — Vite can retain old React prebundles after workspace catalog upgrades even when installed versions and builds agree.
+- [Mobile photo integrity](mobile-photo-integrity.md) — captured files need retry retention; adding photos must be an idempotent append, not a client-side list replacement.

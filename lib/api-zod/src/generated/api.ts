@@ -172,6 +172,37 @@ export const DeleteProductResponse = zod.void()
 
 
 /**
+ * @summary Append photos to a catalog product
+ */
+export const AppendProductPhotosParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const appendProductPhotosBodyImagesItemRegExp = new RegExp('^/objects/uploads/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$');
+export const appendProductPhotosBodyImagesMax = 10;
+
+
+
+export const AppendProductPhotosBody = zod.object({
+  "images": zod.array(zod.string().regex(appendProductPhotosBodyImagesItemRegExp)).min(1).max(appendProductPhotosBodyImagesMax)
+})
+
+export const appendProductPhotosResponseImagesMax = 10;
+
+
+
+export const AppendProductPhotosResponse = zod.object({
+  "available": zod.boolean(),
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "subtitle": zod.string(),
+  "price": zod.string(),
+  "kind": zod.string(),
+  "images": zod.array(zod.string()).max(appendProductPhotosResponseImagesMax)
+})
+
+
+/**
  * @summary Request a presigned URL for file upload
  */
 
@@ -204,11 +235,8 @@ export const RequestUploadUrlResponse = zod.object({
 /**
  * @summary Serve a catalog image
  */
-export const getStorageObjectPathObjectPathRegExp = new RegExp('^uploads/[0-9a-fA-F-]{36}$');
-
-
-export const GetStorageObjectParams = zod.object({
-  "objectPath": zod.coerce.string().regex(getStorageObjectPathObjectPathRegExp).describe('Relative path after /objects/, for example uploads/UUID. Do not pass the full normalized database path returned by upload creation.')
+export const GetStorageObjectQueryParams = zod.object({
+  "width": zod.union([zod.literal(480),zod.literal(960),zod.literal(1440),zod.literal(1920)]).optional().describe('Optional responsive image width. When omitted, the verified original is streamed unchanged.')
 })
 
 export const GetStorageObjectResponse = zod.unknown()
