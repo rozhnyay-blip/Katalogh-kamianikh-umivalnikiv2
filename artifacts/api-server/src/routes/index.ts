@@ -4,6 +4,7 @@ import ownerRouter from "./owner";
 import orderRouter from "./orders";
 import productRouter from "./products";
 import storageRouter from "./storage";
+import siteContentRouter from "./siteContent";
 
 const router: IRouter = Router();
 
@@ -12,5 +13,6 @@ router.use(ownerRouter);
 router.use(productRouter);
 router.use(orderRouter);
 router.use(storageRouter);
+router.use(siteContentRouter);
 
 export default router;
