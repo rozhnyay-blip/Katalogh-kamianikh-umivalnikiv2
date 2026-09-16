@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram } from 'lucide-react';
-import { useListProducts, useCreateOrder, type Product } from '@workspace/api-client-react';
+import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, type Product } from '@workspace/api-client-react';
+import { useAuth } from '@clerk/react';
 import { Link } from 'wouter';
 import { Brand } from '../components/Brand';
 import { useFocusScope } from '../hooks/useFocusScope';
+import { ProductImage } from '../components/ProductImage';
+import { EditableProductMedia } from '../components/EditableProductMedia';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 
@@ -12,6 +15,11 @@ function getImageUrl(path: string) {
 }
 
 export function HomePage() {
+  const { isLoaded, userId } = useAuth();
+  const { data: owner } = useGetOwnerStatus({
+    query: { enabled: isLoaded, queryKey: [...getGetOwnerStatusQueryKey(), userId] },
+  });
+  const canEdit = Boolean(isLoaded && owner?.signedIn && owner?.isOwner);
   const [savedIds, setSavedIds] = useState<number[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
@@ -63,6 +71,7 @@ export function HomePage() {
           <a href="#detaily">Detaily</a>
         </nav>
         <div className="nav-contact">
+          <Link className="owner-nav-link" href="/admin">{canEdit ? 'Správa' : 'Prihlásenie majiteľa'}</Link>
           <a className="round-button" href="https://www.instagram.com/skala_sk_/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <Instagram size={16} />
           </a>
@@ -134,6 +143,10 @@ export function HomePage() {
               </div>
               <p className="catalog-intro">Každé umývadlo je originál. To, čo vidíte, je presne to, čo dostanete.</p>
             </div>
+            {canEdit && <div className="owner-catalog-toolbar">
+              <div><strong>Vaše fotografie, priamo v katalógu</strong><p>Podržte prst na fotografii alebo klepnite na Pridať fotografiu.</p></div>
+              <Link className="button-primary" href="/admin?new=1">Pridať umývadlo</Link>
+            </div>}
 
             {isLoading ? (
               <div className="catalog-status">
@@ -147,6 +160,7 @@ export function HomePage() {
             ) : products.length === 0 ? (
               <div className="catalog-status">
                 <p>Zatiaľ tu nie sú žiadne umývadlá. Sledujte náš <a href="https://www.instagram.com/skala_sk_/" target="_blank" rel="noreferrer" className="text-[#d99c8b] hover:underline">Instagram</a> pre novinky.</p>
+                {canEdit && <Link className="owner-empty-add" href="/admin?new=1">Pridať prvé umývadlo a fotografie</Link>}
               </div>
             ) : (
               <div className="catalog-grid">
@@ -154,6 +168,7 @@ export function HomePage() {
                   <ProductCard
                     key={product.id}
                     product={product}
+                    canEdit={canEdit}
                     saved={savedIds.includes(product.id)}
                     onToggleSaved={toggleSaved}
                     onOrder={setOrderProduct}
@@ -217,11 +232,13 @@ export function HomePage() {
 
 function ProductCard({
   product,
+  canEdit,
   saved,
   onToggleSaved,
   onOrder,
 }: {
   product: Product;
+  canEdit: boolean;
   saved: boolean;
   onToggleSaved: (product: Product) => void;
   onOrder: (product: Product) => void;
@@ -235,11 +252,11 @@ function ProductCard({
 
   return (
     <article className={`product-card ${!product.available ? 'is-unavailable' : ''}`}>
-      <div className="product-media">
+      <EditableProductMedia product={product} canEdit={canEdit}>
         {product.images.length > 0 ? (
-          <img
+          <ProductImage
             className="product-image"
-            src={getImageUrl(product.images[imageIndex])}
+            path={product.images[imageIndex] || product.images[0]}
             alt={`Umývadlo ${product.name}`}
           />
         ) : (
@@ -275,7 +292,7 @@ function ProductCard({
         {!product.available && (
           <div className="product-badge-unavailable">PREDANÉ</div>
         )}
-      </div>
+      </EditableProductMedia>
       <div className="product-info">
         <div className="w-full">
           <h3 className="product-name">{product.name}</h3>

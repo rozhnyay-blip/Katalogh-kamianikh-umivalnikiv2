@@ -198,6 +198,60 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
+  /products/{id}/photos:
+    post:
+      operationId: appendProductPhotos
+      tags: [products]
+      summary: Append photos to a catalog product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductPhotosInput"
+      responses:
+        "200":
+          description: Product with appended photos.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Invalid photo paths.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "403":
+          description: Owner access required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Product not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "409":
+          description: Product already has the maximum number of photos.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
   /storage/uploads/request-url:
     post:
       tags: [Storage]
@@ -247,16 +301,36 @@ paths:
           schema:
             type: string
             pattern: '^uploads/[0-9a-fA-F-]{36}$'
+        - name: width
+          in: query
+          required: false
+          description: Optional responsive image width. When omitted, the verified original is streamed unchanged.
+          schema:
+            type: integer
+            enum: [480, 960, 1440, 1920]
       responses:
         "200":
-          description: Object content streamed with correct Content-Type.
+          description: Verified original content streamed unchanged, or a
+            responsive WebP variant when width is provided.
           content:
             "*/*":
               schema:
                 type: string
                 format: binary
+        "400":
+          description: Invalid responsive image width.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
         "404":
           description: Object not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "503":
+          description: Responsive image processing is temporarily overloaded.
           content:
             application/json:
               schema:
@@ -340,6 +414,19 @@ components:
           items:
             type: string
             minLength: 1
+    ProductPhotosInput:
+      type: object
+      required: [images]
+      additionalProperties: false
+      properties:
+        images:
+          type: array
+          minItems: 1
+          maxItems: 10
+          uniqueItems: true
+          items:
+            type: string
+            pattern: '^/objects/uploads/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
     UploadUrlRequest:
       type: object
       required: [name, size, contentType]

@@ -70,6 +70,18 @@ export default defineConfig({
         },
         useDates: true,
         useBigInt: true,
+        operations: {
+          // Orval gives both path and query schemas the same operation-level
+          // name. This endpoint validates its path in the route and needs only
+          // the generated query schema to avoid that collision.
+          getStorageObject: {
+            zod: {
+              generate: {
+                param: false,
+              },
+            },
+          },
+        },
       },
     },
   },

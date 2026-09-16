@@ -56,6 +56,15 @@ export interface ProductUpdate {
   images?: string[];
 }
 
+export interface ProductPhotosInput {
+  /**
+     * @minItems 1
+     * @maxItems 10
+     * @items.pattern ^/objects/uploads/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+     */
+  images: string[];
+}
+
 export type UploadUrlRequestContentType = typeof UploadUrlRequestContentType[keyof typeof UploadUrlRequestContentType];
 
 
@@ -121,4 +130,21 @@ export interface Order {
   email: string;
   createdAt: string;
 }
+
+export type GetStorageObjectParams = {
+/**
+ * Optional responsive image width. When omitted, the verified original is streamed unchanged.
+ */
+width?: GetStorageObjectWidth;
+};
+
+export type GetStorageObjectWidth = typeof GetStorageObjectWidth[keyof typeof GetStorageObjectWidth];
+
+
+export const GetStorageObjectWidth = {
+  NUMBER_480: 480,
+  NUMBER_960: 960,
+  NUMBER_1440: 1440,
+  NUMBER_1920: 1920,
+} as const;
 
