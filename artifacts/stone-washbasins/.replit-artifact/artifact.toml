@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Stone Washbasins"
+description = "Responsive Ukrainian catalog for natural stone washbasins with image carousels, saved items, and an order request form."
+version = "1.0.0"
+id = "artifacts/stone-washbasins"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22429
+
+[services.development]
+run = "pnpm --filter @workspace/stone-washbasins run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/stone-washbasins", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/stone-washbasins/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22429"
+BASE_PATH = "/"

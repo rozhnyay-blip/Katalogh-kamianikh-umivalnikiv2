@@ -1,6 +1,6 @@
-# [Project name]
+# FORMA STONE
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Адаптивний український каталог умивальників із натурального каменю з каруселями фото, збереженням виробів і формою заявки.
 
 ## Run & Operate
 
@@ -22,23 +22,30 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/stone-washbasins/src/App.tsx` — каталог, каруселі, збереження та форма замовлення
+- `artifacts/stone-washbasins/src/index.css` — візуальна система та адаптивні стилі
+- `artifacts/stone-washbasins/public/images/` — локальні зображення виробів
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Перший реліз працює без бекенду: збережені вироби зберігаються в `localStorage`, а заявка підтверджується локально.
+- Каталог використовує локальні зображення, щоб прев’ю не залежало від зовнішніх CDN.
+- Візуальна мова свідомо відділена від сайту-референсу: власний бренд FORMA STONE і українські тексти.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Перегляд колекції натуральних умивальників.
+- Перегортання до 10 фото в кожній картці товару стрілками.
+- Збереження виробів у браузері з видимим підтвердженням.
+- Форма заявки з валідацією імені, телефону та Gmail.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Інтерфейс і тексти — українською мовою.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Для запуску вебартефакту потрібні змінні `PORT` і `BASE_PATH`, їх додає workflow.
 
 ## Pointers
 
