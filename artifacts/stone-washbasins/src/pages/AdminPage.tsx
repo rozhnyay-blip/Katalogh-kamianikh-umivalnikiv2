@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth, useClerk } from '@clerk/react';
 import { Redirect } from 'wouter';
 import { 
@@ -9,12 +9,15 @@ import {
   useCreateProduct,
   useUpdateProduct,
   useDeleteProduct,
+  useGetSiteContent,
+  useUpdateSiteContent,
+  type SiteContent,
   type Product,
   type Order
 } from '@workspace/api-client-react';
 import { LogOut, Plus, Edit2, Trash2, X, UploadCloud, GripVertical, Check } from 'lucide-react';
 import { queryClient } from '../lib/queryClient';
-import { getListProductsQueryKey, getListOrdersQueryKey } from '@workspace/api-client-react';
+import { getGetSiteContentQueryKey, getListProductsQueryKey, getListOrdersQueryKey } from '@workspace/api-client-react';
 import { useFocusScope } from '../hooks/useFocusScope';
 import { useLongPress } from '../hooks/useLongPress';
 import { usePhotoUpload } from '../hooks/usePhotoUpload';
@@ -37,7 +40,7 @@ export function AdminPage() {
   });
   const { signOut } = useClerk();
   
-  const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'site'>('products');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isAdding, setIsAdding] = useState(() => new URLSearchParams(window.location.search).get('new') === '1');
 
@@ -77,6 +80,12 @@ export function AdminPage() {
           >
             Dopyty
           </button>
+          <button
+            className={`admin-nav-item ${activeTab === 'site' ? 'active' : ''}`}
+            onClick={() => setActiveTab('site')}
+          >
+            Obsah stránky
+          </button>
         </nav>
         <div className="admin-sidebar-bottom">
           <button className="admin-nav-item" onClick={() => signOut({ redirectUrl: basePath || "/" })}>
@@ -99,6 +108,7 @@ export function AdminPage() {
               />
             )}
             {activeTab === 'orders' && <OrdersManager />}
+            {activeTab === 'site' && <SiteContentEditor />}
           </>
         )}
       </main>
@@ -235,6 +245,216 @@ function OrdersManager() {
           </tbody>
         </table>
       </div>
+    </div>
+  );
+}
+
+function SiteContentEditor() {
+  const { data, isLoading, isError, refetch } = useGetSiteContent();
+  const updateContent = useUpdateSiteContent();
+  const [form, setForm] = useState<SiteContent | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (data) setForm(data);
+  }, [data]);
+
+  if (isLoading || !form) return <div>Načítavam obsah stránky...</div>;
+  if (isError) return (
+    <div className="admin-card" role="alert">
+      <p>Obsah stránky sa nepodarilo načítať.</p>
+      <button className="button-quiet" type="button" onClick={() => refetch()}>Skúsiť znova</button>
+    </div>
+  );
+
+  const updateSectionField = (section: keyof Pick<SiteContent, 'topline' | 'nav' | 'contact' | 'hero' | 'story' | 'catalog' | 'details' | 'footer'>, field: string, value: string) => {
+    setForm((current) => {
+      if (!current) return current;
+      const sectionValue = current[section] as unknown as Record<string, unknown>;
+      return { ...current, [section]: { ...sectionValue, [field]: value } } as SiteContent;
+    });
+    setSaved(false);
+  };
+
+  const updateMarquee = (index: number, value: string) => {
+    setForm((current) => current ? { ...current, marquee: current.marquee.map((item, itemIndex) => itemIndex === index ? value : item) } : current);
+    setSaved(false);
+  };
+
+  const updateStep = (index: number, field: 'number' | 'title' | 'description', value: string) => {
+    setForm((current) => current ? {
+      ...current,
+      story: { ...current.story, steps: current.story.steps.map((step, stepIndex) => stepIndex === index ? { ...step, [field]: value } : step) },
+    } : current);
+    setSaved(false);
+  };
+
+  const updateSpec = (index: number, field: 'label' | 'value', value: string) => {
+    setForm((current) => current ? {
+      ...current,
+      details: { ...current.details, specs: current.details.specs.map((spec, specIndex) => specIndex === index ? { ...spec, [field]: value } : spec) },
+    } : current);
+    setSaved(false);
+  };
+
+  const save = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    updateContent.mutate({ data: form }, {
+      onSuccess: (next) => {
+        setForm(next);
+        setSaved(true);
+        queryClient.invalidateQueries({ queryKey: getGetSiteContentQueryKey() });
+      },
+    });
+  };
+
+  return (
+    <form className="site-content-editor" onSubmit={save}>
+      <div className="admin-header">
+        <div>
+          <h1 className="admin-title">Obsah stránky</h1>
+          <p className="text-muted-foreground mt-2">Všetky tieto zmeny vidia návštevníci po uložení.</p>
+        </div>
+      </div>
+
+      <section className="admin-card">
+        <h2>Horná lišta a navigácia</h2>
+        <div className="editor-grid">
+          <ContentField label="Horný text" value={form.topline.tagline} onChange={(value) => updateSectionField('topline', 'tagline', value)} />
+          <ContentField label="Horná poznámka" value={form.topline.note} onChange={(value) => updateSectionField('topline', 'note', value)} />
+          <ContentField label="Katalóg v navigácii" value={form.nav.catalog} onChange={(value) => updateSectionField('nav', 'catalog', value)} />
+          <ContentField label="Príbeh v navigácii" value={form.nav.story} onChange={(value) => updateSectionField('nav', 'story', value)} />
+          <ContentField label="Detaily v navigácii" value={form.nav.details} onChange={(value) => updateSectionField('nav', 'details', value)} />
+          <ContentField label="Instagram URL" value={form.nav.instagramUrl} onChange={(value) => updateSectionField('nav', 'instagramUrl', value)} type="url" />
+        </div>
+      </section>
+
+      <section className="admin-card">
+        <h2>Kontakt na ľavej strane</h2>
+        <div className="editor-grid">
+          <ContentField label="Názov kontaktu" value={form.contact.label} onChange={(value) => updateSectionField('contact', 'label', value)} />
+          <ContentField label="Telefón" value={form.contact.phone} onChange={(value) => updateSectionField('contact', 'phone', value)} type="tel" />
+          <ContentField label="Viber" value={form.contact.viberLabel} onChange={(value) => updateSectionField('contact', 'viberLabel', value)} />
+          <ContentField label="WhatsApp" value={form.contact.whatsappLabel} onChange={(value) => updateSectionField('contact', 'whatsappLabel', value)} />
+          <ContentField label="Instagram" value={form.contact.instagramLabel} onChange={(value) => updateSectionField('contact', 'instagramLabel', value)} />
+        </div>
+      </section>
+
+      <section className="admin-card">
+        <h2>Hlavný blok</h2>
+        <div className="editor-grid">
+          <ContentField label="Malý nadpis" value={form.hero.eyebrow} onChange={(value) => updateSectionField('hero', 'eyebrow', value)} />
+          <ContentField label="Prvý riadok nadpisu" value={form.hero.titleLead} onChange={(value) => updateSectionField('hero', 'titleLead', value)} />
+          <ContentField label="Druhý riadok nadpisu" value={form.hero.titleMiddle} onChange={(value) => updateSectionField('hero', 'titleMiddle', value)} />
+          <ContentField label="Zvýraznený text nadpisu" value={form.hero.titleEmphasis} onChange={(value) => updateSectionField('hero', 'titleEmphasis', value)} />
+          <ContentField label="Hlavný text" value={form.hero.lede} onChange={(value) => updateSectionField('hero', 'lede', value)} multiline />
+          <ContentField label="Hlavné tlačidlo" value={form.hero.primaryCta} onChange={(value) => updateSectionField('hero', 'primaryCta', value)} />
+          <ContentField label="Druhé tlačidlo" value={form.hero.secondaryCta} onChange={(value) => updateSectionField('hero', 'secondaryCta', value)} />
+          <ContentField label="Popis vizuálu pre čítačky" value={form.hero.visualAria} onChange={(value) => updateSectionField('hero', 'visualAria', value)} />
+          <ContentField label="Index vizuálu" value={form.hero.visualIndex} onChange={(value) => updateSectionField('hero', 'visualIndex', value)} />
+          <ContentField label="Pečiatka — riadok 1" value={form.hero.stampLine1} onChange={(value) => updateSectionField('hero', 'stampLine1', value)} />
+          <ContentField label="Pečiatka — riadok 2" value={form.hero.stampLine2} onChange={(value) => updateSectionField('hero', 'stampLine2', value)} />
+          <ContentField label="Pečiatka — riadok 3" value={form.hero.stampLine3} onChange={(value) => updateSectionField('hero', 'stampLine3', value)} />
+        </div>
+      </section>
+
+      <section className="admin-card">
+        <h2>Bežiaci pás</h2>
+        <div className="editor-grid">
+          {form.marquee.map((item, index) => (
+            <div className="field" key={`marquee-${index}`}>
+              <label htmlFor={`marquee-${index}`}>Text {index + 1}</label>
+              <div className="flex gap-2">
+                <input id={`marquee-${index}`} value={item} onChange={(event) => updateMarquee(index, event.target.value)} />
+                {form.marquee.length > 1 && <button className="button-quiet" type="button" onClick={() => setForm((current) => current ? { ...current, marquee: current.marquee.filter((_, itemIndex) => itemIndex !== index) } : current)} aria-label={`Odstrániť text ${index + 1}`}>×</button>}
+              </div>
+            </div>
+          ))}
+        </div>
+        {form.marquee.length < 8 && <button className="button-quiet" type="button" onClick={() => setForm((current) => current ? { ...current, marquee: [...current.marquee, 'nový text'] } : current)}>+ Pridať text</button>}
+      </section>
+
+      <section className="admin-card">
+        <h2>Príbeh a proces</h2>
+        <ContentField label="Nadpis sekcie" value={form.story.eyebrow} onChange={(value) => updateSectionField('story', 'eyebrow', value)} />
+        <div className="editor-grid">
+          <ContentField label="Prvý riadok nadpisu" value={form.story.titleLead} onChange={(value) => updateSectionField('story', 'titleLead', value)} />
+          <ContentField label="Zvýraznený riadok nadpisu" value={form.story.titleEmphasis} onChange={(value) => updateSectionField('story', 'titleEmphasis', value)} />
+        </div>
+        <ContentField label="Text príbehu" value={form.story.copy} onChange={(value) => updateSectionField('story', 'copy', value)} multiline />
+        <ContentField label="Poznámka" value={form.story.note} onChange={(value) => updateSectionField('story', 'note', value)} multiline />
+        <div className="editor-grid-wide">
+          {form.story.steps.map((step, index) => (
+            <div key={`step-${index}`} className="border-t border-border pt-4">
+              <ContentField label={`Krok ${index + 1}`} value={step.number} onChange={(value) => updateStep(index, 'number', value)} />
+              <ContentField label="Názov" value={step.title} onChange={(value) => updateStep(index, 'title', value)} />
+              <ContentField label="Popis" value={step.description} onChange={(value) => updateStep(index, 'description', value)} multiline />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="admin-card">
+        <h2>Katalóg a detaily</h2>
+        <div className="editor-grid">
+          <ContentField label="Katalóg — malý nadpis" value={form.catalog.eyebrow} onChange={(value) => updateSectionField('catalog', 'eyebrow', value)} />
+          <ContentField label="Katalóg — prvý riadok" value={form.catalog.titleLead} onChange={(value) => updateSectionField('catalog', 'titleLead', value)} />
+          <ContentField label="Katalóg — zvýraznený riadok" value={form.catalog.titleEmphasis} onChange={(value) => updateSectionField('catalog', 'titleEmphasis', value)} />
+          <ContentField label="Úvod katalógu" value={form.catalog.intro} onChange={(value) => updateSectionField('catalog', 'intro', value)} multiline />
+          <ContentField label="Text pre vlastníka" value={form.catalog.ownerToolbarTitle} onChange={(value) => updateSectionField('catalog', 'ownerToolbarTitle', value)} />
+          <ContentField label="Pomoc pre vlastníka" value={form.catalog.ownerToolbarHelp} onChange={(value) => updateSectionField('catalog', 'ownerToolbarHelp', value)} multiline />
+          <ContentField label="Pridať produkt" value={form.catalog.addProductLabel} onChange={(value) => updateSectionField('catalog', 'addProductLabel', value)} />
+          <ContentField label="Prázdny katalóg" value={form.catalog.emptyMessage} onChange={(value) => updateSectionField('catalog', 'emptyMessage', value)} multiline />
+          <ContentField label="Pridať prvý produkt" value={form.catalog.emptyAddLabel} onChange={(value) => updateSectionField('catalog', 'emptyAddLabel', value)} />
+          <ContentField label="Detaily — malý nadpis" value={form.details.eyebrow} onChange={(value) => updateSectionField('details', 'eyebrow', value)} />
+          <ContentField label="Detaily — prvý riadok" value={form.details.titleLead} onChange={(value) => updateSectionField('details', 'titleLead', value)} />
+          <ContentField label="Detaily — zvýraznený riadok" value={form.details.titleEmphasis} onChange={(value) => updateSectionField('details', 'titleEmphasis', value)} />
+        </div>
+        <ContentField label="Text detailov" value={form.details.text} onChange={(value) => updateSectionField('details', 'text', value)} multiline />
+        <div className="editor-grid">
+          {form.details.specs.map((spec, index) => (
+            <div key={`spec-${index}`} className="border-t border-border pt-4">
+              <ContentField label={`Detail ${index + 1}`} value={spec.label} onChange={(value) => updateSpec(index, 'label', value)} />
+              <ContentField label="Hodnota" value={spec.value} onChange={(value) => updateSpec(index, 'value', value)} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="admin-card">
+        <h2>Pätička</h2>
+        <div className="editor-grid">
+          <ContentField label="Popis" value={form.footer.description} onChange={(value) => updateSectionField('footer', 'description', value)} multiline />
+          <ContentField label="Nadpis navigácie" value={form.footer.navigationTitle} onChange={(value) => updateSectionField('footer', 'navigationTitle', value)} />
+          <ContentField label="Odkaz katalógu" value={form.footer.catalogLink} onChange={(value) => updateSectionField('footer', 'catalogLink', value)} />
+          <ContentField label="Odkaz o nás" value={form.footer.storyLink} onChange={(value) => updateSectionField('footer', 'storyLink', value)} />
+          <ContentField label="Odkaz starostlivosti" value={form.footer.detailsLink} onChange={(value) => updateSectionField('footer', 'detailsLink', value)} />
+          <ContentField label="Sociálne siete — nadpis" value={form.footer.socialTitle} onChange={(value) => updateSectionField('footer', 'socialTitle', value)} />
+          <ContentField label="Instagram účet" value={form.footer.socialHandle} onChange={(value) => updateSectionField('footer', 'socialHandle', value)} />
+          <ContentField label="Spodný slogan" value={form.footer.bottomSlogan} onChange={(value) => updateSectionField('footer', 'bottomSlogan', value)} />
+        </div>
+      </section>
+
+      <div className="admin-card editor-actions">
+        {saved && <span className="editor-success" role="status">Obsah bol uložený.</span>}
+        {updateContent.isError && <span className="text-destructive text-sm" role="alert">Obsah sa nepodarilo uložiť.</span>}
+        <button className="button-primary" type="submit" disabled={updateContent.isPending}>{updateContent.isPending ? 'Ukladám...' : 'Uložiť celý obsah'}</button>
+      </div>
+    </form>
+  );
+}
+
+function ContentField({ label, value, onChange, multiline = false, type = 'text' }: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  multiline?: boolean;
+  type?: string;
+}) {
+  return (
+    <div className="field">
+      <label>{label}</label>
+      {multiline ? <textarea value={value} onChange={(event) => onChange(event.target.value)} /> : <input type={type} value={value} onChange={(event) => onChange(event.target.value)} />}
     </div>
   );
 }
