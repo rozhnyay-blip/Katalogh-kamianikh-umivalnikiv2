@@ -236,7 +236,7 @@ export const RequestUploadUrlResponse = zod.object({
  * @summary Serve a catalog image
  */
 export const GetStorageObjectQueryParams = zod.object({
-  "width": zod.union([zod.literal(480),zod.literal(960),zod.literal(1440),zod.literal(1920)]).optional().describe('Optional responsive image width. When omitted, the verified original is streamed unchanged.')
+  "width": zod.union([zod.literal(480),zod.literal(960),zod.literal(1440),zod.literal(1920),zod.literal(3840)]).optional().describe('Optional responsive image width. When omitted, the verified original is streamed unchanged.')
 })
 
 export const GetStorageObjectResponse = zod.unknown()

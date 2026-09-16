@@ -14,7 +14,7 @@ export function ProductImage({ path, alt, className, sizes = '(max-width: 620px)
   const original = originalImageUrl(path);
   return <img
     src={failedPath === path ? original : `${original}?width=960`}
-    srcSet={failedPath === path ? undefined : [480, 960, 1440, 1920].map(width => `${original}?width=${width} ${width}w`).join(', ')}
+    srcSet={failedPath === path ? undefined : [480, 960, 1440, 1920, 3840].map(width => `${original}?width=${width} ${width}w`).join(', ')}
     sizes={sizes}
     alt={alt}
     className={className}
