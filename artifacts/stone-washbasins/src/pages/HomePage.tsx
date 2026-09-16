@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram } from 'lucide-react';
-import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, type Product } from '@workspace/api-client-react';
+import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, useGetSiteContent, type Product } from '@workspace/api-client-react';
 import { useAuth } from '@clerk/react';
 import { Link } from 'wouter';
 import { Brand } from '../components/Brand';
 import { useFocusScope } from '../hooks/useFocusScope';
 import { ProductImage } from '../components/ProductImage';
 import { EditableProductMedia } from '../components/EditableProductMedia';
+import { ContactDock } from '../components/ContactDock';
+import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 
@@ -20,6 +22,7 @@ export function HomePage() {
     query: { enabled: isLoaded, queryKey: [...getGetOwnerStatusQueryKey(), userId] },
   });
   const canEdit = Boolean(isLoaded && owner?.signedIn && owner?.isOwner);
+  const { data: content = SITE_CONTENT_DEFAULTS } = useGetSiteContent();
   const [savedIds, setSavedIds] = useState<number[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
@@ -58,21 +61,21 @@ export function HomePage() {
     <div className="site-shell">
       <div className="topline">
         <div className="container-wide topline-inner">
-          <span>Kameň, ktorý si pamätá vodu</span>
-          <span className="topline-note">Prírodný kameň · Ručná práca</span>
+           <span>{content.topline.tagline}</span>
+           <span className="topline-note">{content.topline.note}</span>
         </div>
       </div>
 
       <header className="container-wide nav">
         <a className="brand" href="#domov"><Brand /></a>
         <nav className="nav-links" aria-label="Hlavná navigácia">
-          <a href="#katalog">Katalóg</a>
-          <a href="#pribeh">Príbeh</a>
-          <a href="#detaily">Detaily</a>
+           <a href="#katalog">{content.nav.catalog}</a>
+           <a href="#pribeh">{content.nav.story}</a>
+           <a href="#detaily">{content.nav.details}</a>
         </nav>
         <div className="nav-contact">
           <Link className="owner-nav-link" href="/admin">{canEdit ? 'Správa' : 'Prihlásenie majiteľa'}</Link>
-          <a className="round-button" href="https://www.instagram.com/skala_sk_/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <a className="round-button" href={content.nav.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <Instagram size={16} />
           </a>
         </div>
@@ -82,25 +85,25 @@ export function HomePage() {
         <section className="hero container-wide" id="domov">
           <div className="hero-grid">
             <div className="hero-copy">
-              <span className="eyebrow">Tvar · Kameň · Voda</span>
-              <h1 className="display hero-title">Príroda<br />vo vašej <em>kúpeľni.</em></h1>
-              <p className="hero-lede">Nachádzame kameň a dávame mu nový život — umývadlo, aké nebude mať nikto iný.</p>
+               <span className="eyebrow">{content.hero.eyebrow}</span>
+               <h1 className="display hero-title">{content.hero.titleLead}<br />{content.hero.titleMiddle} <em>{content.hero.titleEmphasis}</em></h1>
+               <p className="hero-lede">{content.hero.lede}</p>
               <div className="hero-actions">
-                <a className="button-primary" href="#katalog">Pozrieť kolekciu <ChevronDown size={15} /></a>
-                <a className="button-quiet" href="#pribeh">Ako to vzniká</a>
+                 <a className="button-primary" href="#katalog">{content.hero.primaryCta} <ChevronDown size={15} /></a>
+                 <a className="button-quiet" href="#pribeh">{content.hero.secondaryCta}</a>
               </div>
             </div>
-            <div className="hero-visual" aria-label="Skulpturálne umývadlo z prírodného kameňa">
-              <span className="hero-index">01 — TVAR / VODA</span>
+             <div className="hero-visual" aria-label={content.hero.visualAria}>
+               <span className="hero-index">{content.hero.visualIndex}</span>
               <div className="hero-orb" />
-              <div className="hero-stamp"><span>100%<br />prírodný<br />kameň</span></div>
+               <div className="hero-stamp"><span>{content.hero.stampLine1}<br />{content.hero.stampLine2}<br />{content.hero.stampLine3}</span></div>
             </div>
           </div>
         </section>
 
         <div className="marquee" aria-hidden="true">
           <div className="marquee-track">
-            {Array.from({ length: 2 }).flatMap((_, copyIndex) => ['ručná práca', 'prírodný kameň', 'jediný exemplár', 'pokojné rána'].map((item) => (
+             {Array.from({ length: 2 }).flatMap((_, copyIndex) => content.marquee.map((item) => (
               <span className="marquee-item" key={`${copyIndex}-${item}`}><span className="marquee-dot" />{item}</span>
             )))}
           </div>
@@ -109,27 +112,19 @@ export function HomePage() {
         <section className="story container-wide" id="pribeh">
           <div className="story-grid">
             <div>
-              <span className="eyebrow">01 / náš prístup</span>
-              <h2 className="display story-heading">Nie ideálny.<br /><em>Skutočný.</em></h2>
-              <p className="story-copy">V SKALA neopravujeme prírodu. Odhaľujeme ju — brúsime líniu, zachovávame žilky, ponechávame haptickosť. Každý tvar sa rodí z konkrétneho kameňa, nie naopak.</p>
-              <p className="story-note">Kameň spracúvame ručne s dôrazom na detail a rešpektom k materiálu.</p>
+               <span className="eyebrow">{content.story.eyebrow}</span>
+               <h2 className="display story-heading">{content.story.titleLead}<br /><em>{content.story.titleEmphasis}</em></h2>
+               <p className="story-copy">{content.story.copy}</p>
+               <p className="story-note">{content.story.note}</p>
             </div>
             <div className="process">
-              <div className="process-step">
-                <span className="process-number">01 — Nájsť</span>
-                <h3>Dopriať kameňu čas</h3>
-                <p>Vyberáme kusy s prirodzenou plasticitou a hustou štruktúrou.</p>
-              </div>
-              <div className="process-step">
-                <span className="process-number">02 — Precítiť</span>
-                <h3>Uvidieť tvar</h3>
-                <p>Najskôr počúvame faktúru. Potom opatrne odhaľujeme misu bez zmazania charakteru.</p>
-              </div>
-              <div className="process-step">
-                <span className="process-number">03 — Odovzdať</span>
-                <h3>Poslať ďalej</h3>
-                <p>Kameň ošetríme, otestujeme s vodou a bezpečne zabalíme na cestu k vám.</p>
-              </div>
+             {content.story.steps.map((step) => (
+               <div className="process-step" key={step.number}>
+                 <span className="process-number">{step.number}</span>
+                 <h3>{step.title}</h3>
+                 <p>{step.description}</p>
+               </div>
+             ))}
             </div>
           </div>
         </section>
@@ -138,14 +133,14 @@ export function HomePage() {
           <div className="container-wide">
             <div className="catalog-head">
               <div>
-                <span className="eyebrow">02 / hotové tvary</span>
-                <h2 className="display catalog-title">Nájdite svoj<br /><em>kameň.</em></h2>
+                 <span className="eyebrow">{content.catalog.eyebrow}</span>
+                 <h2 className="display catalog-title">{content.catalog.titleLead}<br /><em>{content.catalog.titleEmphasis}</em></h2>
               </div>
-              <p className="catalog-intro">Každé umývadlo je originál. To, čo vidíte, je presne to, čo dostanete.</p>
+               <p className="catalog-intro">{content.catalog.intro}</p>
             </div>
             {canEdit && <div className="owner-catalog-toolbar">
-              <div><strong>Vaše fotografie, priamo v katalógu</strong><p>Podržte prst na fotografii alebo klepnite na Pridať fotografiu.</p></div>
-              <Link className="button-primary" href="/admin?new=1">Pridať umývadlo</Link>
+               <div><strong>{content.catalog.ownerToolbarTitle}</strong><p>{content.catalog.ownerToolbarHelp}</p></div>
+               <Link className="button-primary" href="/admin?new=1">{content.catalog.addProductLabel}</Link>
             </div>}
 
             {isLoading ? (
@@ -159,8 +154,8 @@ export function HomePage() {
               </div>
             ) : products.length === 0 ? (
               <div className="catalog-status">
-                <p>Zatiaľ tu nie sú žiadne umývadlá. Sledujte náš <a href="https://www.instagram.com/skala_sk_/" target="_blank" rel="noreferrer" className="text-[#d99c8b] hover:underline">Instagram</a> pre novinky.</p>
-                {canEdit && <Link className="owner-empty-add" href="/admin?new=1">Pridať prvé umývadlo a fotografie</Link>}
+                 <p>{content.catalog.emptyMessage}</p>
+                 {canEdit && <Link className="owner-empty-add" href="/admin?new=1">{content.catalog.emptyAddLabel}</Link>}
               </div>
             ) : (
               <div className="catalog-grid">
@@ -182,15 +177,12 @@ export function HomePage() {
         <section className="details-band" id="detaily">
           <div className="container-wide details-grid">
             <div>
-              <span className="eyebrow">03 / detaily, na ktorých záleží</span>
-              <h2 className="display details-title">Kameň si pýta<br /><em>pozornosť.</em></h2>
-              <p className="details-text">Pri výbere si pozrite fotografie, materiál a rozmery konkrétneho umývadla. Na podrobnosti o montáži, údržbe a doručení sa môžete opýtať v dopyte alebo na Instagrame.</p>
+               <span className="eyebrow">{content.details.eyebrow}</span>
+               <h2 className="display details-title">{content.details.titleLead}<br /><em>{content.details.titleEmphasis}</em></h2>
+               <p className="details-text">{content.details.text}</p>
             </div>
             <dl className="spec-list">
-              <div className="spec-row"><dt>Materiál a rozmery</dt><dd>Pri konkrétnom výrobku</dd></div>
-              <div className="spec-row"><dt>Fotografie</dt><dd>Detail každého kusu</dd></div>
-              <div className="spec-row"><dt>Príslušenstvo a montáž</dt><dd>Informácie na vyžiadanie</dd></div>
-              <div className="spec-row"><dt>Dodanie</dt><dd>Podľa dohody</dd></div>
+               {content.details.specs.map((spec) => <div className="spec-row" key={spec.label}><dt>{spec.label}</dt><dd>{spec.value}</dd></div>)}
             </dl>
           </div>
         </section>
@@ -201,24 +193,24 @@ export function HomePage() {
           <div className="footer-grid">
             <div>
               <Brand light />
-              <p>Umývadlá z prírodného kameňa. Tvar pre vaše každodenné rituály.</p>
+               <p>{content.footer.description}</p>
             </div>
             <div>
-              <h3>Navigácia</h3>
+               <h3>{content.footer.navigationTitle}</h3>
               <div className="footer-links">
-                <a href="#katalog">Katalóg výrobkov</a>
-                <a href="#pribeh">O nás</a>
-                <a href="#detaily">Starostlivosť o kameň</a>
+                 <a href="#katalog">{content.footer.catalogLink}</a>
+                 <a href="#pribeh">{content.footer.storyLink}</a>
+                 <a href="#detaily">{content.footer.detailsLink}</a>
               </div>
             </div>
             <div>
-              <h3>Sledujte nás</h3>
-              <a className="footer-contact" href="https://www.instagram.com/skala_sk_/" target="_blank" rel="noopener noreferrer">@skala_sk_</a>
+               <h3>{content.footer.socialTitle}</h3>
+               <a className="footer-contact" href={content.nav.instagramUrl} target="_blank" rel="noopener noreferrer">{content.footer.socialHandle}</a>
             </div>
           </div>
           <div className="footer-bottom">
             <span>© {new Date().getFullYear()} SKALA</span>
-            <span>Kameň sa neopakuje. A to je dobre.</span>
+             <span>{content.footer.bottomSlogan}</span>
             <Link href="/admin" className="admin-link">Prihlásenie majiteľa</Link>
           </div>
         </div>
@@ -226,6 +218,7 @@ export function HomePage() {
 
       {savedNotice && <div className="saved-toast" role="status">{savedNotice}</div>}
       {orderProduct && <OrderModal product={orderProduct} onClose={() => setOrderProduct(null)} />}
+      <ContactDock content={content} />
     </div>
   );
 }
