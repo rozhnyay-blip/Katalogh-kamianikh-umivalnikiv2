@@ -1,0 +1,1 @@
+- [Catalog dependency cache](catalog-dependency-cache.md) — Vite can retain old React prebundles after workspace catalog upgrades even when installed versions and builds agree.
