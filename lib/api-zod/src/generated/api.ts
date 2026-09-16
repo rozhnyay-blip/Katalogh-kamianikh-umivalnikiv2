@@ -18,6 +18,554 @@ export const GetOwnerStatusResponse = zod.object({
 
 
 /**
+ * @summary Get the public site content
+ */
+export const getSiteContentResponseToplineTaglineMax = 160;
+
+export const getSiteContentResponseToplineNoteMax = 160;
+
+export const getSiteContentResponseNavCatalogMax = 80;
+
+export const getSiteContentResponseNavStoryMax = 80;
+
+export const getSiteContentResponseNavDetailsMax = 80;
+
+export const getSiteContentResponseNavInstagramUrlRegExp = new RegExp('^https://www\\.instagram\\.com');
+export const getSiteContentResponseHeroEyebrowMax = 120;
+
+export const getSiteContentResponseHeroTitleLeadMax = 120;
+
+export const getSiteContentResponseHeroTitleMiddleMax = 120;
+
+export const getSiteContentResponseHeroTitleEmphasisMax = 120;
+
+export const getSiteContentResponseHeroLedeMax = 500;
+
+export const getSiteContentResponseHeroPrimaryCtaMax = 100;
+
+export const getSiteContentResponseHeroSecondaryCtaMax = 100;
+
+export const getSiteContentResponseHeroVisualAriaMax = 200;
+
+export const getSiteContentResponseHeroVisualIndexMax = 80;
+
+export const getSiteContentResponseHeroStampLine1Max = 40;
+
+export const getSiteContentResponseHeroStampLine2Max = 80;
+
+export const getSiteContentResponseHeroStampLine3Max = 80;
+
+export const getSiteContentResponseMarqueeItemMax = 100;
+
+export const getSiteContentResponseMarqueeMax = 8;
+
+export const getSiteContentResponseStoryEyebrowMax = 120;
+
+export const getSiteContentResponseStoryTitleLeadMax = 120;
+
+export const getSiteContentResponseStoryTitleEmphasisMax = 120;
+
+export const getSiteContentResponseStoryCopyMax = 900;
+
+export const getSiteContentResponseStoryNoteMax = 400;
+
+export const getSiteContentResponseStoryStepsItemNumberMax = 40;
+
+export const getSiteContentResponseStoryStepsItemTitleMax = 160;
+
+export const getSiteContentResponseStoryStepsItemDescriptionMax = 500;
+
+export const getSiteContentResponseStoryStepsMin = 3;
+export const getSiteContentResponseStoryStepsMax = 3;
+
+export const getSiteContentResponseCatalogEyebrowMax = 120;
+
+export const getSiteContentResponseCatalogTitleLeadMax = 120;
+
+export const getSiteContentResponseCatalogTitleEmphasisMax = 120;
+
+export const getSiteContentResponseCatalogIntroMax = 500;
+
+export const getSiteContentResponseCatalogOwnerToolbarTitleMax = 160;
+
+export const getSiteContentResponseCatalogOwnerToolbarHelpMax = 240;
+
+export const getSiteContentResponseCatalogAddProductLabelMax = 100;
+
+export const getSiteContentResponseCatalogEmptyMessageMax = 500;
+
+export const getSiteContentResponseCatalogEmptyAddLabelMax = 180;
+
+export const getSiteContentResponseDetailsEyebrowMax = 160;
+
+export const getSiteContentResponseDetailsTitleLeadMax = 120;
+
+export const getSiteContentResponseDetailsTitleEmphasisMax = 120;
+
+export const getSiteContentResponseDetailsTextMax = 700;
+
+export const getSiteContentResponseDetailsSpecsItemLabelMax = 160;
+
+export const getSiteContentResponseDetailsSpecsItemValueMax = 240;
+
+export const getSiteContentResponseDetailsSpecsMin = 4;
+export const getSiteContentResponseDetailsSpecsMax = 4;
+
+export const getSiteContentResponseFooterDescriptionMax = 400;
+
+export const getSiteContentResponseFooterNavigationTitleMax = 100;
+
+export const getSiteContentResponseFooterCatalogLinkMax = 120;
+
+export const getSiteContentResponseFooterStoryLinkMax = 120;
+
+export const getSiteContentResponseFooterDetailsLinkMax = 160;
+
+export const getSiteContentResponseFooterSocialTitleMax = 100;
+
+export const getSiteContentResponseFooterSocialHandleMax = 120;
+
+export const getSiteContentResponseFooterBottomSloganMax = 240;
+
+
+
+export const GetSiteContentResponse = zod.object({
+  "topline": zod.object({
+  "tagline": zod.string().min(1).max(getSiteContentResponseToplineTaglineMax),
+  "note": zod.string().min(1).max(getSiteContentResponseToplineNoteMax)
+}),
+  "nav": zod.object({
+  "catalog": zod.string().min(1).max(getSiteContentResponseNavCatalogMax),
+  "story": zod.string().min(1).max(getSiteContentResponseNavStoryMax),
+  "details": zod.string().min(1).max(getSiteContentResponseNavDetailsMax),
+  "instagramUrl": zod.string().url().regex(getSiteContentResponseNavInstagramUrlRegExp)
+}),
+  "hero": zod.object({
+  "eyebrow": zod.string().min(1).max(getSiteContentResponseHeroEyebrowMax),
+  "titleLead": zod.string().min(1).max(getSiteContentResponseHeroTitleLeadMax),
+  "titleMiddle": zod.string().min(1).max(getSiteContentResponseHeroTitleMiddleMax),
+  "titleEmphasis": zod.string().min(1).max(getSiteContentResponseHeroTitleEmphasisMax),
+  "lede": zod.string().min(1).max(getSiteContentResponseHeroLedeMax),
+  "primaryCta": zod.string().min(1).max(getSiteContentResponseHeroPrimaryCtaMax),
+  "secondaryCta": zod.string().min(1).max(getSiteContentResponseHeroSecondaryCtaMax),
+  "visualAria": zod.string().min(1).max(getSiteContentResponseHeroVisualAriaMax),
+  "visualIndex": zod.string().min(1).max(getSiteContentResponseHeroVisualIndexMax),
+  "stampLine1": zod.string().min(1).max(getSiteContentResponseHeroStampLine1Max),
+  "stampLine2": zod.string().min(1).max(getSiteContentResponseHeroStampLine2Max),
+  "stampLine3": zod.string().min(1).max(getSiteContentResponseHeroStampLine3Max)
+}),
+  "marquee": zod.array(zod.string().min(1).max(getSiteContentResponseMarqueeItemMax)).min(1).max(getSiteContentResponseMarqueeMax),
+  "story": zod.object({
+  "eyebrow": zod.string().min(1).max(getSiteContentResponseStoryEyebrowMax),
+  "titleLead": zod.string().min(1).max(getSiteContentResponseStoryTitleLeadMax),
+  "titleEmphasis": zod.string().min(1).max(getSiteContentResponseStoryTitleEmphasisMax),
+  "copy": zod.string().min(1).max(getSiteContentResponseStoryCopyMax),
+  "note": zod.string().min(1).max(getSiteContentResponseStoryNoteMax),
+  "steps": zod.array(zod.object({
+  "number": zod.string().min(1).max(getSiteContentResponseStoryStepsItemNumberMax),
+  "title": zod.string().min(1).max(getSiteContentResponseStoryStepsItemTitleMax),
+  "description": zod.string().min(1).max(getSiteContentResponseStoryStepsItemDescriptionMax)
+})).min(getSiteContentResponseStoryStepsMin).max(getSiteContentResponseStoryStepsMax)
+}),
+  "catalog": zod.object({
+  "eyebrow": zod.string().min(1).max(getSiteContentResponseCatalogEyebrowMax),
+  "titleLead": zod.string().min(1).max(getSiteContentResponseCatalogTitleLeadMax),
+  "titleEmphasis": zod.string().min(1).max(getSiteContentResponseCatalogTitleEmphasisMax),
+  "intro": zod.string().min(1).max(getSiteContentResponseCatalogIntroMax),
+  "ownerToolbarTitle": zod.string().min(1).max(getSiteContentResponseCatalogOwnerToolbarTitleMax),
+  "ownerToolbarHelp": zod.string().min(1).max(getSiteContentResponseCatalogOwnerToolbarHelpMax),
+  "addProductLabel": zod.string().min(1).max(getSiteContentResponseCatalogAddProductLabelMax),
+  "emptyMessage": zod.string().min(1).max(getSiteContentResponseCatalogEmptyMessageMax),
+  "emptyAddLabel": zod.string().min(1).max(getSiteContentResponseCatalogEmptyAddLabelMax)
+}),
+  "details": zod.object({
+  "eyebrow": zod.string().min(1).max(getSiteContentResponseDetailsEyebrowMax),
+  "titleLead": zod.string().min(1).max(getSiteContentResponseDetailsTitleLeadMax),
+  "titleEmphasis": zod.string().min(1).max(getSiteContentResponseDetailsTitleEmphasisMax),
+  "text": zod.string().min(1).max(getSiteContentResponseDetailsTextMax),
+  "specs": zod.array(zod.object({
+  "label": zod.string().min(1).max(getSiteContentResponseDetailsSpecsItemLabelMax),
+  "value": zod.string().min(1).max(getSiteContentResponseDetailsSpecsItemValueMax)
+})).min(getSiteContentResponseDetailsSpecsMin).max(getSiteContentResponseDetailsSpecsMax)
+}),
+  "footer": zod.object({
+  "description": zod.string().min(1).max(getSiteContentResponseFooterDescriptionMax),
+  "navigationTitle": zod.string().min(1).max(getSiteContentResponseFooterNavigationTitleMax),
+  "catalogLink": zod.string().min(1).max(getSiteContentResponseFooterCatalogLinkMax),
+  "storyLink": zod.string().min(1).max(getSiteContentResponseFooterStoryLinkMax),
+  "detailsLink": zod.string().min(1).max(getSiteContentResponseFooterDetailsLinkMax),
+  "socialTitle": zod.string().min(1).max(getSiteContentResponseFooterSocialTitleMax),
+  "socialHandle": zod.string().min(1).max(getSiteContentResponseFooterSocialHandleMax),
+  "bottomSlogan": zod.string().min(1).max(getSiteContentResponseFooterBottomSloganMax)
+})
+})
+
+
+/**
+ * @summary Replace the public site content
+ */
+export const updateSiteContentBodyOneToplineTaglineMax = 160;
+
+export const updateSiteContentBodyOneToplineNoteMax = 160;
+
+export const updateSiteContentBodyOneNavCatalogMax = 80;
+
+export const updateSiteContentBodyOneNavStoryMax = 80;
+
+export const updateSiteContentBodyOneNavDetailsMax = 80;
+
+export const updateSiteContentBodyOneNavInstagramUrlRegExp = new RegExp('^https://www\\.instagram\\.com');
+export const updateSiteContentBodyOneHeroEyebrowMax = 120;
+
+export const updateSiteContentBodyOneHeroTitleLeadMax = 120;
+
+export const updateSiteContentBodyOneHeroTitleMiddleMax = 120;
+
+export const updateSiteContentBodyOneHeroTitleEmphasisMax = 120;
+
+export const updateSiteContentBodyOneHeroLedeMax = 500;
+
+export const updateSiteContentBodyOneHeroPrimaryCtaMax = 100;
+
+export const updateSiteContentBodyOneHeroSecondaryCtaMax = 100;
+
+export const updateSiteContentBodyOneHeroVisualAriaMax = 200;
+
+export const updateSiteContentBodyOneHeroVisualIndexMax = 80;
+
+export const updateSiteContentBodyOneHeroStampLine1Max = 40;
+
+export const updateSiteContentBodyOneHeroStampLine2Max = 80;
+
+export const updateSiteContentBodyOneHeroStampLine3Max = 80;
+
+export const updateSiteContentBodyOneMarqueeItemMax = 100;
+
+export const updateSiteContentBodyOneMarqueeMax = 8;
+
+export const updateSiteContentBodyOneStoryEyebrowMax = 120;
+
+export const updateSiteContentBodyOneStoryTitleLeadMax = 120;
+
+export const updateSiteContentBodyOneStoryTitleEmphasisMax = 120;
+
+export const updateSiteContentBodyOneStoryCopyMax = 900;
+
+export const updateSiteContentBodyOneStoryNoteMax = 400;
+
+export const updateSiteContentBodyOneStoryStepsItemNumberMax = 40;
+
+export const updateSiteContentBodyOneStoryStepsItemTitleMax = 160;
+
+export const updateSiteContentBodyOneStoryStepsItemDescriptionMax = 500;
+
+export const updateSiteContentBodyOneStoryStepsMin = 3;
+export const updateSiteContentBodyOneStoryStepsMax = 3;
+
+export const updateSiteContentBodyOneCatalogEyebrowMax = 120;
+
+export const updateSiteContentBodyOneCatalogTitleLeadMax = 120;
+
+export const updateSiteContentBodyOneCatalogTitleEmphasisMax = 120;
+
+export const updateSiteContentBodyOneCatalogIntroMax = 500;
+
+export const updateSiteContentBodyOneCatalogOwnerToolbarTitleMax = 160;
+
+export const updateSiteContentBodyOneCatalogOwnerToolbarHelpMax = 240;
+
+export const updateSiteContentBodyOneCatalogAddProductLabelMax = 100;
+
+export const updateSiteContentBodyOneCatalogEmptyMessageMax = 500;
+
+export const updateSiteContentBodyOneCatalogEmptyAddLabelMax = 180;
+
+export const updateSiteContentBodyOneDetailsEyebrowMax = 160;
+
+export const updateSiteContentBodyOneDetailsTitleLeadMax = 120;
+
+export const updateSiteContentBodyOneDetailsTitleEmphasisMax = 120;
+
+export const updateSiteContentBodyOneDetailsTextMax = 700;
+
+export const updateSiteContentBodyOneDetailsSpecsItemLabelMax = 160;
+
+export const updateSiteContentBodyOneDetailsSpecsItemValueMax = 240;
+
+export const updateSiteContentBodyOneDetailsSpecsMin = 4;
+export const updateSiteContentBodyOneDetailsSpecsMax = 4;
+
+export const updateSiteContentBodyOneFooterDescriptionMax = 400;
+
+export const updateSiteContentBodyOneFooterNavigationTitleMax = 100;
+
+export const updateSiteContentBodyOneFooterCatalogLinkMax = 120;
+
+export const updateSiteContentBodyOneFooterStoryLinkMax = 120;
+
+export const updateSiteContentBodyOneFooterDetailsLinkMax = 160;
+
+export const updateSiteContentBodyOneFooterSocialTitleMax = 100;
+
+export const updateSiteContentBodyOneFooterSocialHandleMax = 120;
+
+export const updateSiteContentBodyOneFooterBottomSloganMax = 240;
+
+
+
+export const UpdateSiteContentBody = zod.object({
+  "topline": zod.object({
+  "tagline": zod.string().min(1).max(updateSiteContentBodyOneToplineTaglineMax),
+  "note": zod.string().min(1).max(updateSiteContentBodyOneToplineNoteMax)
+}),
+  "nav": zod.object({
+  "catalog": zod.string().min(1).max(updateSiteContentBodyOneNavCatalogMax),
+  "story": zod.string().min(1).max(updateSiteContentBodyOneNavStoryMax),
+  "details": zod.string().min(1).max(updateSiteContentBodyOneNavDetailsMax),
+  "instagramUrl": zod.string().url().regex(updateSiteContentBodyOneNavInstagramUrlRegExp)
+}),
+  "hero": zod.object({
+  "eyebrow": zod.string().min(1).max(updateSiteContentBodyOneHeroEyebrowMax),
+  "titleLead": zod.string().min(1).max(updateSiteContentBodyOneHeroTitleLeadMax),
+  "titleMiddle": zod.string().min(1).max(updateSiteContentBodyOneHeroTitleMiddleMax),
+  "titleEmphasis": zod.string().min(1).max(updateSiteContentBodyOneHeroTitleEmphasisMax),
+  "lede": zod.string().min(1).max(updateSiteContentBodyOneHeroLedeMax),
+  "primaryCta": zod.string().min(1).max(updateSiteContentBodyOneHeroPrimaryCtaMax),
+  "secondaryCta": zod.string().min(1).max(updateSiteContentBodyOneHeroSecondaryCtaMax),
+  "visualAria": zod.string().min(1).max(updateSiteContentBodyOneHeroVisualAriaMax),
+  "visualIndex": zod.string().min(1).max(updateSiteContentBodyOneHeroVisualIndexMax),
+  "stampLine1": zod.string().min(1).max(updateSiteContentBodyOneHeroStampLine1Max),
+  "stampLine2": zod.string().min(1).max(updateSiteContentBodyOneHeroStampLine2Max),
+  "stampLine3": zod.string().min(1).max(updateSiteContentBodyOneHeroStampLine3Max)
+}),
+  "marquee": zod.array(zod.string().min(1).max(updateSiteContentBodyOneMarqueeItemMax)).min(1).max(updateSiteContentBodyOneMarqueeMax),
+  "story": zod.object({
+  "eyebrow": zod.string().min(1).max(updateSiteContentBodyOneStoryEyebrowMax),
+  "titleLead": zod.string().min(1).max(updateSiteContentBodyOneStoryTitleLeadMax),
+  "titleEmphasis": zod.string().min(1).max(updateSiteContentBodyOneStoryTitleEmphasisMax),
+  "copy": zod.string().min(1).max(updateSiteContentBodyOneStoryCopyMax),
+  "note": zod.string().min(1).max(updateSiteContentBodyOneStoryNoteMax),
+  "steps": zod.array(zod.object({
+  "number": zod.string().min(1).max(updateSiteContentBodyOneStoryStepsItemNumberMax),
+  "title": zod.string().min(1).max(updateSiteContentBodyOneStoryStepsItemTitleMax),
+  "description": zod.string().min(1).max(updateSiteContentBodyOneStoryStepsItemDescriptionMax)
+})).min(updateSiteContentBodyOneStoryStepsMin).max(updateSiteContentBodyOneStoryStepsMax)
+}),
+  "catalog": zod.object({
+  "eyebrow": zod.string().min(1).max(updateSiteContentBodyOneCatalogEyebrowMax),
+  "titleLead": zod.string().min(1).max(updateSiteContentBodyOneCatalogTitleLeadMax),
+  "titleEmphasis": zod.string().min(1).max(updateSiteContentBodyOneCatalogTitleEmphasisMax),
+  "intro": zod.string().min(1).max(updateSiteContentBodyOneCatalogIntroMax),
+  "ownerToolbarTitle": zod.string().min(1).max(updateSiteContentBodyOneCatalogOwnerToolbarTitleMax),
+  "ownerToolbarHelp": zod.string().min(1).max(updateSiteContentBodyOneCatalogOwnerToolbarHelpMax),
+  "addProductLabel": zod.string().min(1).max(updateSiteContentBodyOneCatalogAddProductLabelMax),
+  "emptyMessage": zod.string().min(1).max(updateSiteContentBodyOneCatalogEmptyMessageMax),
+  "emptyAddLabel": zod.string().min(1).max(updateSiteContentBodyOneCatalogEmptyAddLabelMax)
+}),
+  "details": zod.object({
+  "eyebrow": zod.string().min(1).max(updateSiteContentBodyOneDetailsEyebrowMax),
+  "titleLead": zod.string().min(1).max(updateSiteContentBodyOneDetailsTitleLeadMax),
+  "titleEmphasis": zod.string().min(1).max(updateSiteContentBodyOneDetailsTitleEmphasisMax),
+  "text": zod.string().min(1).max(updateSiteContentBodyOneDetailsTextMax),
+  "specs": zod.array(zod.object({
+  "label": zod.string().min(1).max(updateSiteContentBodyOneDetailsSpecsItemLabelMax),
+  "value": zod.string().min(1).max(updateSiteContentBodyOneDetailsSpecsItemValueMax)
+})).min(updateSiteContentBodyOneDetailsSpecsMin).max(updateSiteContentBodyOneDetailsSpecsMax)
+}),
+  "footer": zod.object({
+  "description": zod.string().min(1).max(updateSiteContentBodyOneFooterDescriptionMax),
+  "navigationTitle": zod.string().min(1).max(updateSiteContentBodyOneFooterNavigationTitleMax),
+  "catalogLink": zod.string().min(1).max(updateSiteContentBodyOneFooterCatalogLinkMax),
+  "storyLink": zod.string().min(1).max(updateSiteContentBodyOneFooterStoryLinkMax),
+  "detailsLink": zod.string().min(1).max(updateSiteContentBodyOneFooterDetailsLinkMax),
+  "socialTitle": zod.string().min(1).max(updateSiteContentBodyOneFooterSocialTitleMax),
+  "socialHandle": zod.string().min(1).max(updateSiteContentBodyOneFooterSocialHandleMax),
+  "bottomSlogan": zod.string().min(1).max(updateSiteContentBodyOneFooterBottomSloganMax)
+})
+})
+
+export const updateSiteContentResponseToplineTaglineMax = 160;
+
+export const updateSiteContentResponseToplineNoteMax = 160;
+
+export const updateSiteContentResponseNavCatalogMax = 80;
+
+export const updateSiteContentResponseNavStoryMax = 80;
+
+export const updateSiteContentResponseNavDetailsMax = 80;
+
+export const updateSiteContentResponseNavInstagramUrlRegExp = new RegExp('^https://www\\.instagram\\.com');
+export const updateSiteContentResponseHeroEyebrowMax = 120;
+
+export const updateSiteContentResponseHeroTitleLeadMax = 120;
+
+export const updateSiteContentResponseHeroTitleMiddleMax = 120;
+
+export const updateSiteContentResponseHeroTitleEmphasisMax = 120;
+
+export const updateSiteContentResponseHeroLedeMax = 500;
+
+export const updateSiteContentResponseHeroPrimaryCtaMax = 100;
+
+export const updateSiteContentResponseHeroSecondaryCtaMax = 100;
+
+export const updateSiteContentResponseHeroVisualAriaMax = 200;
+
+export const updateSiteContentResponseHeroVisualIndexMax = 80;
+
+export const updateSiteContentResponseHeroStampLine1Max = 40;
+
+export const updateSiteContentResponseHeroStampLine2Max = 80;
+
+export const updateSiteContentResponseHeroStampLine3Max = 80;
+
+export const updateSiteContentResponseMarqueeItemMax = 100;
+
+export const updateSiteContentResponseMarqueeMax = 8;
+
+export const updateSiteContentResponseStoryEyebrowMax = 120;
+
+export const updateSiteContentResponseStoryTitleLeadMax = 120;
+
+export const updateSiteContentResponseStoryTitleEmphasisMax = 120;
+
+export const updateSiteContentResponseStoryCopyMax = 900;
+
+export const updateSiteContentResponseStoryNoteMax = 400;
+
+export const updateSiteContentResponseStoryStepsItemNumberMax = 40;
+
+export const updateSiteContentResponseStoryStepsItemTitleMax = 160;
+
+export const updateSiteContentResponseStoryStepsItemDescriptionMax = 500;
+
+export const updateSiteContentResponseStoryStepsMin = 3;
+export const updateSiteContentResponseStoryStepsMax = 3;
+
+export const updateSiteContentResponseCatalogEyebrowMax = 120;
+
+export const updateSiteContentResponseCatalogTitleLeadMax = 120;
+
+export const updateSiteContentResponseCatalogTitleEmphasisMax = 120;
+
+export const updateSiteContentResponseCatalogIntroMax = 500;
+
+export const updateSiteContentResponseCatalogOwnerToolbarTitleMax = 160;
+
+export const updateSiteContentResponseCatalogOwnerToolbarHelpMax = 240;
+
+export const updateSiteContentResponseCatalogAddProductLabelMax = 100;
+
+export const updateSiteContentResponseCatalogEmptyMessageMax = 500;
+
+export const updateSiteContentResponseCatalogEmptyAddLabelMax = 180;
+
+export const updateSiteContentResponseDetailsEyebrowMax = 160;
+
+export const updateSiteContentResponseDetailsTitleLeadMax = 120;
+
+export const updateSiteContentResponseDetailsTitleEmphasisMax = 120;
+
+export const updateSiteContentResponseDetailsTextMax = 700;
+
+export const updateSiteContentResponseDetailsSpecsItemLabelMax = 160;
+
+export const updateSiteContentResponseDetailsSpecsItemValueMax = 240;
+
+export const updateSiteContentResponseDetailsSpecsMin = 4;
+export const updateSiteContentResponseDetailsSpecsMax = 4;
+
+export const updateSiteContentResponseFooterDescriptionMax = 400;
+
+export const updateSiteContentResponseFooterNavigationTitleMax = 100;
+
+export const updateSiteContentResponseFooterCatalogLinkMax = 120;
+
+export const updateSiteContentResponseFooterStoryLinkMax = 120;
+
+export const updateSiteContentResponseFooterDetailsLinkMax = 160;
+
+export const updateSiteContentResponseFooterSocialTitleMax = 100;
+
+export const updateSiteContentResponseFooterSocialHandleMax = 120;
+
+export const updateSiteContentResponseFooterBottomSloganMax = 240;
+
+
+
+export const UpdateSiteContentResponse = zod.object({
+  "topline": zod.object({
+  "tagline": zod.string().min(1).max(updateSiteContentResponseToplineTaglineMax),
+  "note": zod.string().min(1).max(updateSiteContentResponseToplineNoteMax)
+}),
+  "nav": zod.object({
+  "catalog": zod.string().min(1).max(updateSiteContentResponseNavCatalogMax),
+  "story": zod.string().min(1).max(updateSiteContentResponseNavStoryMax),
+  "details": zod.string().min(1).max(updateSiteContentResponseNavDetailsMax),
+  "instagramUrl": zod.string().url().regex(updateSiteContentResponseNavInstagramUrlRegExp)
+}),
+  "hero": zod.object({
+  "eyebrow": zod.string().min(1).max(updateSiteContentResponseHeroEyebrowMax),
+  "titleLead": zod.string().min(1).max(updateSiteContentResponseHeroTitleLeadMax),
+  "titleMiddle": zod.string().min(1).max(updateSiteContentResponseHeroTitleMiddleMax),
+  "titleEmphasis": zod.string().min(1).max(updateSiteContentResponseHeroTitleEmphasisMax),
+  "lede": zod.string().min(1).max(updateSiteContentResponseHeroLedeMax),
+  "primaryCta": zod.string().min(1).max(updateSiteContentResponseHeroPrimaryCtaMax),
+  "secondaryCta": zod.string().min(1).max(updateSiteContentResponseHeroSecondaryCtaMax),
+  "visualAria": zod.string().min(1).max(updateSiteContentResponseHeroVisualAriaMax),
+  "visualIndex": zod.string().min(1).max(updateSiteContentResponseHeroVisualIndexMax),
+  "stampLine1": zod.string().min(1).max(updateSiteContentResponseHeroStampLine1Max),
+  "stampLine2": zod.string().min(1).max(updateSiteContentResponseHeroStampLine2Max),
+  "stampLine3": zod.string().min(1).max(updateSiteContentResponseHeroStampLine3Max)
+}),
+  "marquee": zod.array(zod.string().min(1).max(updateSiteContentResponseMarqueeItemMax)).min(1).max(updateSiteContentResponseMarqueeMax),
+  "story": zod.object({
+  "eyebrow": zod.string().min(1).max(updateSiteContentResponseStoryEyebrowMax),
+  "titleLead": zod.string().min(1).max(updateSiteContentResponseStoryTitleLeadMax),
+  "titleEmphasis": zod.string().min(1).max(updateSiteContentResponseStoryTitleEmphasisMax),
+  "copy": zod.string().min(1).max(updateSiteContentResponseStoryCopyMax),
+  "note": zod.string().min(1).max(updateSiteContentResponseStoryNoteMax),
+  "steps": zod.array(zod.object({
+  "number": zod.string().min(1).max(updateSiteContentResponseStoryStepsItemNumberMax),
+  "title": zod.string().min(1).max(updateSiteContentResponseStoryStepsItemTitleMax),
+  "description": zod.string().min(1).max(updateSiteContentResponseStoryStepsItemDescriptionMax)
+})).min(updateSiteContentResponseStoryStepsMin).max(updateSiteContentResponseStoryStepsMax)
+}),
+  "catalog": zod.object({
+  "eyebrow": zod.string().min(1).max(updateSiteContentResponseCatalogEyebrowMax),
+  "titleLead": zod.string().min(1).max(updateSiteContentResponseCatalogTitleLeadMax),
+  "titleEmphasis": zod.string().min(1).max(updateSiteContentResponseCatalogTitleEmphasisMax),
+  "intro": zod.string().min(1).max(updateSiteContentResponseCatalogIntroMax),
+  "ownerToolbarTitle": zod.string().min(1).max(updateSiteContentResponseCatalogOwnerToolbarTitleMax),
+  "ownerToolbarHelp": zod.string().min(1).max(updateSiteContentResponseCatalogOwnerToolbarHelpMax),
+  "addProductLabel": zod.string().min(1).max(updateSiteContentResponseCatalogAddProductLabelMax),
+  "emptyMessage": zod.string().min(1).max(updateSiteContentResponseCatalogEmptyMessageMax),
+  "emptyAddLabel": zod.string().min(1).max(updateSiteContentResponseCatalogEmptyAddLabelMax)
+}),
+  "details": zod.object({
+  "eyebrow": zod.string().min(1).max(updateSiteContentResponseDetailsEyebrowMax),
+  "titleLead": zod.string().min(1).max(updateSiteContentResponseDetailsTitleLeadMax),
+  "titleEmphasis": zod.string().min(1).max(updateSiteContentResponseDetailsTitleEmphasisMax),
+  "text": zod.string().min(1).max(updateSiteContentResponseDetailsTextMax),
+  "specs": zod.array(zod.object({
+  "label": zod.string().min(1).max(updateSiteContentResponseDetailsSpecsItemLabelMax),
+  "value": zod.string().min(1).max(updateSiteContentResponseDetailsSpecsItemValueMax)
+})).min(updateSiteContentResponseDetailsSpecsMin).max(updateSiteContentResponseDetailsSpecsMax)
+}),
+  "footer": zod.object({
+  "description": zod.string().min(1).max(updateSiteContentResponseFooterDescriptionMax),
+  "navigationTitle": zod.string().min(1).max(updateSiteContentResponseFooterNavigationTitleMax),
+  "catalogLink": zod.string().min(1).max(updateSiteContentResponseFooterCatalogLinkMax),
+  "storyLink": zod.string().min(1).max(updateSiteContentResponseFooterStoryLinkMax),
+  "detailsLink": zod.string().min(1).max(updateSiteContentResponseFooterDetailsLinkMax),
+  "socialTitle": zod.string().min(1).max(updateSiteContentResponseFooterSocialTitleMax),
+  "socialHandle": zod.string().min(1).max(updateSiteContentResponseFooterSocialHandleMax),
+  "bottomSlogan": zod.string().min(1).max(updateSiteContentResponseFooterBottomSloganMax)
+})
+})
+
+
+/**
  * @summary Submit a product enquiry
  */
 

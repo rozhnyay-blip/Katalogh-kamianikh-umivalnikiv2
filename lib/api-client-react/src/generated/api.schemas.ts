@@ -101,6 +101,304 @@ export interface OwnerStatus {
   isOwner: boolean;
 }
 
+export interface SiteTopline {
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  tagline: string;
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  note: string;
+}
+
+export interface SiteNav {
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  catalog: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  story: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  details: string;
+  /** @pattern ^https://www\.instagram\.com/ */
+  instagramUrl: string;
+}
+
+export interface SiteHero {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  eyebrow: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  titleLead: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  titleMiddle: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  titleEmphasis: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  lede: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  primaryCta: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  secondaryCta: string;
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  visualAria: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  visualIndex: string;
+  /**
+     * @minLength 1
+     * @maxLength 40
+     */
+  stampLine1: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  stampLine2: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  stampLine3: string;
+}
+
+export interface SiteProcessStep {
+  /**
+     * @minLength 1
+     * @maxLength 40
+     */
+  number: string;
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  title: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  description: string;
+}
+
+export interface SiteStory {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  eyebrow: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  titleLead: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  titleEmphasis: string;
+  /**
+     * @minLength 1
+     * @maxLength 900
+     */
+  copy: string;
+  /**
+     * @minLength 1
+     * @maxLength 400
+     */
+  note: string;
+  /**
+     * @minItems 3
+     * @maxItems 3
+     */
+  steps: SiteProcessStep[];
+}
+
+export interface SiteCatalog {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  eyebrow: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  titleLead: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  titleEmphasis: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  intro: string;
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  ownerToolbarTitle: string;
+  /**
+     * @minLength 1
+     * @maxLength 240
+     */
+  ownerToolbarHelp: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  addProductLabel: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  emptyMessage: string;
+  /**
+     * @minLength 1
+     * @maxLength 180
+     */
+  emptyAddLabel: string;
+}
+
+export interface SiteSpec {
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  label: string;
+  /**
+     * @minLength 1
+     * @maxLength 240
+     */
+  value: string;
+}
+
+export interface SiteDetails {
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  eyebrow: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  titleLead: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  titleEmphasis: string;
+  /**
+     * @minLength 1
+     * @maxLength 700
+     */
+  text: string;
+  /**
+     * @minItems 4
+     * @maxItems 4
+     */
+  specs: SiteSpec[];
+}
+
+export interface SiteFooter {
+  /**
+     * @minLength 1
+     * @maxLength 400
+     */
+  description: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  navigationTitle: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  catalogLink: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  storyLink: string;
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  detailsLink: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  socialTitle: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  socialHandle: string;
+  /**
+     * @minLength 1
+     * @maxLength 240
+     */
+  bottomSlogan: string;
+}
+
+export interface SiteContent {
+  topline: SiteTopline;
+  nav: SiteNav;
+  hero: SiteHero;
+  /**
+     * @minItems 1
+     * @maxItems 8
+     * @items.minLength 1
+     * @items.maxLength 100
+     */
+  marquee: string[];
+  story: SiteStory;
+  catalog: SiteCatalog;
+  details: SiteDetails;
+  footer: SiteFooter;
+}
+
+export type SiteContentUpdate = SiteContent;
+
 export interface OrderInput {
   /** @minimum 1 */
   productId: number;
