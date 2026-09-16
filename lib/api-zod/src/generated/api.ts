@@ -31,6 +31,17 @@ export const getSiteContentResponseNavStoryMax = 80;
 export const getSiteContentResponseNavDetailsMax = 80;
 
 export const getSiteContentResponseNavInstagramUrlRegExp = new RegExp('^https://www\\.instagram\\.com');
+export const getSiteContentResponseContactLabelMax = 100;
+
+export const getSiteContentResponseContactPhoneMin = 5;
+export const getSiteContentResponseContactPhoneMax = 40;
+
+export const getSiteContentResponseContactViberLabelMax = 60;
+
+export const getSiteContentResponseContactWhatsappLabelMax = 60;
+
+export const getSiteContentResponseContactInstagramLabelMax = 60;
+
 export const getSiteContentResponseHeroEyebrowMax = 120;
 
 export const getSiteContentResponseHeroTitleLeadMax = 120;
@@ -140,6 +151,13 @@ export const GetSiteContentResponse = zod.object({
   "details": zod.string().min(1).max(getSiteContentResponseNavDetailsMax),
   "instagramUrl": zod.string().url().regex(getSiteContentResponseNavInstagramUrlRegExp)
 }),
+  "contact": zod.object({
+  "label": zod.string().min(1).max(getSiteContentResponseContactLabelMax),
+  "phone": zod.string().min(getSiteContentResponseContactPhoneMin).max(getSiteContentResponseContactPhoneMax),
+  "viberLabel": zod.string().min(1).max(getSiteContentResponseContactViberLabelMax),
+  "whatsappLabel": zod.string().min(1).max(getSiteContentResponseContactWhatsappLabelMax),
+  "instagramLabel": zod.string().min(1).max(getSiteContentResponseContactInstagramLabelMax)
+}),
   "hero": zod.object({
   "eyebrow": zod.string().min(1).max(getSiteContentResponseHeroEyebrowMax),
   "titleLead": zod.string().min(1).max(getSiteContentResponseHeroTitleLeadMax),
@@ -215,6 +233,17 @@ export const updateSiteContentBodyOneNavStoryMax = 80;
 export const updateSiteContentBodyOneNavDetailsMax = 80;
 
 export const updateSiteContentBodyOneNavInstagramUrlRegExp = new RegExp('^https://www\\.instagram\\.com');
+export const updateSiteContentBodyOneContactLabelMax = 100;
+
+export const updateSiteContentBodyOneContactPhoneMin = 5;
+export const updateSiteContentBodyOneContactPhoneMax = 40;
+
+export const updateSiteContentBodyOneContactViberLabelMax = 60;
+
+export const updateSiteContentBodyOneContactWhatsappLabelMax = 60;
+
+export const updateSiteContentBodyOneContactInstagramLabelMax = 60;
+
 export const updateSiteContentBodyOneHeroEyebrowMax = 120;
 
 export const updateSiteContentBodyOneHeroTitleLeadMax = 120;
@@ -324,6 +353,13 @@ export const UpdateSiteContentBody = zod.object({
   "details": zod.string().min(1).max(updateSiteContentBodyOneNavDetailsMax),
   "instagramUrl": zod.string().url().regex(updateSiteContentBodyOneNavInstagramUrlRegExp)
 }),
+  "contact": zod.object({
+  "label": zod.string().min(1).max(updateSiteContentBodyOneContactLabelMax),
+  "phone": zod.string().min(updateSiteContentBodyOneContactPhoneMin).max(updateSiteContentBodyOneContactPhoneMax),
+  "viberLabel": zod.string().min(1).max(updateSiteContentBodyOneContactViberLabelMax),
+  "whatsappLabel": zod.string().min(1).max(updateSiteContentBodyOneContactWhatsappLabelMax),
+  "instagramLabel": zod.string().min(1).max(updateSiteContentBodyOneContactInstagramLabelMax)
+}),
   "hero": zod.object({
   "eyebrow": zod.string().min(1).max(updateSiteContentBodyOneHeroEyebrowMax),
   "titleLead": zod.string().min(1).max(updateSiteContentBodyOneHeroTitleLeadMax),
@@ -395,6 +431,17 @@ export const updateSiteContentResponseNavStoryMax = 80;
 export const updateSiteContentResponseNavDetailsMax = 80;
 
 export const updateSiteContentResponseNavInstagramUrlRegExp = new RegExp('^https://www\\.instagram\\.com');
+export const updateSiteContentResponseContactLabelMax = 100;
+
+export const updateSiteContentResponseContactPhoneMin = 5;
+export const updateSiteContentResponseContactPhoneMax = 40;
+
+export const updateSiteContentResponseContactViberLabelMax = 60;
+
+export const updateSiteContentResponseContactWhatsappLabelMax = 60;
+
+export const updateSiteContentResponseContactInstagramLabelMax = 60;
+
 export const updateSiteContentResponseHeroEyebrowMax = 120;
 
 export const updateSiteContentResponseHeroTitleLeadMax = 120;
@@ -503,6 +550,13 @@ export const UpdateSiteContentResponse = zod.object({
   "story": zod.string().min(1).max(updateSiteContentResponseNavStoryMax),
   "details": zod.string().min(1).max(updateSiteContentResponseNavDetailsMax),
   "instagramUrl": zod.string().url().regex(updateSiteContentResponseNavInstagramUrlRegExp)
+}),
+  "contact": zod.object({
+  "label": zod.string().min(1).max(updateSiteContentResponseContactLabelMax),
+  "phone": zod.string().min(updateSiteContentResponseContactPhoneMin).max(updateSiteContentResponseContactPhoneMax),
+  "viberLabel": zod.string().min(1).max(updateSiteContentResponseContactViberLabelMax),
+  "whatsappLabel": zod.string().min(1).max(updateSiteContentResponseContactWhatsappLabelMax),
+  "instagramLabel": zod.string().min(1).max(updateSiteContentResponseContactInstagramLabelMax)
 }),
   "hero": zod.object({
   "eyebrow": zod.string().min(1).max(updateSiteContentResponseHeroEyebrowMax),

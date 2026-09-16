@@ -518,12 +518,14 @@ components:
           type: boolean
     SiteContent:
       type: object
-      required: [topline, nav, hero, marquee, story, catalog, details, footer]
+      required: [topline, nav, contact, hero, marquee, story, catalog, details, footer]
       properties:
         topline:
           $ref: "#/components/schemas/SiteTopline"
         nav:
           $ref: "#/components/schemas/SiteNav"
+        contact:
+          $ref: "#/components/schemas/SiteContact"
         hero:
           $ref: "#/components/schemas/SiteHero"
         marquee:
@@ -559,6 +561,15 @@ components:
         story: { type: string, minLength: 1, maxLength: 80 }
         details: { type: string, minLength: 1, maxLength: 80 }
         instagramUrl: { type: string, format: uri, pattern: '^https://www\.instagram\.com/' }
+    SiteContact:
+      type: object
+      required: [label, phone, viberLabel, whatsappLabel, instagramLabel]
+      properties:
+        label: { type: string, minLength: 1, maxLength: 100 }
+        phone: { type: string, minLength: 5, maxLength: 40 }
+        viberLabel: { type: string, minLength: 1, maxLength: 60 }
+        whatsappLabel: { type: string, minLength: 1, maxLength: 60 }
+        instagramLabel: { type: string, minLength: 1, maxLength: 60 }
     SiteHero:
       type: object
       required: [eyebrow, titleLead, titleMiddle, titleEmphasis, lede, primaryCta, secondaryCta, visualAria, visualIndex, stampLine1, stampLine2, stampLine3]

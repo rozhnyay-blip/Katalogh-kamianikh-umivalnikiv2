@@ -1,83 +1,7 @@
-import { z } from "zod/v4";
+import { UpdateSiteContentBody } from "@workspace/api-zod";
+import type { SiteContent } from "@workspace/api-zod";
 
-const text = (max: number) => z.string().trim().min(1).max(max);
-
-const processStep = z.object({
-  number: text(40),
-  title: text(160),
-  description: text(500),
-});
-
-const spec = z.object({
-  label: text(160),
-  value: text(240),
-});
-
-export const siteContentSchema = z.object({
-  topline: z.object({
-    tagline: text(160),
-    note: text(160),
-  }),
-  nav: z.object({
-    catalog: text(80),
-    story: text(80),
-    details: text(80),
-    instagramUrl: z.string().url().max(500).refine((value) => value.startsWith("https://www.instagram.com/"), "Instagram URL required"),
-  }),
-  hero: z.object({
-    eyebrow: text(120),
-    titleLead: text(120),
-    titleMiddle: text(120),
-    titleEmphasis: text(120),
-    lede: text(500),
-    primaryCta: text(100),
-    secondaryCta: text(100),
-    visualAria: text(200),
-    visualIndex: text(80),
-    stampLine1: text(40),
-    stampLine2: text(80),
-    stampLine3: text(80),
-  }),
-  marquee: z.array(text(100)).min(1).max(8),
-  story: z.object({
-    eyebrow: text(120),
-    titleLead: text(120),
-    titleEmphasis: text(120),
-    copy: text(900),
-    note: text(400),
-    steps: z.array(processStep).length(3),
-  }),
-  catalog: z.object({
-    eyebrow: text(120),
-    titleLead: text(120),
-    titleEmphasis: text(120),
-    intro: text(500),
-    ownerToolbarTitle: text(160),
-    ownerToolbarHelp: text(240),
-    addProductLabel: text(100),
-    emptyMessage: text(500),
-    emptyAddLabel: text(180),
-  }),
-  details: z.object({
-    eyebrow: text(160),
-    titleLead: text(120),
-    titleEmphasis: text(120),
-    text: text(700),
-    specs: z.array(spec).length(4),
-  }),
-  footer: z.object({
-    description: text(400),
-    navigationTitle: text(100),
-    catalogLink: text(120),
-    storyLink: text(120),
-    detailsLink: text(160),
-    socialTitle: text(100),
-    socialHandle: text(120),
-    bottomSlogan: text(240),
-  }),
-});
-
-export type SiteContent = z.infer<typeof siteContentSchema>;
+export const siteContentSchema = UpdateSiteContentBody;
 
 export const DEFAULT_SITE_CONTENT: SiteContent = {
   topline: {
@@ -89,6 +13,13 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     story: "Príbeh",
     details: "Detaily",
     instagramUrl: "https://www.instagram.com/skala_sk_/",
+  },
+  contact: {
+    label: "Kontaktujte nás",
+    phone: "+421 918 103 604",
+    viberLabel: "Viber",
+    whatsappLabel: "WhatsApp",
+    instagramLabel: "Instagram",
   },
   hero: {
     eyebrow: "Tvar · Kameň · Voda",

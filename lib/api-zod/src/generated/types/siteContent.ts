@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { SiteCatalog } from './siteCatalog';
+import type { SiteContact } from './siteContact';
 import type { SiteDetails } from './siteDetails';
 import type { SiteFooter } from './siteFooter';
 import type { SiteHero } from './siteHero';
@@ -16,6 +17,7 @@ import type { SiteTopline } from './siteTopline';
 export interface SiteContent {
   topline: SiteTopline;
   nav: SiteNav;
+  contact: SiteContact;
   hero: SiteHero;
   /**
      * @minItems 1

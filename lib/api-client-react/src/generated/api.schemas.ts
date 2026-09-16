@@ -134,6 +134,34 @@ export interface SiteNav {
   instagramUrl: string;
 }
 
+export interface SiteContact {
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  label: string;
+  /**
+     * @minLength 5
+     * @maxLength 40
+     */
+  phone: string;
+  /**
+     * @minLength 1
+     * @maxLength 60
+     */
+  viberLabel: string;
+  /**
+     * @minLength 1
+     * @maxLength 60
+     */
+  whatsappLabel: string;
+  /**
+     * @minLength 1
+     * @maxLength 60
+     */
+  instagramLabel: string;
+}
+
 export interface SiteHero {
   /**
      * @minLength 1
@@ -383,6 +411,7 @@ export interface SiteFooter {
 export interface SiteContent {
   topline: SiteTopline;
   nav: SiteNav;
+  contact: SiteContact;
   hero: SiteHero;
   /**
      * @minItems 1
