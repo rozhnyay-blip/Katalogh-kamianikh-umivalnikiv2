@@ -19,6 +19,7 @@ export * from './productInput';
 export * from './productPhotosInput';
 export * from './productUpdate';
 export * from './siteCatalog';
+export * from './siteContact';
 export * from './siteContent';
 export * from './siteContentUpdate';
 export * from './siteDetails';

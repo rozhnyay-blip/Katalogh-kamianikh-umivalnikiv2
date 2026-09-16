@@ -1,5 +1,5 @@
 import { db, siteContent as siteContentTable } from "@workspace/db";
-import { SiteContentResponse } from "@workspace/api-zod";
+import { GetSiteContentResponse, UpdateSiteContentResponse } from "@workspace/api-zod";
 import { eq } from "drizzle-orm";
 import { Router, type IRouter, type Request, type Response } from "express";
 
@@ -17,7 +17,7 @@ router.get("/site-content", async (req: Request, res: Response) => {
       .where(eq(siteContentTable.id, 1))
       .limit(1);
     const content = parseSiteContent(row?.content) ?? DEFAULT_SITE_CONTENT;
-    res.json(SiteContentResponse.parse(content));
+    res.json(GetSiteContentResponse.parse(content));
   } catch (error) {
     logFailure(req, "get_site_content", error);
     sendError(res, 500, API_ERRORS.internal);
@@ -40,7 +40,7 @@ router.put("/site-content", requireOwner, async (req: Request, res: Response) =>
         set: { content, updatedAt: new Date() },
       })
       .returning({ content: siteContentTable.content });
-    res.json(SiteContentResponse.parse(parseSiteContent(row.content) ?? DEFAULT_SITE_CONTENT));
+    res.json(UpdateSiteContentResponse.parse(parseSiteContent(row.content) ?? DEFAULT_SITE_CONTENT));
   } catch (error) {
     logFailure(req, "update_site_content", error);
     sendError(res, 500, API_ERRORS.internal);
