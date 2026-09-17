@@ -174,9 +174,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .button-quiet { border-color: hsl(var(--border)); color: hsl(var(--foreground)); }
 .button-quiet:hover { background: hsl(var(--secondary)); transform: translateY(-2px); }
 .hero-visual { min-height: 490px; position:relative; display:grid; place-items:center; }
-.hero-orb { width: min(84%, 470px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #bec9c2, #748e88 48%, #3e5e60 76%, #28434a); box-shadow: inset -40px -34px 70px rgba(21, 46, 49, .4), inset 23px 18px 50px rgba(230, 226, 205, .31), 0 38px 50px rgba(28,63,67,.18); position:relative; transform: rotate(-10deg); animation: float 7s ease-in-out infinite; }
-.hero-orb::before { content:''; position:absolute; inset: 18% 15% 18%; border-radius:50%; background: radial-gradient(ellipse at 35% 25%, #244148 0 14%, #46686a 39%, #788d88 62%, #b8c1b7 80%); box-shadow: inset 8px 8px 18px rgba(235,232,212,.22), inset -16px -11px 28px rgba(21,46,49,.35); }
-.hero-orb::after { content:''; position:absolute; width: 24%; aspect-ratio:1; border-radius:50%; background:#2d5055; top: 38%; left: 38%; box-shadow: inset 8px 6px 14px rgba(195,209,199,.19), 0 2px 4px rgba(21,46,49,.35); }
+.hero-product-image { display:block; width:min(100%, 620px); max-height:520px; height:auto; object-fit:contain; filter:drop-shadow(0 28px 24px rgba(28,63,67,.18)); animation:float-photo 7s ease-in-out infinite; }
 .hero-stamp { position:absolute; bottom: 8%; right: 3%; width: 120px; height:120px; border:1px solid hsla(177,33%,30%,.38); border-radius:50%; display:grid; place-items:center; transform: rotate(12deg); }
 .hero-stamp span { text-align:center; font: .55rem/1.55 var(--app-font-mono); letter-spacing:.12em; text-transform:uppercase; color:hsl(var(--primary)); }
 .hero-index { position:absolute; top: 9%; left: 5%; font: .66rem var(--app-font-mono); color:hsl(var(--muted-foreground)); }
@@ -539,9 +537,9 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .site-content-editor .editor-grid, .site-content-editor .editor-grid-wide { grid-template-columns:1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-orb, .marquee-track { animation:none; }
+  .hero-product-image, .marquee-track { animation:none; }
 }
-@keyframes float { 0%,100%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(-13px) rotate(-7deg)} }
+@keyframes float-photo { 0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)} }
 @keyframes marquee { to { transform:translateX(-50%); } }
 @keyframes rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fade { from{opacity:0}to{opacity:1} }
