@@ -16,7 +16,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   },
   contact: {
     label: "Kontaktujte nás",
-    phone: "+421 918 103 604",
+    phone: "0918103604",
     viberLabel: "Viber",
     whatsappLabel: "WhatsApp",
     instagramLabel: "Instagram",
