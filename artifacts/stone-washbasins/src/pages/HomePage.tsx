@@ -9,6 +9,7 @@ import { ProductImage } from '../components/ProductImage';
 import { EditableProductMedia } from '../components/EditableProductMedia';
 import { ContactDock } from '../components/ContactDock';
 import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
+import heroProductImage from '@assets/image_1789628614912.png';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 
@@ -95,7 +96,7 @@ export function HomePage() {
             </div>
              <div className="hero-visual" aria-label={content.hero.visualAria}>
                <span className="hero-index">{content.hero.visualIndex}</span>
-              <div className="hero-orb" />
+               <img className="hero-product-image" src={heroProductImage} alt="" />
                <div className="hero-stamp"><span>{content.hero.stampLine1}<br />{content.hero.stampLine2}<br />{content.hero.stampLine3}</span></div>
             </div>
           </div>
