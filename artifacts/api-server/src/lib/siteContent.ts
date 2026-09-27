@@ -37,6 +37,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     price: "300 €",
     dimensions: "56 × 32 × 13 cm",
     weight: "40 kg",
+    orderCta: "Objednať",
   },
   marquee: ["ručná práca", "prírodný kameň", "jediný exemplár", "pokojné rána"],
   story: {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram, MessageCircle } from 'lucide-react';
 import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, useGetSiteContent, type Product } from '@workspace/api-client-react';
 import { useAuth } from '@clerk/react';
 import { Link } from 'wouter';
@@ -9,6 +9,7 @@ import { ProductImage } from '../components/ProductImage';
 import { EditableProductMedia } from '../components/EditableProductMedia';
 import { ContactDock } from '../components/ContactDock';
 import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
+import { toInternationalPhoneNumber } from '../lib/phone';
 import heroProductImage from '@assets/image_1789628614912.png';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
@@ -37,6 +38,8 @@ export function HomePage() {
   const [orderProduct, setOrderProduct] = useState<Product | null>(null);
 
   const { data: products = [], isLoading, isError, refetch } = useListProducts();
+  const orderMessage = `Dobrý deň, mám záujem o kamenné umývadlo z hlavnej stránky SKALA. Cena: ${content.hero.price}; rozmery: ${content.hero.dimensions}; hmotnosť: ${content.hero.weight}. Prosím o informácie k objednávke.`;
+  const orderHref = `https://wa.me/${toInternationalPhoneNumber(content.contact.phone)}?text=${encodeURIComponent(orderMessage)}`;
 
   useEffect(() => {
     try {
@@ -103,6 +106,11 @@ export function HomePage() {
                 <div><dt>Rozmery</dt><dd>{content.hero.dimensions}</dd></div>
                 <div><dt>Hmotnosť</dt><dd>{content.hero.weight}</dd></div>
               </dl>
+              <a className="hero-order-button" href={orderHref} target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={18} aria-hidden="true" />
+                <span>{content.hero.orderCta}</span>
+                <ArrowRight size={16} aria-hidden="true" />
+              </a>
             </div>
           </div>
         </section>

@@ -358,6 +358,7 @@ function SiteContentEditor() {
           <ContentField label="Cena umývadla" value={form.hero.price} onChange={(value) => updateSectionField('hero', 'price', value)} />
           <ContentField label="Rozmery umývadla" value={form.hero.dimensions} onChange={(value) => updateSectionField('hero', 'dimensions', value)} />
           <ContentField label="Hmotnosť umývadla" value={form.hero.weight} onChange={(value) => updateSectionField('hero', 'weight', value)} />
+          <ContentField label="Tlačidlo objednávky" value={form.hero.orderCta} onChange={(value) => updateSectionField('hero', 'orderCta', value)} />
         </div>
       </section>
 
