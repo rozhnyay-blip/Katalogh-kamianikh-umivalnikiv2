@@ -134,7 +134,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .brand-mark svg { display:block; width:100%; height:100%; overflow:visible; }
 .brand-stone { fill:rgba(104,126,114,.22); stroke:currentColor; stroke-width:1.5; stroke-linejoin:round; stroke-linecap:round; }
 .brand-stone-veins { fill:none; stroke:#9c7768; stroke-width:1.05; stroke-linecap:round; stroke-linejoin:round; }
-.brand-word { font-weight: 800; letter-spacing: .16em; font-size: .92rem; }
+.brand-word { font-weight: 800; letter-spacing: .08em; font-size: .92rem; }
 .brand-sub { color: hsl(var(--muted-foreground)); font: .58rem var(--app-font-mono); letter-spacing: .13em; margin-top: 2px; }
 .nav-links { display:flex; align-items:center; gap: clamp(16px, 3vw, 38px); }
 .nav-links a { color: hsl(var(--foreground)); text-decoration:none; font-size: .77rem; font-weight: 700; }
@@ -160,9 +160,9 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .hero::after { content:''; position:absolute; right: -13%; top: 2%; width: 52vw; height: 52vw; max-width: 700px; max-height:700px; border:1px solid hsla(177,33%,30%,.18); border-radius:50%; pointer-events:none; }
 .hero-grid { position:relative; z-index:1; display:grid; grid-template-columns: 1.03fr .97fr; align-items:center; gap: 7%; }
 .hero-copy { padding-left: clamp(0px, 4vw, 62px); }
-.hero-title { font-size: clamp(3.6rem, 7.4vw, 7.2rem); line-height: .91; margin: 18px 0 28px; max-width: 700px; }
+.hero-title { font-size: clamp(3.6rem, 7.4vw, 7.2rem); line-height: .86; margin: 14px 0 18px; max-width: 700px; }
 .hero-title em { color: hsl(var(--accent)); }
-.hero-lede { font-size: .94rem; line-height:1.8; max-width: 430px; color: hsl(var(--muted-foreground)); margin: 0 0 34px; }
+.hero-lede { font-size: .94rem; line-height:1.6; max-width: 430px; color: hsl(var(--muted-foreground)); margin: 0 0 24px; }
 .hero-actions { display:flex; flex-wrap:wrap; gap: 12px; align-items:center; }
 .button-primary, .button-quiet {
   min-height: 48px; border-radius: 999px; padding: 0 22px; display:inline-flex; align-items:center; justify-content:center; gap: 9px; text-decoration:none; border: 1px solid transparent; font-size: .75rem; font-weight:800; letter-spacing: .03em; transition: transform .25s ease, background-color .25s ease, color .25s ease;
