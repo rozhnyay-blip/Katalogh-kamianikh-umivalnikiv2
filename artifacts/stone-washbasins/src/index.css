@@ -127,6 +127,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   border-bottom: 1px solid hsla(193, 17%, 45%, .2);
 }
 .brand { display:flex; align-items:center; gap: 10px; text-decoration:none; color: inherit; }
+.brand-copy { display:inline-flex; align-items:baseline; gap:2px; }
 .brand-mark {
   width: 35px; height: 35px; flex:none; color:hsl(var(--primary));
   display:grid; place-items:center;
@@ -135,7 +136,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .brand-stone { fill:rgba(104,126,114,.22); stroke:currentColor; stroke-width:1.5; stroke-linejoin:round; stroke-linecap:round; }
 .brand-stone-veins { fill:none; stroke:#9c7768; stroke-width:1.05; stroke-linecap:round; stroke-linejoin:round; }
 .brand-word { font-weight: 800; letter-spacing: .16em; font-size: .92rem; }
-.brand-sub { color: hsl(var(--muted-foreground)); font: .58rem var(--app-font-mono); letter-spacing: .13em; margin-top: 2px; }
+.brand-sub { color: hsl(var(--muted-foreground)); font: .58rem var(--app-font-mono); letter-spacing: .13em; }
 .nav-links { display:flex; align-items:center; gap: clamp(16px, 3vw, 38px); }
 .nav-links a { color: hsl(var(--foreground)); text-decoration:none; font-size: .77rem; font-weight: 700; }
 .nav-links a:hover { color: hsl(var(--primary)); }
