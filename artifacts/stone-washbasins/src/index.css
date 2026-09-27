@@ -132,9 +132,9 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   display:grid; place-items:center;
 }
 .brand-mark svg { display:block; width:100%; height:100%; overflow:visible; }
-.brand-stone { fill:rgba(46,77,74,.12); stroke:currentColor; stroke-width:1.6; stroke-linejoin:round; }
-.brand-stone-facet { fill:none; stroke:currentColor; stroke-width:1; stroke-linecap:round; stroke-linejoin:round; opacity:.68; }
-.brand-stone-vein { fill:none; stroke:hsl(var(--accent)); stroke-width:1.4; stroke-linecap:round; }
+.brand-stone { fill:rgba(104,126,114,.22); stroke:currentColor; stroke-width:1.5; stroke-linejoin:round; stroke-linecap:round; }
+.brand-stone-strata { fill:none; stroke:currentColor; stroke-width:.78; stroke-linecap:round; opacity:.58; }
+.brand-stone-vein { fill:none; stroke:hsl(var(--accent)); stroke-width:1.1; stroke-linecap:round; }
 .brand-word { font-weight: 800; letter-spacing: .16em; font-size: .92rem; }
 .brand-sub { color: hsl(var(--muted-foreground)); font: .58rem var(--app-font-mono); letter-spacing: .13em; margin-top: 2px; }
 .nav-links { display:flex; align-items:center; gap: clamp(16px, 3vw, 38px); }
