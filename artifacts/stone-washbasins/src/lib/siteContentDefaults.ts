@@ -23,6 +23,9 @@ export const SITE_CONTENT_DEFAULTS: SiteContent = {
     stampLine1: '100%',
     stampLine2: 'prírodný',
     stampLine3: 'kameň',
+    price: '300 €',
+    dimensions: '56 × 32 × 13 cm',
+    weight: '40 kg',
   },
   marquee: ['ručná práca', 'prírodný kameň', 'jediný exemplár', 'pokojné rána'],
   story: {

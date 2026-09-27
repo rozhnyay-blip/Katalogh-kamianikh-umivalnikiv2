@@ -173,8 +173,14 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .button-primary:hover { transform: translateY(-3px); background: hsl(177 33% 24%); }
 .button-quiet { border-color: hsl(var(--border)); color: hsl(var(--foreground)); }
 .button-quiet:hover { background: hsl(var(--secondary)); transform: translateY(-2px); }
-.hero-visual { min-height: 490px; position:relative; display:grid; place-items:center; }
+.hero-visual { min-height: 490px; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
 .hero-product-image { display:block; width:min(100%, 620px); max-height:520px; height:auto; object-fit:contain; filter:drop-shadow(0 28px 24px rgba(28,63,67,.18)); animation:float-photo 7s ease-in-out infinite; }
+.hero-product-details { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:min(100%,520px); margin:0; padding-top:12px; border-top:1px solid hsl(var(--border)); }
+.hero-product-details > div { min-width:0; padding:0 10px; }
+.hero-product-details > div:first-child { padding-left:0; }
+.hero-product-details > div:last-child { padding-right:0; }
+.hero-product-details dt { color:hsl(var(--muted-foreground)); font: .58rem/1.4 var(--app-font-mono); letter-spacing:.1em; text-transform:uppercase; }
+.hero-product-details dd { margin:4px 0 0; color:hsl(var(--foreground)); font-size:.78rem; font-weight:800; }
 .hero-stamp { position:absolute; bottom: 8%; right: 3%; width: 120px; height:120px; border:1px solid hsla(177,33%,30%,.38); border-radius:50%; display:grid; place-items:center; transform: rotate(12deg); }
 .hero-stamp span { text-align:center; font: .55rem/1.55 var(--app-font-mono); letter-spacing:.12em; text-transform:uppercase; color:hsl(var(--primary)); }
 .hero-index { position:absolute; top: 9%; left: 5%; font: .66rem var(--app-font-mono); color:hsl(var(--muted-foreground)); }
@@ -579,7 +585,11 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .nav-links { display:none; }
   .hero { padding-top:42px; }
   .hero-title { font-size: clamp(3.4rem, 16vw, 5rem); }
-  .hero-visual { min-height:330px; }
+  .hero-visual { min-height:330px; gap:12px; }
+  .hero-product-details { padding-top:10px; }
+  .hero-product-details > div { padding:0 6px; }
+  .hero-product-details dt { font-size:.52rem; }
+  .hero-product-details dd { font-size:.68rem; }
   .hero-stamp { width:92px;height:92px; right:0; bottom:4%; }
   .process { grid-template-columns:1fr; gap:30px; }
   .process h3 { margin-top:24px; }

@@ -5,7 +5,7 @@ import { Router, type IRouter, type Request, type Response } from "express";
 
 import { requireOwner } from "../lib/auth";
 import { API_ERRORS, logFailure, sendError } from "../lib/errors";
-import { DEFAULT_SITE_CONTENT, parseSiteContent } from "../lib/siteContent";
+import { DEFAULT_SITE_CONTENT, parseSiteContent, parseStoredSiteContent } from "../lib/siteContent";
 
 const router: IRouter = Router();
 
@@ -16,7 +16,7 @@ router.get("/site-content", async (req: Request, res: Response) => {
       .from(siteContentTable)
       .where(eq(siteContentTable.id, 1))
       .limit(1);
-    const content = parseSiteContent(row?.content) ?? DEFAULT_SITE_CONTENT;
+    const content = parseStoredSiteContent(row?.content) ?? DEFAULT_SITE_CONTENT;
     res.json(GetSiteContentResponse.parse(content));
   } catch (error) {
     logFailure(req, "get_site_content", error);
@@ -40,7 +40,7 @@ router.put("/site-content", requireOwner, async (req: Request, res: Response) =>
         set: { content, updatedAt: new Date() },
       })
       .returning({ content: siteContentTable.content });
-    res.json(UpdateSiteContentResponse.parse(parseSiteContent(row.content) ?? DEFAULT_SITE_CONTENT));
+    res.json(UpdateSiteContentResponse.parse(parseStoredSiteContent(row.content) ?? DEFAULT_SITE_CONTENT));
   } catch (error) {
     logFailure(req, "update_site_content", error);
     sendError(res, 500, API_ERRORS.internal);
