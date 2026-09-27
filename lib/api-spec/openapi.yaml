@@ -572,7 +572,7 @@ components:
         instagramLabel: { type: string, minLength: 1, maxLength: 60 }
     SiteHero:
       type: object
-      required: [eyebrow, titleLead, titleMiddle, titleEmphasis, lede, primaryCta, secondaryCta, visualAria, visualIndex, stampLine1, stampLine2, stampLine3]
+      required: [eyebrow, titleLead, titleMiddle, titleEmphasis, lede, primaryCta, secondaryCta, visualAria, visualIndex, stampLine1, stampLine2, stampLine3, price, dimensions, weight]
       properties:
         eyebrow: { type: string, minLength: 1, maxLength: 120 }
         titleLead: { type: string, minLength: 1, maxLength: 120 }
@@ -586,6 +586,9 @@ components:
         stampLine1: { type: string, minLength: 1, maxLength: 40 }
         stampLine2: { type: string, minLength: 1, maxLength: 80 }
         stampLine3: { type: string, minLength: 1, maxLength: 80 }
+        price: { type: string, minLength: 1, maxLength: 80 }
+        dimensions: { type: string, minLength: 1, maxLength: 80 }
+        weight: { type: string, minLength: 1, maxLength: 80 }
     SiteProcessStep:
       type: object
       required: [number, title, description]

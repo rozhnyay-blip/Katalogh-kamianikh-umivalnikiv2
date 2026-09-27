@@ -34,6 +34,9 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     stampLine1: "100%",
     stampLine2: "prírodný",
     stampLine3: "kameň",
+    price: "300 €",
+    dimensions: "56 × 32 × 13 cm",
+    weight: "40 kg",
   },
   marquee: ["ručná práca", "prírodný kameň", "jediný exemplár", "pokojné rána"],
   story: {
@@ -86,4 +89,16 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
 export function parseSiteContent(input: unknown): SiteContent | null {
   const result = siteContentSchema.safeParse(input);
   return result.success ? result.data : null;
+}
+
+export function parseStoredSiteContent(input: unknown): SiteContent | null {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return null;
+  const stored = input as Record<string, unknown>;
+  const storedHero = stored.hero && typeof stored.hero === "object" && !Array.isArray(stored.hero)
+    ? stored.hero as Record<string, unknown>
+    : {};
+  return parseSiteContent({
+    ...stored,
+    hero: { ...DEFAULT_SITE_CONTENT.hero, ...storedHero },
+  });
 }

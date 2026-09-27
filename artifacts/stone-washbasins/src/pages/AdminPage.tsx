@@ -355,6 +355,9 @@ function SiteContentEditor() {
           <ContentField label="Pečiatka — riadok 1" value={form.hero.stampLine1} onChange={(value) => updateSectionField('hero', 'stampLine1', value)} />
           <ContentField label="Pečiatka — riadok 2" value={form.hero.stampLine2} onChange={(value) => updateSectionField('hero', 'stampLine2', value)} />
           <ContentField label="Pečiatka — riadok 3" value={form.hero.stampLine3} onChange={(value) => updateSectionField('hero', 'stampLine3', value)} />
+          <ContentField label="Cena umývadla" value={form.hero.price} onChange={(value) => updateSectionField('hero', 'price', value)} />
+          <ContentField label="Rozmery umývadla" value={form.hero.dimensions} onChange={(value) => updateSectionField('hero', 'dimensions', value)} />
+          <ContentField label="Hmotnosť umývadla" value={form.hero.weight} onChange={(value) => updateSectionField('hero', 'weight', value)} />
         </div>
       </section>
 

@@ -94,10 +94,15 @@ export function HomePage() {
                  <a className="button-quiet" href="#pribeh">{content.hero.secondaryCta}</a>
               </div>
             </div>
-             <div className="hero-visual" aria-label={content.hero.visualAria}>
+            <div className="hero-visual" aria-label={content.hero.visualAria}>
                <span className="hero-index">{content.hero.visualIndex}</span>
                <img className="hero-product-image" src={heroProductImage} alt="" />
                <div className="hero-stamp"><span>{content.hero.stampLine1}<br />{content.hero.stampLine2}<br />{content.hero.stampLine3}</span></div>
+              <dl className="hero-product-details" aria-label="Informácie o umývadle">
+                <div><dt>Cena</dt><dd>{content.hero.price}</dd></div>
+                <div><dt>Rozmery</dt><dd>{content.hero.dimensions}</dd></div>
+                <div><dt>Hmotnosť</dt><dd>{content.hero.weight}</dd></div>
+              </dl>
             </div>
           </div>
         </section>
