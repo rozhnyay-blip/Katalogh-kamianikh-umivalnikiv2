@@ -223,6 +223,21 @@ export interface SiteHero {
      * @maxLength 80
      */
   stampLine3: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  price: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  dimensions: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  weight: string;
 }
 
 export interface SiteProcessStep {

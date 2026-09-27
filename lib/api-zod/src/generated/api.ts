@@ -66,6 +66,12 @@ export const getSiteContentResponseHeroStampLine2Max = 80;
 
 export const getSiteContentResponseHeroStampLine3Max = 80;
 
+export const getSiteContentResponseHeroPriceMax = 80;
+
+export const getSiteContentResponseHeroDimensionsMax = 80;
+
+export const getSiteContentResponseHeroWeightMax = 80;
+
 export const getSiteContentResponseMarqueeItemMax = 100;
 
 export const getSiteContentResponseMarqueeMax = 8;
@@ -170,7 +176,10 @@ export const GetSiteContentResponse = zod.object({
   "visualIndex": zod.string().min(1).max(getSiteContentResponseHeroVisualIndexMax),
   "stampLine1": zod.string().min(1).max(getSiteContentResponseHeroStampLine1Max),
   "stampLine2": zod.string().min(1).max(getSiteContentResponseHeroStampLine2Max),
-  "stampLine3": zod.string().min(1).max(getSiteContentResponseHeroStampLine3Max)
+  "stampLine3": zod.string().min(1).max(getSiteContentResponseHeroStampLine3Max),
+  "price": zod.string().min(1).max(getSiteContentResponseHeroPriceMax),
+  "dimensions": zod.string().min(1).max(getSiteContentResponseHeroDimensionsMax),
+  "weight": zod.string().min(1).max(getSiteContentResponseHeroWeightMax)
 }),
   "marquee": zod.array(zod.string().min(1).max(getSiteContentResponseMarqueeItemMax)).min(1).max(getSiteContentResponseMarqueeMax),
   "story": zod.object({
@@ -267,6 +276,12 @@ export const updateSiteContentBodyOneHeroStampLine1Max = 40;
 export const updateSiteContentBodyOneHeroStampLine2Max = 80;
 
 export const updateSiteContentBodyOneHeroStampLine3Max = 80;
+
+export const updateSiteContentBodyOneHeroPriceMax = 80;
+
+export const updateSiteContentBodyOneHeroDimensionsMax = 80;
+
+export const updateSiteContentBodyOneHeroWeightMax = 80;
 
 export const updateSiteContentBodyOneMarqueeItemMax = 100;
 
@@ -372,7 +387,10 @@ export const UpdateSiteContentBody = zod.object({
   "visualIndex": zod.string().min(1).max(updateSiteContentBodyOneHeroVisualIndexMax),
   "stampLine1": zod.string().min(1).max(updateSiteContentBodyOneHeroStampLine1Max),
   "stampLine2": zod.string().min(1).max(updateSiteContentBodyOneHeroStampLine2Max),
-  "stampLine3": zod.string().min(1).max(updateSiteContentBodyOneHeroStampLine3Max)
+  "stampLine3": zod.string().min(1).max(updateSiteContentBodyOneHeroStampLine3Max),
+  "price": zod.string().min(1).max(updateSiteContentBodyOneHeroPriceMax),
+  "dimensions": zod.string().min(1).max(updateSiteContentBodyOneHeroDimensionsMax),
+  "weight": zod.string().min(1).max(updateSiteContentBodyOneHeroWeightMax)
 }),
   "marquee": zod.array(zod.string().min(1).max(updateSiteContentBodyOneMarqueeItemMax)).min(1).max(updateSiteContentBodyOneMarqueeMax),
   "story": zod.object({
@@ -465,6 +483,12 @@ export const updateSiteContentResponseHeroStampLine1Max = 40;
 export const updateSiteContentResponseHeroStampLine2Max = 80;
 
 export const updateSiteContentResponseHeroStampLine3Max = 80;
+
+export const updateSiteContentResponseHeroPriceMax = 80;
+
+export const updateSiteContentResponseHeroDimensionsMax = 80;
+
+export const updateSiteContentResponseHeroWeightMax = 80;
 
 export const updateSiteContentResponseMarqueeItemMax = 100;
 
@@ -570,7 +594,10 @@ export const UpdateSiteContentResponse = zod.object({
   "visualIndex": zod.string().min(1).max(updateSiteContentResponseHeroVisualIndexMax),
   "stampLine1": zod.string().min(1).max(updateSiteContentResponseHeroStampLine1Max),
   "stampLine2": zod.string().min(1).max(updateSiteContentResponseHeroStampLine2Max),
-  "stampLine3": zod.string().min(1).max(updateSiteContentResponseHeroStampLine3Max)
+  "stampLine3": zod.string().min(1).max(updateSiteContentResponseHeroStampLine3Max),
+  "price": zod.string().min(1).max(updateSiteContentResponseHeroPriceMax),
+  "dimensions": zod.string().min(1).max(updateSiteContentResponseHeroDimensionsMax),
+  "weight": zod.string().min(1).max(updateSiteContentResponseHeroWeightMax)
 }),
   "marquee": zod.array(zod.string().min(1).max(updateSiteContentResponseMarqueeItemMax)).min(1).max(updateSiteContentResponseMarqueeMax),
   "story": zod.object({
