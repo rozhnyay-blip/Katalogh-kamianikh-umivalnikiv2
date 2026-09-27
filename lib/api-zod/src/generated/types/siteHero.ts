@@ -82,4 +82,9 @@ export interface SiteHero {
      * @maxLength 80
      */
   weight: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  orderCta: string;
 }

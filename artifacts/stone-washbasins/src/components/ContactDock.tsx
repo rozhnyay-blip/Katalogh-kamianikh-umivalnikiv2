@@ -1,16 +1,11 @@
 import { useState } from 'react';
 import { ChevronRight, Instagram, MessageCircle, Phone, X } from 'lucide-react';
 import type { SiteContent } from '@workspace/api-client-react';
-
-function internationalNumber(phone: string) {
-  const digits = phone.replace(/\D/g, '');
-  if (digits.startsWith('0')) return `421${digits.slice(1)}`;
-  return digits;
-}
+import { toInternationalPhoneNumber } from '../lib/phone';
 
 export function ContactDock({ content }: { content: SiteContent }) {
   const [open, setOpen] = useState(false);
-  const number = internationalNumber(content.contact.phone);
+  const number = toInternationalPhoneNumber(content.contact.phone);
   const phoneHref = `tel:${content.contact.phone.replace(/[^\d+]/g, '')}`;
   const viberHref = `viber://chat?number=%2B${number}`;
   const whatsappHref = `https://wa.me/${number}`;
