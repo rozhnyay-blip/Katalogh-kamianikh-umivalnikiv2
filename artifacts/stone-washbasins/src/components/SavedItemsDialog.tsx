@@ -1,0 +1,128 @@
+import { useRef } from 'react';
+import { X } from 'lucide-react';
+import type { Product } from '@workspace/api-client-react';
+import { ProductImage } from './ProductImage';
+import { useFocusScope } from '../hooks/useFocusScope';
+
+export type SavedItem = {
+  id: number;
+  product: Product | null;
+};
+
+type SavedItemsDialogProps = {
+  items: SavedItem[];
+  cartIds: number[];
+  isLoading: boolean;
+  isError: boolean;
+  onRetry: () => void;
+  onAddToCart: (product: Product) => void;
+  onRemove: (item: SavedItem) => void;
+  onClose: () => void;
+};
+
+export function SavedItemsDialog({
+  items,
+  cartIds,
+  isLoading,
+  isError,
+  onRetry,
+  onAddToCart,
+  onRemove,
+  onClose,
+}: SavedItemsDialogProps) {
+  const modalRef = useRef<HTMLElement>(null);
+  useFocusScope(modalRef, onClose);
+
+  return (
+    <div
+      className="modal-backdrop"
+      role="presentation"
+      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+    >
+      <section
+        ref={modalRef}
+        className="order-modal saved-items-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="saved-items-title"
+      >
+        <button className="modal-close" type="button" onClick={onClose} aria-label="Zavrieť uložené produkty">
+          <X size={19} />
+        </button>
+        <span className="eyebrow">Obľúbené</span>
+        <h2 className="display modal-title" id="saved-items-title">
+          Uložené<br /><em>umývadlá</em>
+        </h2>
+        <p className="saved-items-intro">
+          Produkty označené srdiečkom nájdete tu. Môžete ich pridať do košíka alebo odstrániť zo zoznamu.
+        </p>
+
+        {isLoading ? (
+          <div className="saved-items-state" role="status">Načítavam uložené produkty...</div>
+        ) : isError ? (
+          <div className="saved-items-state">
+            <p>Nepodarilo sa načítať katalóg.</p>
+            <button className="button-quiet" type="button" onClick={onRetry}>Skúsiť znova</button>
+          </div>
+        ) : items.length === 0 ? (
+          <div className="saved-items-state">
+            Zatiaľ tu nič nie je. Uložte si produkt klepnutím na srdiečko v katalógu.
+          </div>
+        ) : (
+          <div className="saved-items-list" aria-label="Uložené produkty">
+            {items.map(({ id, product }) => {
+              const isInCart = cartIds.includes(id);
+
+              return (
+                <article className="cart-item-card saved-item-card" key={id}>
+                  <div className="cart-item-card-media">
+                    {product && product.images.length > 0 ? (
+                      <ProductImage
+                        className="cart-item-card-image"
+                        path={product.images[0]}
+                        alt={`Umývadlo ${product.name}`}
+                        sizes="72px"
+                      />
+                    ) : (
+                      <div className="cart-item-card-placeholder">BEZ FOTOGRAFIE</div>
+                    )}
+                  </div>
+                  <div className="cart-item-card-content">
+                    <span className="cart-item-kind">{product?.kind ?? 'Uložený produkt'}</span>
+                    <strong className="cart-item-name">{product?.name ?? 'Produkt už nie je v katalógu'}</strong>
+                    {product && (
+                      <span className="cart-item-details">
+                        {product.price?.trim() || 'Cena na vyžiadanie'}
+                      </span>
+                    )}
+                    {product && !product.available && (
+                      <span className="cart-item-unavailable">Už nie je dostupný</span>
+                    )}
+                    <div className="saved-item-actions">
+                      <button
+                        className="cart-item-remove"
+                        type="button"
+                        onClick={() => onRemove({ id, product })}
+                        aria-label={`Odstrániť ${product?.name ?? 'produkt'} z uložených`}
+                      >
+                        <X size={16} aria-hidden="true" />
+                      </button>
+                      <button
+                        className="button-primary saved-item-add"
+                        type="button"
+                        disabled={!product?.available || isInCart}
+                        onClick={() => product && onAddToCart(product)}
+                      >
+                        {isInCart ? 'V košíku' : product?.available ? 'Do košíka' : 'Nedostupné'}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
