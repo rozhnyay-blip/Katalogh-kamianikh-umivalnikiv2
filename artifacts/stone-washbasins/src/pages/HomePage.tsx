@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram, MessageCircle, Plus, ShoppingCart } from 'lucide-react';
 import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, getGetSiteContentQueryKey, useGetSiteContent, useUpdateSiteContent, type Product, type SiteContent } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -437,53 +437,87 @@ function ProductCard({
 }) {
   const [imageIndex, setImageIndex] = useState(0);
   const imageCount = Math.min(product.images.length, 10);
-  useEffect(() => { setImageIndex(0); }, [product.images.join('|')]);
+  const swipeStart = useRef<{ x: number; y: number; pointerId: number } | null>(null);
+  useEffect(() => {
+    setImageIndex(0);
+    swipeStart.current = null;
+  }, [product.images.join('|')]);
 
   const nextImage = () => setImageIndex((current) => (current + 1) % imageCount);
   const previousImage = () => setImageIndex((current) => (current - 1 + imageCount) % imageCount);
+  const startImageSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (
+      imageCount < 2 ||
+      !event.isPrimary ||
+      event.button !== 0 ||
+      (event.target as HTMLElement).closest('button, a, input')
+    ) return;
+    swipeStart.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const finishImageSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    if (!start || start.pointerId !== event.pointerId || imageCount < 2) return;
+
+    const distanceX = event.clientX - start.x;
+    const distanceY = event.clientY - start.y;
+    if (Math.abs(distanceX) < 44 || Math.abs(distanceX) < Math.abs(distanceY) * 1.25) return;
+
+    event.preventDefault();
+    if (distanceX < 0) nextImage();
+    else previousImage();
+  };
 
   return (
     <article className={`product-card ${!product.available ? 'is-unavailable' : ''}`}>
       <EditableProductMedia product={product} canEdit={canEdit}>
-        {product.images.length > 0 ? (
-          <ProductImage
-            className="product-image"
-            path={product.images[imageIndex] || product.images[0]}
-            alt={`Umývadlo ${product.name}`}
-          />
-        ) : (
-          <div className="product-image-placeholder flex items-center justify-center h-full bg-[#3e5e60] text-[#eef0dd] text-xs font-mono tracking-widest">BEZ FOTOGRAFIE</div>
-        )}
-        <span className="media-shade" aria-hidden="true" />
-        <div className="product-meta-top">
-          <span className="product-kind">{product.kind}</span>
-          <button
-            className={`save-button ${saved ? 'is-saved' : ''}`}
-            type="button"
-            onClick={() => onToggleSaved(product)}
-            aria-label={saved ? `Odstrániť ${product.name} z uložených` : `Uložiť ${product.name}`}
-          >
-            <Heart size={15} strokeWidth={saved ? 2.6 : 1.7} fill={saved ? 'currentColor' : 'none'} />
-          </button>
-        </div>
-        {imageCount > 1 && (
-          <div className="product-arrows">
-            <button className="media-arrow" type="button" onClick={previousImage} aria-label="Predchádzajúca fotka">
-              <ArrowLeft size={14} />
-            </button>
-            <button className="media-arrow" type="button" onClick={nextImage} aria-label="Nasledujúca fotka">
-              <ArrowRight size={14} />
+        <div
+          className="product-gallery"
+          onPointerDown={startImageSwipe}
+          onPointerUp={finishImageSwipe}
+          onPointerCancel={() => { swipeStart.current = null; }}
+        >
+          {product.images.length > 0 ? (
+            <ProductImage
+              className="product-image"
+              path={product.images[imageIndex] || product.images[0]}
+              alt={`Umývadlo ${product.name}`}
+            />
+          ) : (
+            <div className="product-image-placeholder flex items-center justify-center h-full bg-[#3e5e60] text-[#eef0dd] text-xs font-mono tracking-widest">BEZ FOTOGRAFIE</div>
+          )}
+          <span className="media-shade" aria-hidden="true" />
+          <div className="product-meta-top">
+            <span className="product-kind">{product.kind}</span>
+            <button
+              className={`save-button ${saved ? 'is-saved' : ''}`}
+              type="button"
+              onClick={() => onToggleSaved(product)}
+              aria-label={saved ? `Odstrániť ${product.name} z uložených` : `Uložiť ${product.name}`}
+            >
+              <Heart size={15} strokeWidth={saved ? 2.6 : 1.7} fill={saved ? 'currentColor' : 'none'} />
             </button>
           </div>
-        )}
-        {imageCount > 0 && (
-          <span className="position-count">
-            {String(imageIndex + 1).padStart(2, '0')} / {String(imageCount).padStart(2, '0')}
-          </span>
-        )}
-        {!product.available && (
-          <div className="product-badge-unavailable">PREDANÉ</div>
-        )}
+          {imageCount > 1 && (
+            <div className="product-arrows">
+              <button className="media-arrow" type="button" onClick={previousImage} aria-label="Predchádzajúca fotka">
+                <ArrowLeft size={14} />
+              </button>
+              <button className="media-arrow" type="button" onClick={nextImage} aria-label="Nasledujúca fotka">
+                <ArrowRight size={14} />
+              </button>
+            </div>
+          )}
+          {imageCount > 0 && (
+            <span className="position-count">
+              {String(imageIndex + 1).padStart(2, '0')} / {String(imageCount).padStart(2, '0')}
+            </span>
+          )}
+          {!product.available && (
+            <div className="product-badge-unavailable">PREDANÉ</div>
+          )}
+        </div>
       </EditableProductMedia>
       <div className="product-info">
         <div className="product-info-main">

@@ -235,6 +235,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .product-media { position:relative; overflow:hidden; background:#5e7572; aspect-ratio: .92; }
 .product-card:nth-child(2) .product-media { aspect-ratio:1.12; }
 .product-card:nth-child(3) .product-media { aspect-ratio:.78; }
+.product-gallery { position:absolute; inset:0; touch-action:pan-y pinch-zoom; user-select:none; -webkit-user-select:none; }
 .product-image { display:block; width:100%; height:100%; object-fit:cover; transition: transform .6s cubic-bezier(.2,.75,.3,1); }
 .product-card:hover .product-image { transform:scale(1.045); }
 .media-shade { position:absolute; inset:0; background:linear-gradient(180deg, rgba(23,46,49,.2), transparent 40%, rgba(23,46,49,.48)); pointer-events:none; }
