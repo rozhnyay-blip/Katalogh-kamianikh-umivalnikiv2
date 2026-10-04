@@ -7,6 +7,7 @@ export const API_ERRORS = {
   notFound: "Záznam sa nenašiel.",
   productNotFound: "Produkt sa nenašiel.",
   productUnavailable: "Produkt nie je dostupný.",
+  productCatalogLimit: "Katalóg môže obsahovať najviac 1000 produktov.",
   uploadNotFound: "Súbor sa nenašiel.",
   forbiddenOrigin: "Neplatná požiadavka z iného pôvodu.",
   tooManyRequests: "Príliš veľa požiadaviek.",

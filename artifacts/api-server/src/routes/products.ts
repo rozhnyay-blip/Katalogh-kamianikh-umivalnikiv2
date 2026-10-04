@@ -5,7 +5,7 @@ import {
   ListProductsResponse,
   UpdateProductResponse,
 } from "@workspace/api-zod";
-import { eq } from "drizzle-orm";
+import { count, eq, sql } from "drizzle-orm";
 import { Router, type IRouter, type Request, type Response } from "express";
 
 import { requireOwner, ownerIdFromResponseLocals } from "../lib/auth";
@@ -20,6 +20,7 @@ import {
   parseProductInput,
   parseProductPhotosInput,
   parseProductUpdate,
+  canCreateCatalogProduct,
 } from "../lib/validation";
 
 const router: IRouter = Router();
@@ -54,10 +55,23 @@ router.post(
     const ownerClerkId = ownerIdFromResponseLocals(res);
     try {
       await validateOwnedProductImages(input.images, ownerClerkId);
-      const [product] = await db
-        .insert(products)
-        .values(input)
-        .returning();
+      const product = await db.transaction(async (tx) => {
+        // Serialize owner create requests so concurrent tabs cannot exceed the
+        // catalog-wide limit between the count check and insert.
+        await tx.execute(sql`SELECT pg_advisory_xact_lock(57324, 1)`);
+        const [{ productCount }] = await tx
+          .select({ productCount: count() })
+          .from(products);
+        if (!canCreateCatalogProduct(productCount)) {
+          return null;
+        }
+        const [created] = await tx.insert(products).values(input).returning();
+        return created ?? null;
+      });
+      if (!product) {
+        sendError(res, 409, API_ERRORS.productCatalogLimit);
+        return;
+      }
       res.status(201).json(CreateProductResponse.parse(product));
     } catch (error) {
       if (error instanceof ImageAssetValidationError) {

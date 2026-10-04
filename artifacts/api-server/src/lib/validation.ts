@@ -17,6 +17,14 @@ const PRODUCT_FIELDS = [
   "images",
 ] as const;
 
+export const MAX_CATALOG_PRODUCTS = 1000;
+
+export function canCreateCatalogProduct(productCount: number): boolean {
+  return Number.isSafeInteger(productCount)
+    && productCount >= 0
+    && productCount < MAX_CATALOG_PRODUCTS;
+}
+
 const PRODUCT_IMAGE_PATH =
   /^\/objects\/uploads\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 

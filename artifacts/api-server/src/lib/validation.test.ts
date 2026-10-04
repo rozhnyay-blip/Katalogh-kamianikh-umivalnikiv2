@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  canCreateCatalogProduct,
   mergeProductImages,
   parseOrderInput,
   parseProductInput,
@@ -9,6 +10,13 @@ import {
   parseUploadRequest,
   validateImagePath,
 } from "./validation";
+
+test("catalog creation is allowed only below the 1000-product limit", () => {
+  assert.equal(canCreateCatalogProduct(999), true);
+  assert.equal(canCreateCatalogProduct(1000), false);
+  assert.equal(canCreateCatalogProduct(1001), false);
+  assert.equal(canCreateCatalogProduct(-1), false);
+});
 
 const imagePath = "/objects/uploads/123e4567-e89b-12d3-a456-426614174000";
 const secondImagePath =
