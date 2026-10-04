@@ -359,7 +359,7 @@ function ProductCard({
 
 function formatProductDetailLines(subtitle: string): string[] {
   return subtitle
-    .replace(/\s+(?=(?:Vonkajšie|Vonkajsie|Vnútorné|Vnutorne|Hmotnosť|Hmotnost|Rozmery|Materiál|Material|Strana|Priemer|Výška|Vyska|Šírka|Sirka|Hĺbka|Hlbka)(?:\s|$))/giu, '\n')
+    .replace(/\s+(?=(?:Vonkajšie|Vonkajsie|Vnútorné|Vnutorne|Hmotnosť|Hmotnost|Rozmery|Materiál|Material|Strana|Priemer|Výška|Vyska|Šírka|Sirka|Hĺbka|Hlbka)(?::|：|\s|$))/giu, '\n')
     .split(/\n+|\s*[·•|]\s*/u)
     .map((line) => line.trim())
     .filter(Boolean);
