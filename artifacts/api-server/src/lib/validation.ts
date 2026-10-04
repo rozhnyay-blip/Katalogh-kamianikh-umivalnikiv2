@@ -205,6 +205,7 @@ export function validateImagePaths(value: unknown): string[] | null {
 
 export function parseOrderInput(value: unknown): {
   productId: number;
+  productIds: number[];
   name: string;
   phone: string;
   email: string;
@@ -220,7 +221,16 @@ export function parseOrderInput(value: unknown): {
   const name = parsed.data.name.trim();
   const phone = parsed.data.phone.trim();
   const email = parsed.data.email.trim().toLowerCase();
+  const productIds = parsed.data.productIds ?? [parsed.data.productId];
   const digitCount = (phone.match(/[0-9]/g) || []).length;
+  if (
+    productIds.length === 0
+    || productIds.length > MAX_CATALOG_PRODUCTS
+    || productIds[0] !== parsed.data.productId
+    || new Set(productIds).size !== productIds.length
+  ) {
+    return null;
+  }
   if (name.length < 2 || name.length > 100) {
     return null;
   }
@@ -231,7 +241,7 @@ export function parseOrderInput(value: unknown): {
     return null;
   }
 
-  return { productId: parsed.data.productId, name, phone, email };
+  return { productId: parsed.data.productId, productIds, name, phone, email };
 }
 
 export function parseUploadRequest(value: unknown): {
