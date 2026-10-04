@@ -134,7 +134,7 @@ paths:
   /orders:
     post:
       operationId: createOrder
-      summary: Submit a product enquiry
+       summary: Submit an enquiry for one or more products
       requestBody:
         required: true
         content:
@@ -815,6 +815,7 @@ components:
           minimum: 1
         productIds:
           type: array
+          description: Product IDs included in this single enquiry, in basket order.
           minItems: 1
           maxItems: 1000
           uniqueItems: true
