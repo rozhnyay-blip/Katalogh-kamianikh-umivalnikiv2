@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram, MessageCircle, Plus, ShoppingCart } from 'lucide-react';
-import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, useGetSiteContent, type Product } from '@workspace/api-client-react';
+import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, getGetSiteContentQueryKey, useGetSiteContent, useUpdateSiteContent, type Product, type SiteContent } from '@workspace/api-client-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@clerk/react';
 import { Link } from 'wouter';
 import { Brand } from '../components/Brand';
@@ -8,6 +9,7 @@ import { useFocusScope } from '../hooks/useFocusScope';
 import { ProductImage } from '../components/ProductImage';
 import { EditableProductMedia } from '../components/EditableProductMedia';
 import { SavedItemsDialog, type SavedItem } from '../components/SavedItemsDialog';
+import { SiteTextEditorOverlay } from '../components/SiteTextEditorOverlay';
 import { ContactDock } from '../components/ContactDock';
 import { AnalyticsConsent } from '../components/AnalyticsConsent';
 import { trackSiteEvent, trackSitePageView } from '../lib/analytics';
@@ -47,7 +49,10 @@ export function HomePage() {
   });
   const canEdit = Boolean(isLoaded && owner?.signedIn && owner?.isOwner);
   const canTrack = Boolean(isLoaded && !ownerStatusPending && owner && !owner.isOwner);
-  const { data: content = SITE_CONTENT_DEFAULTS } = useGetSiteContent();
+  const { data: storedContent, isLoading: contentLoading, isError: contentError } = useGetSiteContent();
+  const content = storedContent ?? SITE_CONTENT_DEFAULTS;
+  const queryClient = useQueryClient();
+  const updateSiteContent = useUpdateSiteContent();
   const [savedIds, setSavedIds] = useState<number[]>(() => readStoredIds('skala-saved'));
   const [cartIds, setCartIds] = useState<number[]>(() => readStoredIds('skala-cart'));
   const [savedNotice, setSavedNotice] = useState('');
@@ -114,6 +119,29 @@ export function HomePage() {
     }
     setCartIds((current) => current.includes(product.id) ? current : [...current, product.id]);
     setSavedNotice(`${product.name} pridané do košíka`);
+  };
+
+  const saveTextOverride = async (key: string, source: string, text: string) => {
+    const queryKey = getGetSiteContentQueryKey();
+    const current = queryClient.getQueryData<SiteContent>(queryKey) ?? content;
+    const updated = await updateSiteContent.mutateAsync({
+      data: {
+        ...current,
+        textOverrides: { ...current.textOverrides, [key]: { source, text } },
+      },
+    });
+    queryClient.setQueryData(queryKey, updated);
+  };
+
+  const resetTextOverride = async (key: string) => {
+    const queryKey = getGetSiteContentQueryKey();
+    const current = queryClient.getQueryData<SiteContent>(queryKey) ?? content;
+    const textOverrides = { ...current.textOverrides };
+    delete textOverrides[key];
+    const updated = await updateSiteContent.mutateAsync({
+      data: { ...current, textOverrides },
+    });
+    queryClient.setQueryData(queryKey, updated);
   };
 
   return (
@@ -381,6 +409,13 @@ export function HomePage() {
       )}
       <ContactDock content={content} analyticsEnabled={canTrack} />
       {canTrack && <AnalyticsConsent />}
+      <SiteTextEditorOverlay
+        enabled={canEdit && Boolean(storedContent) && !contentLoading && !contentError}
+        overrides={content.textOverrides}
+        isSaving={updateSiteContent.isPending}
+        onSave={saveTextOverride}
+        onReset={resetTextOverride}
+      />
     </div>
   );
 }
