@@ -8,6 +8,8 @@ import { useFocusScope } from '../hooks/useFocusScope';
 import { ProductImage } from '../components/ProductImage';
 import { EditableProductMedia } from '../components/EditableProductMedia';
 import { ContactDock } from '../components/ContactDock';
+import { AnalyticsConsent } from '../components/AnalyticsConsent';
+import { trackSiteEvent, trackSitePageView } from '../lib/analytics';
 import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
 import { toInternationalPhoneNumber } from '../lib/phone';
 import heroProductImage from '@assets/image_1789628614912.png';
@@ -22,10 +24,11 @@ function getImageUrl(path: string) {
 
 export function HomePage() {
   const { isLoaded, userId } = useAuth();
-  const { data: owner } = useGetOwnerStatus({
+  const { data: owner, isPending: ownerStatusPending } = useGetOwnerStatus({
     query: { enabled: isLoaded, queryKey: [...getGetOwnerStatusQueryKey(), userId] },
   });
   const canEdit = Boolean(isLoaded && owner?.signedIn && owner?.isOwner);
+  const canTrack = Boolean(isLoaded && !ownerStatusPending && owner && !owner.isOwner);
   const { data: content = SITE_CONTENT_DEFAULTS } = useGetSiteContent();
   const [savedIds, setSavedIds] = useState<number[]>(() => {
     if (typeof window === 'undefined') return [];
@@ -46,6 +49,10 @@ export function HomePage() {
   const orderHref = `https://wa.me/${toInternationalPhoneNumber(content.contact.phone)}?text=${encodeURIComponent(orderMessage)}`;
 
   useEffect(() => {
+    if (canTrack) trackSitePageView();
+  }, [canTrack]);
+
+  useEffect(() => {
     try {
       window.localStorage.setItem('skala-saved', JSON.stringify(savedIds));
     } catch {
@@ -61,8 +68,16 @@ export function HomePage() {
 
   const toggleSaved = (product: Product) => {
     const isSaved = savedIds.includes(product.id);
+    if (canTrack) {
+      trackSiteEvent(isSaved ? 'favorite_remove' : 'favorite_add', product.id);
+    }
     setSavedIds((current) => isSaved ? current.filter((id) => id !== product.id) : [...current, product.id]);
     setSavedNotice(isSaved ? `${product.name} odstránené z uložených` : `${product.name} uložené pre vás`);
+  };
+
+  const openOrder = (product: Product) => {
+    if (canTrack) trackSiteEvent('enquiry_started', product.id);
+    setOrderProduct(product);
   };
 
   return (
@@ -110,7 +125,13 @@ export function HomePage() {
                 <div><dt>Rozmery</dt><dd>{content.hero.dimensions}</dd></div>
                 <div><dt>Hmotnosť</dt><dd>{content.hero.weight}</dd></div>
               </dl>
-              <a className="hero-order-button" href={orderHref} target="_blank" rel="noopener noreferrer">
+              <a
+                className="hero-order-button"
+                href={orderHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => canTrack && trackSiteEvent('hero_whatsapp_click')}
+              >
                 <MessageCircle size={18} aria-hidden="true" />
                 <span>{content.hero.orderCta}</span>
                 <ArrowRight size={16} aria-hidden="true" />
@@ -162,7 +183,7 @@ export function HomePage() {
                     canEdit={canEdit}
                     saved={savedIds.includes(product.id)}
                     onToggleSaved={toggleSaved}
-                    onOrder={setOrderProduct}
+                    onOrder={openOrder}
                   />
                 ))}
               </div>
@@ -171,7 +192,10 @@ export function HomePage() {
               <button
                 className="catalog-show-more"
                 type="button"
-                onClick={() => setVisibleProductCount((count) => Math.min(count + CATALOG_BATCH_SIZE, MAX_CATALOG_PRODUCTS))}
+                onClick={() => {
+                  if (canTrack) trackSiteEvent('catalog_load_more');
+                  setVisibleProductCount((count) => Math.min(count + CATALOG_BATCH_SIZE, MAX_CATALOG_PRODUCTS));
+                }}
               >
                 Zobraziť ďalších {Math.min(CATALOG_BATCH_SIZE, products.length - visibleProducts.length)} inzerátov
               </button>
@@ -255,8 +279,9 @@ export function HomePage() {
       </footer>
 
       {savedNotice && <div className="saved-toast" role="status">{savedNotice}</div>}
-      {orderProduct && <OrderModal product={orderProduct} onClose={() => setOrderProduct(null)} />}
-      <ContactDock content={content} />
+      {orderProduct && <OrderModal product={orderProduct} onClose={() => setOrderProduct(null)} analyticsEnabled={canTrack} />}
+      <ContactDock content={content} analyticsEnabled={canTrack} />
+      {canTrack && <AnalyticsConsent />}
     </div>
   );
 }
@@ -368,9 +393,11 @@ function formatProductDetailLines(subtitle: string): string[] {
 function OrderModal({
   product,
   onClose,
+  analyticsEnabled,
 }: {
   product: Product;
   onClose: () => void;
+  analyticsEnabled: boolean;
 }) {
   const [form, setForm] = useState({ name: '', phone: '', email: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -407,6 +434,7 @@ function OrderModal({
         }
       }, {
         onSuccess: (receipt) => {
+          if (analyticsEnabled) trackSiteEvent('enquiry_submitted', product.id);
           setReceiptId(receipt.id);
           setSubmitted(true);
         },
