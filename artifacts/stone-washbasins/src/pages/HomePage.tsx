@@ -556,6 +556,7 @@ function OrderModal({
                         className="cart-item-card-image"
                         path={product.images[0]}
                         alt={`Umývadlo ${product.name}`}
+                        sizes="72px"
                       />
                     ) : (
                       <div className="cart-item-card-placeholder">BEZ FOTOGRAFIE</div>
