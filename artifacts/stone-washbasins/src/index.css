@@ -495,17 +495,55 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   cursor: pointer;
 }
 .upload-item .cover-badge {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0,0,0,0.6);
+  flex: 1;
+  min-width: 0;
   color: white;
   font-size: 0.6rem;
-  padding: 4px;
+  padding: 4px 2px;
   text-align: center;
   font-family: var(--app-font-mono);
 }
+.upload-item-dragging { opacity: .55; outline: 2px dashed hsl(var(--primary)); outline-offset: 2px; }
+.photo-order-controls {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 3px;
+  min-height: 44px;
+  padding: 3px;
+  background: rgba(0,0,0,.68);
+}
+.photo-order-button {
+  display: flex;
+  flex: 0 0 38px;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: rgba(255,255,255,.12);
+  color: white;
+  cursor: pointer;
+}
+.photo-order-button:disabled { opacity: .35; cursor: not-allowed; }
+.set-cover-button {
+  flex: 1;
+  min-width: 0;
+  min-height: 38px;
+  padding: 3px 2px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: white;
+  font-size: clamp(.58rem, 1.7vw, .75rem);
+  line-height: 1.15;
+  cursor: pointer;
+}
+.set-cover-button:disabled { opacity: .5; cursor: not-allowed; }
 
 .owner-nav-link { color:hsl(var(--primary)); font-size:.72rem; font-weight:700; text-decoration:none; }
 .owner-catalog-toolbar { position:relative; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:22px; margin:0 0 28px; border:1px solid #68817d; border-radius:14px; background:#2b4549; }

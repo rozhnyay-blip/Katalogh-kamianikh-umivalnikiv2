@@ -15,7 +15,7 @@ import {
   type Product,
   type Order
 } from '@workspace/api-client-react';
-import { LogOut, Plus, Edit2, Trash2, X, UploadCloud, GripVertical, Check } from 'lucide-react';
+import { LogOut, Plus, Edit2, Trash2, X, UploadCloud, GripVertical, Check, ArrowLeft, ArrowRight } from 'lucide-react';
 import { queryClient } from '../lib/queryClient';
 import { getGetSiteContentQueryKey, getListProductsQueryKey, getListOrdersQueryKey } from '@workspace/api-client-react';
 import { useFocusScope } from '../hooks/useFocusScope';
@@ -480,6 +480,7 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
     images: product?.images || []
   });
   const [error, setError] = useState('');
+  const [draggedImageIndex, setDraggedImageIndex] = useState<number | null>(null);
   
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
@@ -562,15 +563,17 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
     });
   };
 
-  const setAsCover = (index: number) => {
-    if (index === 0) return;
+  const moveImage = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex || toIndex < 0 || toIndex >= form.images.length) return;
     setForm(prev => {
       const copy = [...prev.images];
-      const [item] = copy.splice(index, 1);
-      copy.unshift(item);
+      const [item] = copy.splice(fromIndex, 1);
+      copy.splice(toIndex, 0, item);
       return { ...prev, images: copy };
     });
   };
+
+  const setAsCover = (index: number) => moveImage(index, 0);
 
   return (
     <div ref={modalRef} className="admin-card">
@@ -627,19 +630,58 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
             <span className="text-xs text-muted-foreground">Galéria alebo fotoaparát · plná kvalita originálu</span>
           </button>
 
-          <p className="photo-quality-note">Podržte prst na fotografii, ak chcete pridať ďalšiu. Nový produkt zverejníte tlačidlom Uložiť produkt.</p>
+          <p className="photo-quality-note">Podržte prst na fotografii, ak chcete pridať ďalšiu. Poradie zmeňte potiahnutím alebo šípkami; prvá fotografia bude hlavná. Zmeny uložte tlačidlom Uložiť produkt.</p>
           <div className="upload-grid photo-press-target" {...photoPress}>
             {form.images.map((img, i) => (
-              <div key={img} className="upload-item">
+              <div
+                key={img}
+                className={`upload-item ${draggedImageIndex === i ? 'upload-item-dragging' : ''}`}
+                draggable={!isUploading && !isSaving}
+                onDragStart={(event) => {
+                  event.dataTransfer.effectAllowed = 'move';
+                  event.dataTransfer.setData('text/plain', String(i));
+                  setDraggedImageIndex(i);
+                }}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  const fromIndex = Number(event.dataTransfer.getData('text/plain'));
+                  if (Number.isInteger(fromIndex)) moveImage(fromIndex, i);
+                  setDraggedImageIndex(null);
+                }}
+                onDragEnd={() => setDraggedImageIndex(null)}
+              >
                 <ProductImage path={img} alt={`Fotografia ${i+1}`} sizes="160px" />
                 <button type="button" className="remove-btn" aria-label={`Odstrániť fotografiu ${i + 1}`} onClick={() => removeImage(i)} disabled={isUploading || isSaving} style={{ opacity: (isUploading || isSaving) ? 0.5 : 1 }}><X size={14}/></button>
-                {i === 0 ? (
-                  <div className="cover-badge">HLAVNÁ</div>
-                ) : (
-                  <button type="button" className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-2 py-1 rounded disabled:opacity-50" onClick={() => setAsCover(i)} disabled={isUploading || isSaving}>
-                    Nastaviť ako hlavnú
+                <div className="photo-order-controls">
+                  <button
+                    type="button"
+                    className="photo-order-button"
+                    aria-label={`Posunúť fotografiu ${i + 1} dopredu`}
+                    title="Posunúť dopredu"
+                    onClick={() => moveImage(i, i - 1)}
+                    disabled={i === 0 || isUploading || isSaving}
+                  >
+                    <ArrowLeft size={18} aria-hidden="true" />
                   </button>
-                )}
+                  {i === 0 ? (
+                    <span className="cover-badge">HLAVNÁ</span>
+                  ) : (
+                    <button type="button" className="set-cover-button" onClick={() => setAsCover(i)} disabled={isUploading || isSaving}>
+                      Nastaviť ako hlavnú
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="photo-order-button"
+                    aria-label={`Posunúť fotografiu ${i + 1} dozadu`}
+                    title="Posunúť dozadu"
+                    onClick={() => moveImage(i, i + 1)}
+                    disabled={i === form.images.length - 1 || isUploading || isSaving}
+                  >
+                    <ArrowRight size={18} aria-hidden="true" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
