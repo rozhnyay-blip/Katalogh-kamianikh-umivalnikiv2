@@ -130,6 +130,11 @@ export function HomePage() {
            <a href="#detaily">{content.nav.details}</a>
         </nav>
         <div className="nav-contact">
+          <button className="nav-cart-button" type="button" onClick={openCart} aria-haspopup="dialog" aria-label={`Košík, ${cartIds.length} položiek`}>
+            <ShoppingCart size={17} aria-hidden="true" />
+            <span className="nav-cart-label">Košík</span>
+            <span className="nav-cart-count" aria-live="polite">{cartIds.length}</span>
+          </button>
           <Link className="owner-nav-link" href="/admin">{canEdit ? 'Správa' : 'Prihlásenie majiteľa'}</Link>
           <a className="round-button" href={content.nav.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <Instagram size={16} />
@@ -215,8 +220,9 @@ export function HomePage() {
                     product={product}
                     canEdit={canEdit}
                     saved={savedIds.includes(product.id)}
+                    isInCart={cartIds.includes(product.id)}
                     onToggleSaved={toggleSaved}
-                    onOrder={openOrder}
+                    onAddToCart={addToCart}
                   />
                 ))}
               </div>
@@ -312,7 +318,15 @@ export function HomePage() {
       </footer>
 
       {savedNotice && <div className="saved-toast" role="status">{savedNotice}</div>}
-      {orderProduct && <OrderModal product={orderProduct} onClose={() => setOrderProduct(null)} analyticsEnabled={canTrack} />}
+      {cartOpen && (
+        <OrderModal
+          items={cartItems}
+          onRemove={(id) => setCartIds((current) => current.filter((itemId) => itemId !== id))}
+          onClose={() => setCartOpen(false)}
+          onSuccess={() => setCartIds([])}
+          analyticsEnabled={canTrack}
+        />
+      )}
       <ContactDock content={content} analyticsEnabled={canTrack} />
       {canTrack && <AnalyticsConsent />}
     </div>
@@ -323,14 +337,16 @@ function ProductCard({
   product,
   canEdit,
   saved,
+  isInCart,
   onToggleSaved,
-  onOrder,
+  onAddToCart,
 }: {
   product: Product;
   canEdit: boolean;
   saved: boolean;
+  isInCart: boolean;
   onToggleSaved: (product: Product) => void;
-  onOrder: (product: Product) => void;
+  onAddToCart: (product: Product) => void;
 }) {
   const [imageIndex, setImageIndex] = useState(0);
   const imageCount = Math.min(product.images.length, 10);
@@ -399,17 +415,18 @@ function ProductCard({
               {saved ? 'Uložené' : 'Uložiť'}
             </button>
             <button 
-              className="order-link primary ml-auto" 
+              className="order-link primary add-to-cart ml-auto" 
               type="button" 
-              onClick={() => onOrder(product)}
+              onClick={() => onAddToCart(product)}
               disabled={!product.available}
-              style={{ opacity: product.available ? 1 : 0.5 }}
+              aria-label={isInCart ? `${product.name} je v košíku` : `Pridať ${product.name} do košíka`}
             >
-              Objednať <ArrowRight size={14} />
+              {isInCart ? 'V košíku' : product.available ? 'Pridať do košíka' : 'Nedostupné'}
+              {isInCart ? <Check size={14} /> : <ShoppingCart size={14} />}
             </button>
           </div>
         </div>
-        {product.price && <span className="product-price">{product.price}</span>}
+        {product.price?.trim() && <span className="product-price">{formatProductPrice(product.price)}</span>}
       </div>
     </article>
   );
