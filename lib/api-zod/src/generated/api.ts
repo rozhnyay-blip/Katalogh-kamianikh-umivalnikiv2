@@ -187,6 +187,10 @@ export const getSiteContentResponseFooterSocialHandleMax = 120;
 
 export const getSiteContentResponseFooterBottomSloganMax = 240;
 
+export const getSiteContentResponseTextOverridesSourceMax = 2000;
+
+export const getSiteContentResponseTextOverridesTextMax = 2000;
+
 
 
 export const GetSiteContentResponse = zod.object({
@@ -268,7 +272,11 @@ export const GetSiteContentResponse = zod.object({
   "socialTitle": zod.string().min(1).max(getSiteContentResponseFooterSocialTitleMax),
   "socialHandle": zod.string().min(1).max(getSiteContentResponseFooterSocialHandleMax),
   "bottomSlogan": zod.string().min(1).max(getSiteContentResponseFooterBottomSloganMax)
-})
+}),
+  "textOverrides": zod.record(zod.string(), zod.object({
+  "source": zod.string().min(1).max(getSiteContentResponseTextOverridesSourceMax),
+  "text": zod.string().max(getSiteContentResponseTextOverridesTextMax)
+}))
 })
 
 
@@ -401,6 +409,10 @@ export const updateSiteContentBodyOneFooterSocialHandleMax = 120;
 
 export const updateSiteContentBodyOneFooterBottomSloganMax = 240;
 
+export const updateSiteContentBodyOneTextOverridesSourceMax = 2000;
+
+export const updateSiteContentBodyOneTextOverridesTextMax = 2000;
+
 
 
 export const UpdateSiteContentBody = zod.object({
@@ -482,7 +494,11 @@ export const UpdateSiteContentBody = zod.object({
   "socialTitle": zod.string().min(1).max(updateSiteContentBodyOneFooterSocialTitleMax),
   "socialHandle": zod.string().min(1).max(updateSiteContentBodyOneFooterSocialHandleMax),
   "bottomSlogan": zod.string().min(1).max(updateSiteContentBodyOneFooterBottomSloganMax)
-})
+}),
+  "textOverrides": zod.record(zod.string(), zod.object({
+  "source": zod.string().min(1).max(updateSiteContentBodyOneTextOverridesSourceMax),
+  "text": zod.string().max(updateSiteContentBodyOneTextOverridesTextMax)
+}))
 })
 
 export const updateSiteContentResponseToplineTaglineMax = 160;
@@ -611,6 +627,10 @@ export const updateSiteContentResponseFooterSocialHandleMax = 120;
 
 export const updateSiteContentResponseFooterBottomSloganMax = 240;
 
+export const updateSiteContentResponseTextOverridesSourceMax = 2000;
+
+export const updateSiteContentResponseTextOverridesTextMax = 2000;
+
 
 
 export const UpdateSiteContentResponse = zod.object({
@@ -692,7 +712,11 @@ export const UpdateSiteContentResponse = zod.object({
   "socialTitle": zod.string().min(1).max(updateSiteContentResponseFooterSocialTitleMax),
   "socialHandle": zod.string().min(1).max(updateSiteContentResponseFooterSocialHandleMax),
   "bottomSlogan": zod.string().min(1).max(updateSiteContentResponseFooterBottomSloganMax)
-})
+}),
+  "textOverrides": zod.record(zod.string(), zod.object({
+  "source": zod.string().min(1).max(updateSiteContentResponseTextOverridesSourceMax),
+  "text": zod.string().max(updateSiteContentResponseTextOverridesTextMax)
+}))
 })
 
 

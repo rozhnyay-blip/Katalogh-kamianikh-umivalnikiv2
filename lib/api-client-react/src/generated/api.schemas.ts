@@ -169,6 +169,18 @@ export interface OwnerStatus {
   isOwner: boolean;
 }
 
+export interface SiteTextOverride {
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  source: string;
+  /** @maxLength 2000 */
+  text: string;
+}
+
+export type SiteContentTextOverrides = {[key: string]: SiteTextOverride};
+
 export interface SiteTopline {
   /**
      * @minLength 1
@@ -512,6 +524,7 @@ export interface SiteContent {
   catalog: SiteCatalog;
   details: SiteDetails;
   footer: SiteFooter;
+  textOverrides: SiteContentTextOverrides;
 }
 
 export type SiteContentUpdate = SiteContent;

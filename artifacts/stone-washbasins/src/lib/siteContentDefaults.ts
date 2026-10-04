@@ -1,6 +1,7 @@
 import type { SiteContent } from '@workspace/api-client-react';
 
 export const SITE_CONTENT_DEFAULTS: SiteContent = {
+  textOverrides: {},
   topline: { tagline: 'Kameň, ktorý si pamätá vodu', note: 'Prírodný kameň · Ručná práca' },
   nav: { catalog: 'Katalóg', story: 'Príbeh', details: 'Detaily', instagramUrl: 'https://www.instagram.com/skala_sk_/' },
   contact: {
