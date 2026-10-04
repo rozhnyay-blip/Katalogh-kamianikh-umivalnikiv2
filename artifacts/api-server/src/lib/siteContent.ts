@@ -4,6 +4,7 @@ import type { SiteContent } from "@workspace/api-zod";
 export const siteContentSchema = UpdateSiteContentBody;
 
 export const DEFAULT_SITE_CONTENT: SiteContent = {
+  textOverrides: {},
   topline: {
     tagline: "Kameň, ktorý si pamätá vodu",
     note: "Prírodný kameň · Ručná práca",
@@ -89,7 +90,10 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
 
 export function parseSiteContent(input: unknown): SiteContent | null {
   const result = siteContentSchema.safeParse(input);
-  return result.success ? result.data : null;
+  if (!result.success) return null;
+  const entries = Object.entries(result.data.textOverrides);
+  if (entries.length > 400 || entries.some(([key]) => key.length > 1200)) return null;
+  return result.data;
 }
 
 export function parseStoredSiteContent(input: unknown): SiteContent | null {
@@ -101,5 +105,6 @@ export function parseStoredSiteContent(input: unknown): SiteContent | null {
   return parseSiteContent({
     ...stored,
     hero: { ...DEFAULT_SITE_CONTENT.hero, ...storedHero },
+    textOverrides: stored.textOverrides ?? {},
   });
 }

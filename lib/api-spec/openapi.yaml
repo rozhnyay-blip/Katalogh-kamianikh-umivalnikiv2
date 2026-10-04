@@ -667,7 +667,7 @@ components:
           type: boolean
     SiteContent:
       type: object
-      required: [topline, nav, contact, hero, marquee, story, catalog, details, footer]
+      required: [topline, nav, contact, hero, marquee, story, catalog, details, footer, textOverrides]
       properties:
         topline:
           $ref: "#/components/schemas/SiteTopline"
@@ -693,9 +693,21 @@ components:
           $ref: "#/components/schemas/SiteDetails"
         footer:
           $ref: "#/components/schemas/SiteFooter"
+        textOverrides:
+          type: object
+          maxProperties: 400
+          additionalProperties:
+            $ref: "#/components/schemas/SiteTextOverride"
     SiteContentUpdate:
       allOf:
         - $ref: "#/components/schemas/SiteContent"
+    SiteTextOverride:
+      type: object
+      additionalProperties: false
+      required: [source, text]
+      properties:
+        source: { type: string, minLength: 1, maxLength: 2000 }
+        text: { type: string, maxLength: 2000 }
     SiteTopline:
       type: object
       required: [tagline, note]

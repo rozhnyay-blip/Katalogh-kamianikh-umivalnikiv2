@@ -7,6 +7,7 @@
  */
 import type { SiteCatalog } from './siteCatalog';
 import type { SiteContact } from './siteContact';
+import type { SiteContentTextOverrides } from './siteContentTextOverrides';
 import type { SiteDetails } from './siteDetails';
 import type { SiteFooter } from './siteFooter';
 import type { SiteHero } from './siteHero';
@@ -30,4 +31,5 @@ export interface SiteContent {
   catalog: SiteCatalog;
   details: SiteDetails;
   footer: SiteFooter;
+  textOverrides: SiteContentTextOverrides;
 }
