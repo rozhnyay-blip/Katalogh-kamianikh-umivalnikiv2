@@ -25,6 +25,7 @@ import { PhotoPickerSheet } from '../components/PhotoPickerSheet';
 import { ProductImage } from '../components/ProductImage';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
+const MAX_CATALOG_PRODUCTS = 1000;
 
 function getImageUrl(path: string) {
   return `${basePath}/api/storage${path}`;
@@ -137,10 +138,16 @@ function ProductsManager({ onAdd, onEdit }: { onAdd: () => void, onEdit: (p: Pro
     <div>
       <div className="admin-header">
         <h1 className="admin-title">Umývadlá</h1>
-        <button className="button-primary" onClick={onAdd}>
+        <button
+          className="button-primary"
+          onClick={onAdd}
+          disabled={products.length >= MAX_CATALOG_PRODUCTS}
+          title={products.length >= MAX_CATALOG_PRODUCTS ? 'Dosiahli ste limit 1000 inzerátov.' : undefined}
+        >
           <Plus size={16} /> Pridať umývadlo
         </button>
       </div>
+      <p className="text-sm text-muted-foreground mb-4">{products.length} / {MAX_CATALOG_PRODUCTS} inzerátov</p>
       {deleteProduct.isError && <p role="alert" className="text-destructive mb-4">Produkt sa nepodarilo vymazať. Skúste to znova.</p>}
       <div className="admin-card overflow-x-auto">
         <table className="admin-table">

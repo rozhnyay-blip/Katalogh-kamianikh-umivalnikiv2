@@ -127,26 +127,6 @@ export function HomePage() {
           </div>
         </div>
 
-        <section className="story container-wide" id="pribeh">
-          <div className="story-grid">
-            <div>
-               <span className="eyebrow">{content.story.eyebrow}</span>
-               <h2 className="display story-heading">{content.story.titleLead}<br /><em>{content.story.titleEmphasis}</em></h2>
-               <p className="story-copy">{content.story.copy}</p>
-               <p className="story-note">{content.story.note}</p>
-            </div>
-            <div className="process">
-             {content.story.steps.map((step) => (
-               <div className="process-step" key={step.number}>
-                 <span className="process-number">{step.number}</span>
-                 <h3>{step.title}</h3>
-                 <p>{step.description}</p>
-               </div>
-             ))}
-            </div>
-          </div>
-        </section>
-
         <section className="catalog" id="katalog">
           <div className="container-wide">
             <div className="catalog-head">
@@ -158,7 +138,6 @@ export function HomePage() {
             </div>
             {canEdit && <div className="owner-catalog-toolbar">
                <div><strong>{content.catalog.ownerToolbarTitle}</strong><p>{content.catalog.ownerToolbarHelp}</p></div>
-               <Link className="button-primary" href="/admin?new=1">{content.catalog.addProductLabel}</Link>
             </div>}
 
             {isLoading ? (
@@ -173,11 +152,10 @@ export function HomePage() {
             ) : products.length === 0 ? (
               <div className="catalog-status">
                  <p>{content.catalog.emptyMessage}</p>
-                 {canEdit && <Link className="owner-empty-add" href="/admin?new=1">{content.catalog.emptyAddLabel}</Link>}
               </div>
             ) : (
               <div className="catalog-grid">
-                {products.map((product) => (
+                {visibleProducts.map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
@@ -189,6 +167,48 @@ export function HomePage() {
                 ))}
               </div>
             )}
+            {!isLoading && !isError && products.length > visibleProducts.length && (
+              <button
+                className="catalog-show-more"
+                type="button"
+                onClick={() => setVisibleProductCount((count) => Math.min(count + CATALOG_BATCH_SIZE, MAX_CATALOG_PRODUCTS))}
+              >
+                Zobraziť ďalších {Math.min(CATALOG_BATCH_SIZE, products.length - visibleProducts.length)}
+              </button>
+            )}
+            {canEdit && !isLoading && !isError && (
+              <div className="catalog-bottom-actions">
+                <span className="catalog-product-count">{products.length} / {MAX_CATALOG_PRODUCTS} inzerátov</span>
+                {products.length < MAX_CATALOG_PRODUCTS ? (
+                  <Link className="button-primary catalog-add-product" href="/admin?new=1">
+                    <Plus size={17} aria-hidden="true" />
+                    Pridať inzerát
+                  </Link>
+                ) : (
+                  <p className="catalog-limit-message" role="status">Dosiahli ste limit 1000 inzerátov.</p>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="story container-wide" id="pribeh">
+          <div className="story-grid">
+            <div>
+               <span className="eyebrow">{content.story.eyebrow}</span>
+               <h2 className="display story-heading">{content.story.titleLead}<br /><em>{content.story.titleEmphasis}</em></h2>
+               <p className="story-copy">{content.story.copy}</p>
+               <p className="story-note">{content.story.note}</p>
+            </div>
+            <div className="process">
+              {content.story.steps.map((step) => (
+                <div className="process-step" key={step.number}>
+                  <span className="process-number">{step.number}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
