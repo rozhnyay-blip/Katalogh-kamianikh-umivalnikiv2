@@ -5,6 +5,74 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type AnalyticsEventInputEventName = typeof AnalyticsEventInputEventName[keyof typeof AnalyticsEventInputEventName];
+
+
+export const AnalyticsEventInputEventName = {
+  page_view: 'page_view',
+  favorite_add: 'favorite_add',
+  favorite_remove: 'favorite_remove',
+  enquiry_started: 'enquiry_started',
+  enquiry_submitted: 'enquiry_submitted',
+  hero_whatsapp_click: 'hero_whatsapp_click',
+  contact_phone_click: 'contact_phone_click',
+  contact_viber_click: 'contact_viber_click',
+  contact_whatsapp_click: 'contact_whatsapp_click',
+  contact_instagram_click: 'contact_instagram_click',
+  catalog_load_more: 'catalog_load_more',
+} as const;
+
+export interface AnalyticsEventInput {
+  sessionId: string;
+  eventName: AnalyticsEventInputEventName;
+  /** @minimum 1 */
+  productId?: number;
+}
+
+export interface AnalyticsEventReceipt {
+  accepted: boolean;
+}
+
+export interface AnalyticsDaily {
+  date: string;
+  visits: number;
+  uniqueSessions: number;
+}
+
+export type AnalyticsEventCountEventName = typeof AnalyticsEventCountEventName[keyof typeof AnalyticsEventCountEventName];
+
+
+export const AnalyticsEventCountEventName = {
+  favorite_add: 'favorite_add',
+  favorite_remove: 'favorite_remove',
+  enquiry_started: 'enquiry_started',
+  enquiry_submitted: 'enquiry_submitted',
+  hero_whatsapp_click: 'hero_whatsapp_click',
+  contact_phone_click: 'contact_phone_click',
+  contact_viber_click: 'contact_viber_click',
+  contact_whatsapp_click: 'contact_whatsapp_click',
+  contact_instagram_click: 'contact_instagram_click',
+  catalog_load_more: 'catalog_load_more',
+} as const;
+
+export interface AnalyticsEventCount {
+  eventName: AnalyticsEventCountEventName;
+  count: number;
+}
+
+export interface OwnerAnalytics {
+  periodDays: number;
+  startDate: string;
+  endDate: string;
+  visits: number;
+  uniqueSessions: number;
+  interactions: number;
+  enquiries: number;
+  registeredAccounts: number;
+  daily: AnalyticsDaily[];
+  events: AnalyticsEventCount[];
+}
+
 export interface HealthStatus {
   status: string;
 }

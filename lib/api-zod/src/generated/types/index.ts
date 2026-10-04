@@ -6,6 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './analyticsDaily';
+export * from './analyticsEventCount';
+export * from './analyticsEventCountEventName';
+export * from './analyticsEventInput';
+export * from './analyticsEventInputEventName';
+export * from './analyticsEventReceipt';
 export * from './errorEnvelope';
 export * from './getStorageObjectParams';
 export * from './getStorageObjectWidth';
@@ -13,6 +19,7 @@ export * from './healthStatus';
 export * from './order';
 export * from './orderInput';
 export * from './orderReceipt';
+export * from './ownerAnalytics';
 export * from './ownerStatus';
 export * from './product';
 export * from './productInput';

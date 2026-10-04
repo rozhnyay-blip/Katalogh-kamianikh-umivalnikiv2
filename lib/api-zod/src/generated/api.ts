@@ -18,6 +18,47 @@ export const GetOwnerStatusResponse = zod.object({
 
 
 /**
+ * @summary Get privacy-safe analytics for the owner dashboard
+ */
+export const GetOwnerAnalyticsResponse = zod.object({
+  "periodDays": zod.number().int(),
+  "startDate": zod.coerce.date(),
+  "endDate": zod.coerce.date(),
+  "visits": zod.number().int(),
+  "uniqueSessions": zod.number().int(),
+  "interactions": zod.number().int(),
+  "enquiries": zod.number().int(),
+  "registeredAccounts": zod.number().int(),
+  "daily": zod.array(zod.object({
+  "date": zod.coerce.date(),
+  "visits": zod.number().int(),
+  "uniqueSessions": zod.number().int()
+})),
+  "events": zod.array(zod.object({
+  "eventName": zod.enum(['favorite_add', 'favorite_remove', 'enquiry_started', 'enquiry_submitted', 'hero_whatsapp_click', 'contact_phone_click', 'contact_viber_click', 'contact_whatsapp_click', 'contact_instagram_click', 'catalog_load_more']),
+  "count": zod.number().int()
+}))
+})
+
+
+/**
+ * @summary Store an anonymous event after visitor consent
+ */
+
+
+
+export const CreateAnalyticsEventBody = zod.object({
+  "sessionId": zod.string().uuid(),
+  "eventName": zod.enum(['page_view', 'favorite_add', 'favorite_remove', 'enquiry_started', 'enquiry_submitted', 'hero_whatsapp_click', 'contact_phone_click', 'contact_viber_click', 'contact_whatsapp_click', 'contact_instagram_click', 'catalog_load_more']),
+  "productId": zod.number().int().min(1).optional()
+})
+
+export const CreateAnalyticsEventResponse = zod.object({
+  "accepted": zod.boolean()
+})
+
+
+/**
  * @summary Get the public site content
  */
 export const getSiteContentResponseToplineTaglineMax = 160;
