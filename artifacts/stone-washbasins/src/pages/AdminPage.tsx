@@ -586,8 +586,8 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
             <input id="product-name" maxLength={200} type="text" value={form.name} onChange={e => handleField('name', e.target.value)} required disabled={isSaving || isUploading} />
           </div>
           <div className="field">
-            <label htmlFor="product-subtitle">Materiál a rozmery</label>
-            <input id="product-subtitle" maxLength={500} type="text" value={form.subtitle} onChange={e => handleField('subtitle', e.target.value)} required disabled={isSaving || isUploading} />
+            <label htmlFor="product-subtitle">Materiál, rozmery a hmotnosť</label>
+            <input id="product-subtitle" maxLength={500} type="text" placeholder="Napr. prírodný kameň · 56 × 32 × 13 cm · 40 kg" value={form.subtitle} onChange={e => handleField('subtitle', e.target.value)} required disabled={isSaving || isUploading} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="field">
