@@ -142,6 +142,10 @@ export function SiteTextEditorOverlay({
   useFocusScope(dialogRef, closeEditor, isSaving, Boolean(editing));
 
   useEffect(() => {
+    if (editing) document.getElementById('site-text-edit-input')?.focus();
+  }, [editing]);
+
+  useEffect(() => {
     const previousOverrides = previousOverridesRef.current;
     const apply = () => applyTextOverrides(overrides, previousOverrides);
 
