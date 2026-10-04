@@ -204,11 +204,13 @@ export function validateImagePaths(value: unknown): string[] | null {
 }
 
 export function parseOrderInput(value: unknown): {
-  productId: number;
+  productId: number | null;
   productIds: number[];
+  productName: string | null;
   name: string;
   phone: string;
   email: string;
+  message: string | null;
 } | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return null;
@@ -221,12 +223,18 @@ export function parseOrderInput(value: unknown): {
   const name = parsed.data.name.trim();
   const phone = parsed.data.phone.trim();
   const email = parsed.data.email.trim().toLowerCase();
-  const productIds = parsed.data.productIds ?? [parsed.data.productId];
+  const productIds = parsed.data.productIds
+    ?? (parsed.data.productId === undefined ? [] : [parsed.data.productId]);
+  const productName = parsed.data.productName?.trim() ?? "";
+  const message = parsed.data.message?.trim() ?? "";
   const digitCount = (phone.match(/[0-9]/g) || []).length;
   if (
-    productIds.length === 0
-    || productIds.length > MAX_CATALOG_PRODUCTS
-    || productIds[0] !== parsed.data.productId
+    productIds.length > MAX_CATALOG_PRODUCTS
+    || (productIds.length === 0 && (productName.length < 2 || productName.length > 200))
+    || (productIds.length > 0 && productName.length > 0)
+    || (parsed.data.productId !== undefined
+      && productIds.length > 0
+      && productIds[0] !== parsed.data.productId)
     || new Set(productIds).size !== productIds.length
   ) {
     return null;
@@ -241,7 +249,15 @@ export function parseOrderInput(value: unknown): {
     return null;
   }
 
-  return { productId: parsed.data.productId, productIds, name, phone, email };
+  return {
+    productId: productIds[0] ?? null,
+    productIds,
+    productName: productIds.length === 0 ? productName : null,
+    name,
+    phone,
+    email,
+    message: message || null,
+  };
 }
 
 export function parseUploadRequest(value: unknown): {

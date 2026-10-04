@@ -808,7 +808,7 @@ components:
         bottomSlogan: { type: string, minLength: 1, maxLength: 240 }
     OrderInput:
       type: object
-      required: [productId, name, phone, email]
+      required: [name, phone, email]
       properties:
         productId:
           type: integer
@@ -822,6 +822,11 @@ components:
           items:
             type: integer
             minimum: 1
+        productName:
+          type: string
+          minLength: 2
+          maxLength: 200
+          description: Required when the enquiry is for a featured item outside the catalog.
         name:
           type: string
           minLength: 2
@@ -834,6 +839,9 @@ components:
           type: string
           format: email
           maxLength: 254
+        message:
+          type: string
+          maxLength: 2000
     OrderReceipt:
       type: object
       required: [id]
@@ -842,7 +850,7 @@ components:
           type: integer
     Order:
       type: object
-      required: [id, productName, name, phone, email, createdAt]
+      required: [id, productName, name, phone, email, message, createdAt]
       properties:
         id:
           type: integer
@@ -854,6 +862,8 @@ components:
           type: string
         email:
           type: string
+        message:
+          type: ["string", "null"]
         createdAt:
           type: string
           format: date-time
