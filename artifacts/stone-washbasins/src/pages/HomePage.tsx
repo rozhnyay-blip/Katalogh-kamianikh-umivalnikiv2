@@ -118,7 +118,14 @@ export function HomePage() {
       <div className="topline">
         <div className="container-wide topline-inner">
            <span>{content.topline.tagline}</span>
-           <span className="topline-note">{content.topline.note}</span>
+           <div className="topline-actions">
+             <span className="topline-note">{content.topline.note}</span>
+             <button className="topline-cart-button" type="button" onClick={openCart} aria-haspopup="dialog" aria-label={`Košík, ${cartIds.length} položiek`}>
+               <ShoppingCart size={18} aria-hidden="true" />
+               <span>Košík</span>
+               <span className="topline-cart-count" aria-live="polite">{cartIds.length}</span>
+             </button>
+           </div>
         </div>
       </div>
 
@@ -130,11 +137,6 @@ export function HomePage() {
            <a href="#detaily">{content.nav.details}</a>
         </nav>
         <div className="nav-contact">
-          <button className="nav-cart-button" type="button" onClick={openCart} aria-haspopup="dialog" aria-label={`Košík, ${cartIds.length} položiek`}>
-            <ShoppingCart size={17} aria-hidden="true" />
-            <span className="nav-cart-label">Košík</span>
-            <span className="nav-cart-count" aria-live="polite">{cartIds.length}</span>
-          </button>
           <Link className="owner-nav-link" href="/admin">{canEdit ? 'Správa' : 'Prihlásenie majiteľa'}</Link>
           <a className="round-button" href={content.nav.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <Instagram size={16} />

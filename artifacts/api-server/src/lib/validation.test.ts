@@ -108,6 +108,7 @@ test("order validation requires 7 to 15 decimal digits in the phone", () => {
     email: "customer@example.test",
   });
   assert.equal(valid?.phone, "+421 900 123 456");
+  assert.deepEqual(valid?.productIds, [1]);
 
   assert.equal(
     parseOrderInput({
@@ -123,6 +124,38 @@ test("order validation requires 7 to 15 decimal digits in the phone", () => {
       productId: 1,
       name: "Customer",
       phone: "1234567890123456",
+      email: "customer@example.test",
+    }),
+    null,
+  );
+});
+
+test("order validation accepts a unique multi-product basket as one enquiry", () => {
+  const valid = parseOrderInput({
+    productId: 4,
+    productIds: [4, 9, 12],
+    name: "Customer",
+    phone: "+421 900 123 456",
+    email: "customer@example.test",
+  });
+  assert.deepEqual(valid?.productIds, [4, 9, 12]);
+
+  assert.equal(
+    parseOrderInput({
+      productId: 4,
+      productIds: [4, 4],
+      name: "Customer",
+      phone: "+421 900 123 456",
+      email: "customer@example.test",
+    }),
+    null,
+  );
+  assert.equal(
+    parseOrderInput({
+      productId: 9,
+      productIds: [4, 9],
+      name: "Customer",
+      phone: "+421 900 123 456",
       email: "customer@example.test",
     }),
     null,
