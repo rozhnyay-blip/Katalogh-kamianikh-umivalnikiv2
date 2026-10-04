@@ -134,7 +134,7 @@ paths:
   /orders:
     post:
       operationId: createOrder
-       summary: Submit an enquiry for one or more products
+      summary: Submit an enquiry for one or more products
       requestBody:
         required: true
         content:
