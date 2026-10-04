@@ -440,19 +440,29 @@ function formatProductDetailLines(subtitle: string): string[] {
     .filter(Boolean);
 }
 
+type CartEntry = { id: number; product: Product | null };
+
 function OrderModal({
-  product,
+  items,
+  onRemove,
   onClose,
+  onSuccess,
   analyticsEnabled,
 }: {
-  product: Product;
+  items: CartEntry[];
+  onRemove: (id: number) => void;
   onClose: () => void;
+  onSuccess: () => void;
   analyticsEnabled: boolean;
 }) {
   const [form, setForm] = useState({ name: '', phone: '', email: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [receiptId, setReceiptId] = useState<number | null>(null);
+  const availableProducts = items.flatMap((item) =>
+    item.product?.available ? [item.product] : [],
+  );
+  const hasUnavailableProducts = availableProducts.length !== items.length;
 
   const createOrder = useCreateOrder();
 
@@ -465,6 +475,10 @@ function OrderModal({
     event.preventDefault();
     if (createOrder.isPending) return;
     const nextErrors: Record<string, string> = {};
+    if (items.length === 0) nextErrors.form = 'Košík je prázdny.';
+    if (hasUnavailableProducts) {
+      nextErrors.form = 'Niektorý produkt už nie je dostupný. Odstráňte ho z košíka a skúste znova.';
+    }
     if (form.name.trim().length < 2) nextErrors.name = 'Uveďte, prosím, vaše meno';
     const phoneDigits = form.phone.replace(/\D/g, '');
     if (!/^[+0-9\s()\-]+$/.test(form.phone.trim()) || phoneDigits.length < 7 || phoneDigits.length > 15) nextErrors.phone = 'Zadajte platné telefónne číslo';
@@ -477,19 +491,21 @@ function OrderModal({
     if (Object.keys(nextErrors).length === 0) {
       createOrder.mutate({
         data: {
-          productId: product.id,
+          productId: availableProducts[0].id,
+          productIds: availableProducts.map((product) => product.id),
           name: form.name.trim(),
           phone: form.phone.trim(),
           email: form.email.trim(),
         }
       }, {
         onSuccess: (receipt) => {
-          if (analyticsEnabled) trackSiteEvent('enquiry_submitted', product.id);
+          if (analyticsEnabled) trackSiteEvent('enquiry_submitted');
+          onSuccess();
           setReceiptId(receipt.id);
           setSubmitted(true);
         },
         onError: () => {
-          setErrors({ form: 'Nepodarilo sa odoslať objednávku. Skúste to prosím neskôr.' });
+          setErrors({ form: 'Dopyt sa nepodarilo odoslať. Skontrolujte, či sú vybrané produkty stále dostupné, a skúste to znova.' });
         }
       });
     }
@@ -509,14 +525,46 @@ function OrderModal({
           <div className="success-state">
             <div className="success-mark"><Check size={25} /></div>
             <h2 className="display" id="order-title">Dopyt prijatý</h2>
-            <p>Váš dopyt č. {receiptId} na umývadlo „{product.name}“ bol uložený. Majiteľ vás bude kontaktovať s potvrdením dostupnosti a ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.</p>
+            <p>Váš spoločný dopyt č. {receiptId} na vybrané produkty bol uložený. Majiteľ vás bude kontaktovať s potvrdením dostupnosti a ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.</p>
+            <button className="button-primary" type="button" onClick={onClose}>Späť do katalógu</button>
+          </div>
+        ) : items.length === 0 ? (
+          <div className="cart-empty-state">
+            <span className="eyebrow">Košík</span>
+            <h2 className="display modal-title" id="order-title">Zatiaľ je prázdny</h2>
+            <p>Pridajte si do košíka umývadlá, o ktoré máte záujem, a pošlite jeden spoločný dopyt.</p>
             <button className="button-primary" type="button" onClick={onClose}>Späť do katalógu</button>
           </div>
         ) : (
           <>
-            <span className="eyebrow">Dopyt na produkt</span>
-            <h2 className="display modal-title" id="order-title">Váš kameň —<br /><em>{product.name}</em></h2>
-            <p className="modal-product">Vybrané: {product.name} · {product.subtitle} {product.price ? `· ${product.price}` : ''}</p>
+            <span className="eyebrow">Košík · spoločný dopyt</span>
+            <h2 className="display modal-title" id="order-title">Váš výber —<br /><em>na jednom mieste</em></h2>
+            <div className="cart-items-list" aria-label="Vybrané produkty">
+              {items.map(({ id, product }) => (
+                <div className="cart-item" key={id}>
+                  <div className="cart-item-copy">
+                    <strong>{product?.name ?? `Produkt #${id}`}</strong>
+                    {product?.price?.trim() ? (
+                      <span className="cart-item-price">{formatProductPrice(product.price)}</span>
+                    ) : (
+                      <span className="cart-item-price">Cena na vyžiadanie</span>
+                    )}
+                    {(!product || !product.available) && (
+                      <span className="cart-item-unavailable">Už nie je dostupný</span>
+                    )}
+                  </div>
+                  <button
+                    className="cart-item-remove"
+                    type="button"
+                    onClick={() => onRemove(id)}
+                    aria-label={`Odstrániť ${product?.name ?? 'produkt'} z košíka`}
+                  >
+                    <X size={16} aria-hidden="true" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <p className="modal-product">Cena je uvedená pri každom produkte. Dopyt nie je platbou ani záväznou objednávkou.</p>
             <form className="order-form" onSubmit={submitOrder} noValidate>
               <div className="field">
                 <label htmlFor="order-name">Meno a priezvisko</label>
@@ -534,9 +582,9 @@ function OrderModal({
                 {errors.email && <span className="field-error">{errors.email}</span>}
               </div>
               {errors.form && <div className="field-error">{errors.form}</div>}
-              <p className="text-xs text-muted-foreground">Kontaktné údaje odošlete majiteľovi SKALA, aby mohol vybaviť tento dopyt.</p>
-              <button className="form-submit" type="submit" disabled={createOrder.isPending}>
-                {createOrder.isPending ? 'Odosielam...' : 'Odoslať dopyt'} <ArrowRight size={16} />
+              <p className="text-xs text-muted-foreground">Kontaktné údaje odošlete majiteľovi SKALA, aby mohol vybaviť spoločný dopyt.</p>
+              <button className="form-submit" type="submit" disabled={createOrder.isPending || hasUnavailableProducts}>
+                {createOrder.isPending ? 'Odosielam...' : `Odoslať spoločný dopyt (${availableProducts.length})`} <ArrowRight size={16} />
               </button>
             </form>
           </>
