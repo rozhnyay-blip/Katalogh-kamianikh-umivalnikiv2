@@ -1,5 +1,5 @@
 import { CreateOrderResponse, ListOrdersResponse } from "@workspace/api-zod";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import rateLimit from "express-rate-limit";
 import { Router, type IRouter, type Request, type Response } from "express";
 
@@ -30,26 +30,29 @@ router.post(
     }
 
     try {
-      const [product] = await db
+      const selectedProducts = await db
         .select({
           id: products.id,
           name: products.name,
         })
         .from(products)
         .where(
-          and(eq(products.id, input.productId), eq(products.available, true)),
-        )
-        .limit(1);
-      if (!product) {
+          and(inArray(products.id, input.productIds), eq(products.available, true)),
+        );
+      const productById = new Map(
+        selectedProducts.map((product) => [product.id, product]),
+      );
+      if (productById.size !== input.productIds.length) {
         sendError(res, 404, API_ERRORS.productUnavailable);
         return;
       }
+      const productNames = input.productIds.map((id) => productById.get(id)!.name);
 
       const [order] = await db
         .insert(orders)
         .values({
-          productId: product.id,
-          productName: product.name,
+          productId: input.productId,
+          productName: productNames.join(", "),
           name: input.name,
           phone: input.phone,
           email: input.email,
