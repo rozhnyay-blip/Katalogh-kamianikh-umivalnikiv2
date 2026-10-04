@@ -327,7 +327,11 @@ function ProductCard({
       <div className="product-info">
         <div className="w-full">
           <h3 className="product-name">{product.name}</h3>
-          <p className="product-details">{product.subtitle}</p>
+          <p className="product-details">
+            {formatProductDetailLines(product.subtitle).map((line, index) => (
+              <span key={`${index}-${line}`}>{line}</span>
+            ))}
+          </p>
           <div className="product-actions">
             <button 
               className="order-link quiet" 
@@ -351,6 +355,14 @@ function ProductCard({
       </div>
     </article>
   );
+}
+
+function formatProductDetailLines(subtitle: string): string[] {
+  return subtitle
+    .replace(/\s+(?=(?:Vonkajšie|Vnútorné|Hmotnosť|Rozmery|Materiál|Strana|Priemer|Výška|Šírka|Hĺbka)(?:\s|$))/giu, '\n')
+    .split(/\n+|\s*[·•|]\s*/u)
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
 function OrderModal({
