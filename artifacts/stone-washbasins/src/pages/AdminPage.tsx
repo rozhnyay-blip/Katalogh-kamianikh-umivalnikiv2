@@ -638,6 +638,10 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
                 className={`upload-item ${draggedImageIndex === i ? 'upload-item-dragging' : ''}`}
                 draggable={!isUploading && !isSaving}
                 onDragStart={(event) => {
+                  if ((event.target as HTMLElement).closest('button')) {
+                    event.preventDefault();
+                    return;
+                  }
                   event.dataTransfer.effectAllowed = 'move';
                   event.dataTransfer.setData('text/plain', String(i));
                   setDraggedImageIndex(i);
@@ -645,8 +649,11 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={(event) => {
                   event.preventDefault();
-                  const fromIndex = Number(event.dataTransfer.getData('text/plain'));
-                  if (Number.isInteger(fromIndex)) moveImage(fromIndex, i);
+                  const rawIndex = event.dataTransfer.getData('text/plain');
+                  const fromIndex = Number(rawIndex);
+                  if (rawIndex && Number.isInteger(fromIndex) && fromIndex >= 0 && fromIndex < form.images.length) {
+                    moveImage(fromIndex, i);
+                  }
                   setDraggedImageIndex(null);
                 }}
                 onDragEnd={() => setDraggedImageIndex(null)}
