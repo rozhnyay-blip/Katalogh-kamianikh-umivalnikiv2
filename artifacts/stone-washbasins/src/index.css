@@ -358,6 +358,18 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .saved-items-state p { margin:0; }
 .saved-item-actions { grid-column:1 / -1; display:grid; grid-template-columns:40px minmax(0,1fr); align-items:center; gap:8px; }
 .saved-item-add { width:100%; min-height:40px; padding:0 8px; font-size:.66rem; white-space:nowrap; }
+.site-text-editor-root { position:fixed; inset:0; z-index:110; pointer-events:none; }
+.site-text-edit-trigger { position:fixed; z-index:111; display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:40px; padding:0 13px; border:1px solid rgba(240,233,213,.55); border-radius:999px; background:#294b48; color:#f7f4e9; box-shadow:0 8px 24px rgba(25,43,46,.22); font-size:.69rem; font-weight:800; pointer-events:auto; white-space:nowrap; }
+.site-text-edit-trigger:hover { background:#1f3e3b; transform:translateY(-1px); }
+.site-text-edit-backdrop { z-index:112; pointer-events:auto; }
+.site-text-edit-dialog { width:min(600px, 100%); pointer-events:auto; }
+.site-text-edit-help { margin:8px 0 18px; color:hsl(var(--muted-foreground)); font-size:.75rem; line-height:1.55; }
+.site-text-edit-label { display:block; margin:0 0 7px; font: .62rem var(--app-font-mono); letter-spacing:.09em; text-transform:uppercase; }
+.site-text-edit-input { display:block; width:100%; min-height:140px; resize:vertical; border:1px solid hsl(var(--border)); border-radius:9px; background:transparent; color:hsl(var(--foreground)); padding:12px; font: .84rem/1.6 var(--app-font-sans); }
+.site-text-edit-input:focus { outline:2px solid hsl(var(--ring)); outline-offset:2px; }
+.site-text-edit-error { margin:10px 0 0; color:hsl(var(--destructive)); font-size:.72rem; }
+.site-text-edit-actions { display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:9px; margin-top:16px; }
+.site-text-edit-actions button { min-height:42px; padding:0 14px; font-size:.67rem; }
 .owner-cart-tools { display:flex; align-items:center; flex-wrap:wrap; gap:9px; margin:14px 0; padding:12px; border:1px solid hsl(var(--border)); border-radius:12px; background:hsl(var(--secondary)); }
 .owner-cart-tools span { width:100%; color:hsl(var(--muted-foreground)); font: .6rem var(--app-font-mono); letter-spacing:.08em; text-transform:uppercase; }
 .owner-cart-tools a { color:hsl(var(--primary)); font-size:.7rem; font-weight:800; text-decoration:none; }
