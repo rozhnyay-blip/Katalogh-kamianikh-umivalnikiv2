@@ -167,13 +167,13 @@ export function HomePage() {
                 ))}
               </div>
             )}
-            {!isLoading && !isError && products.length > visibleProducts.length && (
+            {!isLoading && !isError && visibleProductCount < MAX_CATALOG_PRODUCTS && products.length > visibleProducts.length && (
               <button
                 className="catalog-show-more"
                 type="button"
                 onClick={() => setVisibleProductCount((count) => Math.min(count + CATALOG_BATCH_SIZE, MAX_CATALOG_PRODUCTS))}
               >
-                Zobraziť ďalších {Math.min(CATALOG_BATCH_SIZE, products.length - visibleProducts.length)}
+                Zobraziť ďalších {Math.min(CATALOG_BATCH_SIZE, products.length - visibleProducts.length)} inzerátov
               </button>
             )}
             {canEdit && !isLoading && !isError && (
