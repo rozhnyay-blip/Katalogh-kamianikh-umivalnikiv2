@@ -10,6 +10,12 @@ export interface OrderInput {
   /** @minimum 1 */
   productId: number;
   /**
+     * @minItems 1
+     * @maxItems 1000
+     * @items.minimum 1
+     */
+  productIds?: number[];
+  /**
      * @minLength 2
      * @maxLength 100
      */

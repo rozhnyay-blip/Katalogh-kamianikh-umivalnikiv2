@@ -700,6 +700,9 @@ export const UpdateSiteContentResponse = zod.object({
  * @summary Submit a product enquiry
  */
 
+
+export const createOrderBodyProductIdsMax = 1000;
+
 export const createOrderBodyNameMin = 2;
 export const createOrderBodyNameMax = 100;
 
@@ -712,6 +715,7 @@ export const createOrderBodyEmailMax = 254;
 
 export const CreateOrderBody = zod.object({
   "productId": zod.number().int().min(1),
+  "productIds": zod.array(zod.number().int().min(1)).min(1).max(createOrderBodyProductIdsMax).optional(),
   "name": zod.string().min(createOrderBodyNameMin).max(createOrderBodyNameMax),
   "phone": zod.string().min(createOrderBodyPhoneMin).max(createOrderBodyPhoneMax),
   "email": zod.string().email().max(createOrderBodyEmailMax)
