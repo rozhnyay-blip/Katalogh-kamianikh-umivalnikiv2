@@ -416,36 +416,36 @@ function ProductCard({
         )}
       </EditableProductMedia>
       <div className="product-info">
-        <div className="w-full">
+        <div className="product-info-main">
           <h3 className="product-name">{product.name}</h3>
           <p className="product-details">
             {formatProductDetailLines(product.subtitle).map((line, index) => (
               <span key={`${index}-${line}`}>{line}</span>
             ))}
           </p>
-          <div className="product-actions">
-            <button 
-              className="order-link quiet" 
-              type="button" 
-              onClick={() => onToggleSaved(product)}
-            >
-              {saved ? 'Uložené' : 'Uložiť'}
-            </button>
-            <button 
-              className="order-link primary add-to-cart ml-auto" 
-              type="button" 
-              onClick={() => onAddToCart(product)}
-              disabled={!product.available}
-              aria-label={isInCart ? `${product.name} je v košíku` : `Pridať ${product.name} do košíka`}
-            >
-              {isInCart ? 'V košíku' : product.available ? 'Pridať do košíka' : 'Nedostupné'}
-              {isInCart ? <Check size={14} /> : <ShoppingCart size={14} />}
-            </button>
-          </div>
         </div>
         <span className="product-price">
           {product.price?.trim() ? formatProductPrice(product.price) : 'Cena na vyžiadanie'}
         </span>
+        <div className="product-actions">
+          <button
+            className="order-link quiet"
+            type="button"
+            onClick={() => onToggleSaved(product)}
+          >
+            {saved ? 'Uložené' : 'Uložiť'}
+          </button>
+          <button
+            className="order-link primary add-to-cart"
+            type="button"
+            onClick={() => onAddToCart(product)}
+            disabled={!product.available}
+            aria-label={isInCart ? `${product.name} je v košíku` : `Pridať ${product.name} do košíka`}
+          >
+            {isInCart ? 'V košíku' : product.available ? 'Pridať do košíka' : 'Nedostupné'}
+            {isInCart ? <Check size={14} /> : <ShoppingCart size={14} />}
+          </button>
+        </div>
       </div>
     </article>
   );
