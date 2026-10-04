@@ -25,7 +25,7 @@ export function AnalyticsConsent() {
           <div>
             <h2 id="analytics-consent-title">Voliteľná anonymná analytika</h2>
             <p>
-              Po súhlase zaznamenáme návštevy a vybrané akcie pod náhodným ID
+              V prehľade SKALA po súhlase zaznamenáme návštevy a vybrané akcie pod náhodným ID
               relácie a prípadne ID produktu. Neukladáme IP adresu, meno,
               telefón ani e-mail. Voľbu môžete kedykoľvek zmeniť.
             </p>

@@ -103,7 +103,7 @@ router.get(
         interactionTotals,
         enquiryTotals,
         registrationCount,
-        daily,
+        dailyRows,
         events,
       ] = await Promise.all([
         db
@@ -168,6 +168,19 @@ router.get(
           .groupBy(analyticsEvents.eventName)
           .orderBy(sql`count(*) desc`),
       ]);
+
+      const dailyByDate = new Map(dailyRows.map((row) => [row.date, row]));
+      const daily = Array.from({ length: PERIOD_DAYS }, (_, index) => {
+        const date = new Date(start);
+        date.setUTCDate(date.getUTCDate() + index);
+        const key = date.toISOString().slice(0, 10);
+        const row = dailyByDate.get(key);
+        return {
+          date: key,
+          visits: row?.visits ?? 0,
+          uniqueSessions: row?.uniqueSessions ?? 0,
+        };
+      });
 
       const analytics = {
         periodDays: PERIOD_DAYS,

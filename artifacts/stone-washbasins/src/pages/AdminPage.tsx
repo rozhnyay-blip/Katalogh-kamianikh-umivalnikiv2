@@ -23,6 +23,7 @@ import { useLongPress } from '../hooks/useLongPress';
 import { usePhotoUpload } from '../hooks/usePhotoUpload';
 import { PhotoPickerSheet } from '../components/PhotoPickerSheet';
 import { ProductImage } from '../components/ProductImage';
+import { AnalyticsDashboard } from '../components/AnalyticsDashboard';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 const MAX_CATALOG_PRODUCTS = 1000;
@@ -41,7 +42,7 @@ export function AdminPage() {
   });
   const { signOut } = useClerk();
   
-  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'site'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'analytics' | 'site'>('products');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isAdding, setIsAdding] = useState(() => new URLSearchParams(window.location.search).get('new') === '1');
 
@@ -82,6 +83,12 @@ export function AdminPage() {
             Dopyty
           </button>
           <button
+            className={`admin-nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
+            onClick={() => setActiveTab('analytics')}
+          >
+            Analytika
+          </button>
+          <button
             className={`admin-nav-item ${activeTab === 'site' ? 'active' : ''}`}
             onClick={() => setActiveTab('site')}
           >
@@ -109,6 +116,7 @@ export function AdminPage() {
               />
             )}
             {activeTab === 'orders' && <OrdersManager />}
+            {activeTab === 'analytics' && <AnalyticsDashboard />}
             {activeTab === 'site' && <SiteContentEditor />}
           </>
         )}
