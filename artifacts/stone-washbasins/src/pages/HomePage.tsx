@@ -7,6 +7,7 @@ import { Brand } from '../components/Brand';
 import { useFocusScope } from '../hooks/useFocusScope';
 import { ProductImage } from '../components/ProductImage';
 import { EditableProductMedia } from '../components/EditableProductMedia';
+import { SavedItemsDialog, type SavedItem } from '../components/SavedItemsDialog';
 import { ContactDock } from '../components/ContactDock';
 import { AnalyticsConsent } from '../components/AnalyticsConsent';
 import { trackSiteEvent, trackSitePageView } from '../lib/analytics';
@@ -50,6 +51,7 @@ export function HomePage() {
   const [savedIds, setSavedIds] = useState<number[]>(() => readStoredIds('skala-saved'));
   const [cartIds, setCartIds] = useState<number[]>(() => readStoredIds('skala-cart'));
   const [savedNotice, setSavedNotice] = useState('');
+  const [savedOpen, setSavedOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [heroOrderOpen, setHeroOrderOpen] = useState(false);
   const [visibleProductCount, setVisibleProductCount] = useState(CATALOG_BATCH_SIZE);
@@ -57,6 +59,10 @@ export function HomePage() {
   const { data: products = [], isLoading, isError, refetch } = useListProducts();
   const visibleProducts = products.slice(0, visibleProductCount);
   const cartItems = cartIds.map((id) => ({
+    id,
+    product: products.find((product) => product.id === id) ?? null,
+  }));
+  const savedItems: SavedItem[] = savedIds.map((id) => ({
     id,
     product: products.find((product) => product.id === id) ?? null,
   }));
@@ -117,6 +123,16 @@ export function HomePage() {
            <span>{content.topline.tagline}</span>
            <div className="topline-actions">
              <span className="topline-note">{content.topline.note}</span>
+             <button
+               className="topline-saved-button"
+               type="button"
+               onClick={() => setSavedOpen(true)}
+               aria-haspopup="dialog"
+               aria-label={`Obľúbené produkty, ${savedIds.length} položiek`}
+             >
+               <Heart size={17} aria-hidden="true" />
+               <span className="topline-cart-count" aria-live="polite">{savedIds.length}</span>
+             </button>
              <button className="topline-cart-button" type="button" onClick={openCart} aria-haspopup="dialog" aria-label={`Košík, ${cartIds.length} položiek`}>
                <ShoppingCart size={18} aria-hidden="true" />
                <span>Košík</span>
@@ -319,6 +335,25 @@ export function HomePage() {
       </footer>
 
       {savedNotice && <div className="saved-toast" role="status">{savedNotice}</div>}
+      {savedOpen && (
+        <SavedItemsDialog
+          items={savedItems}
+          cartIds={cartIds}
+          isLoading={isLoading}
+          isError={isError}
+          onRetry={() => refetch()}
+          onAddToCart={addToCart}
+          onRemove={(item) => {
+            if (item.product) {
+              toggleSaved(item.product);
+            } else {
+              setSavedIds((current) => current.filter((id) => id !== item.id));
+              setSavedNotice('Položka odstránená z uložených');
+            }
+          }}
+          onClose={() => setSavedOpen(false)}
+        />
+      )}
       {(cartOpen || heroOrderOpen) && (
         <OrderModal
           items={heroOrderOpen ? [] : cartItems}
