@@ -16,6 +16,8 @@ tags:
     description: Object storage upload and serving endpoints.
   - name: site-content
     description: Public site copy and owner-only editing.
+  - name: analytics
+    description: Anonymous aggregate activity analytics and owner-only summaries.
 paths:
   /owner/status:
     get:
