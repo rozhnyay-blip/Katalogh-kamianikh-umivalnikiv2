@@ -11,7 +11,6 @@ import { ContactDock } from '../components/ContactDock';
 import { AnalyticsConsent } from '../components/AnalyticsConsent';
 import { trackSiteEvent, trackSitePageView } from '../lib/analytics';
 import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
-import { toInternationalPhoneNumber } from '../lib/phone';
 import heroProductImage from '@assets/image_1789628614912.png';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
@@ -52,6 +51,7 @@ export function HomePage() {
   const [cartIds, setCartIds] = useState<number[]>(() => readStoredIds('skala-cart'));
   const [savedNotice, setSavedNotice] = useState('');
   const [cartOpen, setCartOpen] = useState(false);
+  const [heroOrderOpen, setHeroOrderOpen] = useState(false);
   const [visibleProductCount, setVisibleProductCount] = useState(CATALOG_BATCH_SIZE);
 
   const { data: products = [], isLoading, isError, refetch } = useListProducts();
@@ -60,9 +60,6 @@ export function HomePage() {
     id,
     product: products.find((product) => product.id === id) ?? null,
   }));
-  const orderMessage = `Dobrý deň, mám záujem o kamenné umývadlo z hlavnej stránky SKALA. Cena: ${content.hero.price}; rozmery: ${content.hero.dimensions}; hmotnosť: ${content.hero.weight}. Prosím o informácie k objednávke.`;
-  const orderHref = `https://wa.me/${toInternationalPhoneNumber(content.contact.phone)}?text=${encodeURIComponent(orderMessage)}`;
-
   useEffect(() => {
     if (canTrack) trackSitePageView();
   }, [canTrack]);
@@ -165,17 +162,19 @@ export function HomePage() {
                 <div><dt>Rozmery</dt><dd>{content.hero.dimensions}</dd></div>
                 <div><dt>Hmotnosť</dt><dd>{content.hero.weight}</dd></div>
               </dl>
-              <a
+              <button
                 className="hero-order-button"
-                href={orderHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => canTrack && trackSiteEvent('hero_whatsapp_click')}
+                type="button"
+                aria-haspopup="dialog"
+                onClick={() => {
+                  if (canTrack) trackSiteEvent('enquiry_started');
+                  setHeroOrderOpen(true);
+                }}
               >
                 <MessageCircle size={18} aria-hidden="true" />
                 <span>{content.hero.orderCta}</span>
                 <ArrowRight size={16} aria-hidden="true" />
-              </a>
+              </button>
             </div>
           </div>
         </section>
@@ -320,12 +319,27 @@ export function HomePage() {
       </footer>
 
       {savedNotice && <div className="saved-toast" role="status">{savedNotice}</div>}
-      {cartOpen && (
+      {(cartOpen || heroOrderOpen) && (
         <OrderModal
-          items={cartItems}
+          items={heroOrderOpen ? [] : cartItems}
+          featured={heroOrderOpen ? {
+            productName: 'Umývadlo z hlavnej fotografie',
+            name: 'Umývadlo z hlavnej fotografie',
+            image: heroProductImage,
+            details: [
+              `Cena: ${content.hero.price}`,
+              `Rozmery: ${content.hero.dimensions}`,
+              `Hmotnosť: ${content.hero.weight}`,
+            ],
+          } : undefined}
           onRemove={(id) => setCartIds((current) => current.filter((itemId) => itemId !== id))}
-          onClose={() => setCartOpen(false)}
-          onSuccess={() => setCartIds([])}
+          onClose={() => {
+            setCartOpen(false);
+            setHeroOrderOpen(false);
+          }}
+          onSuccess={() => {
+            if (!heroOrderOpen) setCartIds([]);
+          }}
           ownerMode={canEdit}
           analyticsEnabled={canTrack}
         />
@@ -447,8 +461,16 @@ function formatProductDetailLines(subtitle: string): string[] {
 
 type CartEntry = { id: number; product: Product | null };
 
+type FeaturedInquiry = {
+  productName: string;
+  name: string;
+  image: string;
+  details: string[];
+};
+
 function OrderModal({
   items,
+  featured,
   onRemove,
   onClose,
   onSuccess,
@@ -456,13 +478,14 @@ function OrderModal({
   analyticsEnabled,
 }: {
   items: CartEntry[];
+  featured?: FeaturedInquiry;
   onRemove: (id: number) => void;
   onClose: () => void;
   onSuccess: () => void;
   ownerMode: boolean;
   analyticsEnabled: boolean;
 }) {
-  const [form, setForm] = useState({ name: '', phone: '', email: '' });
+  const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [receiptId, setReceiptId] = useState<number | null>(null);
@@ -470,10 +493,11 @@ function OrderModal({
     item.product?.available ? [item.product] : [],
   );
   const hasUnavailableProducts = availableProducts.length !== items.length;
+  const hasEnquiryTarget = items.length > 0 || Boolean(featured);
 
   const createOrder = useCreateOrder();
 
-  const updateField = (field: 'name' | 'phone' | 'email', value: string) => {
+  const updateField = (field: keyof typeof form, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
     if (errors[field]) setErrors((current) => ({ ...current, [field]: '' }));
   };
@@ -482,7 +506,7 @@ function OrderModal({
     event.preventDefault();
     if (createOrder.isPending) return;
     const nextErrors: Record<string, string> = {};
-    if (items.length === 0) nextErrors.form = 'Košík je prázdny.';
+    if (!hasEnquiryTarget) nextErrors.form = 'Košík je prázdny.';
     if (hasUnavailableProducts) {
       nextErrors.form = 'Niektorý produkt už nie je dostupný. Odstráňte ho z košíka a skúste znova.';
     }
@@ -498,11 +522,16 @@ function OrderModal({
     if (Object.keys(nextErrors).length === 0) {
       createOrder.mutate({
         data: {
-          productId: availableProducts[0].id,
-          productIds: availableProducts.map((product) => product.id),
+          ...(availableProducts.length > 0
+            ? {
+                productId: availableProducts[0].id,
+                productIds: availableProducts.map((product) => product.id),
+              }
+            : { productName: featured!.productName }),
           name: form.name.trim(),
           phone: form.phone.trim(),
           email: form.email.trim(),
+          ...(form.message.trim() ? { message: form.message.trim() } : {}),
         }
       }, {
         onSuccess: (receipt) => {
@@ -532,10 +561,12 @@ function OrderModal({
           <div className="success-state">
             <div className="success-mark"><Check size={25} /></div>
             <h2 className="display" id="order-title">Dopyt prijatý</h2>
-            <p>Váš spoločný dopyt č. {receiptId} na vybrané produkty bol uložený. Majiteľ vás bude kontaktovať s potvrdením dostupnosti a ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.</p>
+            <p>{featured
+              ? `Váš dopyt č. ${receiptId} na ${featured.productName.toLowerCase()} bol uložený. Majiteľ vás bude kontaktovať s ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.`
+              : `Váš spoločný dopyt č. ${receiptId} na vybrané produkty bol uložený. Majiteľ vás bude kontaktovať s potvrdením dostupnosti a ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.`}</p>
             <button className="button-primary" type="button" onClick={onClose}>Späť do katalógu</button>
           </div>
-        ) : items.length === 0 ? (
+        ) : items.length === 0 && !featured ? (
           <div className="cart-empty-state">
             <span className="eyebrow">Košík</span>
             <h2 className="display modal-title" id="order-title">Zatiaľ je prázdny</h2>
@@ -545,9 +576,25 @@ function OrderModal({
           </div>
         ) : (
           <>
-            <span className="eyebrow">Košík · spoločný dopyt</span>
-            <h2 className="display modal-title" id="order-title">Váš výber —<br /><em>na jednom mieste</em></h2>
+            <span className="eyebrow">{featured ? 'Dopyt · hlavné umývadlo' : 'Košík · spoločný dopyt'}</span>
+            <h2 className="display modal-title" id="order-title">
+              {featured ? <>Máte záujem?<br /><em>Napíšte nám.</em></> : <>Váš výber —<br /><em>na jednom mieste</em></>}
+            </h2>
             <div className="cart-items-list" aria-label="Vybrané produkty">
+              {featured && (
+                <article className="cart-item-card" key="featured">
+                  <div className="cart-item-card-media">
+                    <img className="cart-item-card-image" src={featured.image} alt={featured.name} />
+                  </div>
+                  <div className="cart-item-card-content">
+                    <span className="cart-item-kind">Hlavná ponuka</span>
+                    <strong className="cart-item-name">{featured.name}</strong>
+                    <p className="cart-item-details">
+                      {featured.details.map((line) => <span key={line}>{line}</span>)}
+                    </p>
+                  </div>
+                </article>
+              )}
               {items.map(({ id, product }) => (
                 <article className="cart-item-card" key={id}>
                   <div className="cart-item-card-media">
@@ -610,10 +657,20 @@ function OrderModal({
                 <input id="order-email" type="email" value={form.email} onChange={(event) => updateField('email', event.target.value)} placeholder="vasa.adresa@gmail.com" autoComplete="email" disabled={createOrder.isPending} />
                 {errors.email && <span className="field-error">{errors.email}</span>}
               </div>
+              <div className="field">
+                <label htmlFor="order-message">Správa (voliteľná)</label>
+                <textarea id="order-message" value={form.message} onChange={(event) => updateField('message', event.target.value)} placeholder="Čo by ste sa chceli opýtať?" maxLength={2000} rows={4} disabled={createOrder.isPending} />
+              </div>
               {errors.form && <div className="field-error">{errors.form}</div>}
-              <p className="text-xs text-muted-foreground">Kontaktné údaje odošlete majiteľovi SKALA, aby mohol vybaviť spoločný dopyt.</p>
+              <p className="text-xs text-muted-foreground">{featured
+                ? 'Kontaktné údaje a správu odošlete majiteľovi SKALA, aby vám mohol odpovedať na dopyt.'
+                : 'Kontaktné údaje a správu odošlete majiteľovi SKALA, aby mohol vybaviť spoločný dopyt.'}</p>
               <button className="form-submit" type="submit" disabled={createOrder.isPending || hasUnavailableProducts}>
-                {createOrder.isPending ? 'Odosielam...' : `Odoslať spoločný dopyt (${availableProducts.length})`} <ArrowRight size={16} />
+                {createOrder.isPending
+                  ? 'Odosielam...'
+                  : featured
+                    ? 'Odoslať dopyt'
+                    : `Odoslať spoločný dopyt (${availableProducts.length})`} <ArrowRight size={16} />
               </button>
             </form>
           </>
