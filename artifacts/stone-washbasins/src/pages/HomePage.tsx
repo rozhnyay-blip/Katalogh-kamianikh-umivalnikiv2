@@ -549,27 +549,46 @@ function OrderModal({
             <h2 className="display modal-title" id="order-title">Váš výber —<br /><em>na jednom mieste</em></h2>
             <div className="cart-items-list" aria-label="Vybrané produkty">
               {items.map(({ id, product }) => (
-                <div className="cart-item" key={id}>
-                  <div className="cart-item-copy">
-                    <strong>{product?.name ?? `Produkt #${id}`}</strong>
-                    {product?.price?.trim() ? (
-                      <span className="cart-item-price">{formatProductPrice(product.price)}</span>
+                <article className="cart-item-card" key={id}>
+                  <div className="cart-item-card-media">
+                    {product && product.images.length > 0 ? (
+                      <ProductImage
+                        className="cart-item-card-image"
+                        path={product.images[0]}
+                        alt={`Umývadlo ${product.name}`}
+                      />
                     ) : (
-                      <span className="cart-item-price">Cena na vyžiadanie</span>
+                      <div className="cart-item-card-placeholder">BEZ FOTOGRAFIE</div>
+                    )}
+                  </div>
+                  <div className="cart-item-card-content">
+                    <span className="cart-item-kind">{product?.kind ?? 'Produkt'}</span>
+                    <strong className="cart-item-name">{product?.name ?? `Produkt #${id}`}</strong>
+                    {product?.subtitle && (
+                      <p className="cart-item-details">
+                        {formatProductDetailLines(product.subtitle).map((line, index) => (
+                          <span key={`${index}-${line}`}>{line}</span>
+                        ))}
+                      </p>
                     )}
                     {(!product || !product.available) && (
                       <span className="cart-item-unavailable">Už nie je dostupný</span>
                     )}
+                    <div className="cart-item-card-footer">
+                      <span className="cart-item-price">
+                        {product?.price?.trim() ? formatProductPrice(product.price) : 'Cena na vyžiadanie'}
+                      </span>
+                      <button
+                        className="cart-item-remove"
+                        type="button"
+                        onClick={() => onRemove(id)}
+                        aria-label={`Odstrániť ${product?.name ?? 'produkt'} z košíka`}
+                      >
+                        <X size={16} aria-hidden="true" />
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    className="cart-item-remove"
-                    type="button"
-                    onClick={() => onRemove(id)}
-                    aria-label={`Odstrániť ${product?.name ?? 'produkt'} z košíka`}
-                  >
-                    <X size={16} aria-hidden="true" />
-                  </button>
-                </div>
+                </article>
               ))}
             </div>
             {ownerMode && <OwnerCartTools />}
