@@ -30,32 +30,36 @@ router.post(
     }
 
     try {
-      const selectedProducts = await db
-        .select({
-          id: products.id,
-          name: products.name,
-        })
-        .from(products)
-        .where(
-          and(inArray(products.id, input.productIds), eq(products.available, true)),
+      let productName = input.productName;
+      if (input.productIds.length > 0) {
+        const selectedProducts = await db
+          .select({
+            id: products.id,
+            name: products.name,
+          })
+          .from(products)
+          .where(
+            and(inArray(products.id, input.productIds), eq(products.available, true)),
+          );
+        const productById = new Map(
+          selectedProducts.map((product) => [product.id, product]),
         );
-      const productById = new Map(
-        selectedProducts.map((product) => [product.id, product]),
-      );
-      if (productById.size !== input.productIds.length) {
-        sendError(res, 404, API_ERRORS.productUnavailable);
-        return;
+        if (productById.size !== input.productIds.length) {
+          sendError(res, 404, API_ERRORS.productUnavailable);
+          return;
+        }
+        productName = input.productIds.map((id) => productById.get(id)!.name).join(", ");
       }
-      const productNames = input.productIds.map((id) => productById.get(id)!.name);
 
       const [order] = await db
         .insert(orders)
         .values({
           productId: input.productId,
-          productName: productNames.join(", "),
+          productName: productName!,
           name: input.name,
           phone: input.phone,
           email: input.email,
+          message: input.message,
         })
         .returning({ id: orders.id });
       res.status(201).json(CreateOrderResponse.parse(order));

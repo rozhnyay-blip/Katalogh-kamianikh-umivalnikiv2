@@ -242,6 +242,7 @@ function OrdersManager() {
               <th>Meno zákazníka</th>
               <th>Telefón</th>
               <th>E-mail</th>
+              <th>Správa</th>
             </tr>
           </thead>
           <tbody>
@@ -253,11 +254,12 @@ function OrdersManager() {
                 <td>{o.name}</td>
                 <td className="font-mono text-sm">{o.phone}</td>
                 <td className="text-sm"><a href={`mailto:${o.email}`} className="text-primary hover:underline">{o.email}</a></td>
+                <td className="text-sm whitespace-pre-wrap">{o.message || '—'}</td>
               </tr>
             ))}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-center text-muted-foreground py-8">Žiadne dopyty zatiaľ.</td>
+                <td colSpan={7} className="text-center text-muted-foreground py-8">Žiadne dopyty zatiaľ.</td>
               </tr>
             )}
           </tbody>

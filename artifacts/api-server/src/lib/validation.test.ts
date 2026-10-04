@@ -162,6 +162,44 @@ test("order validation accepts a unique multi-product basket as one enquiry", ()
   );
 });
 
+test("order validation accepts a featured-item enquiry with an optional message", () => {
+  const valid = parseOrderInput({
+    productName: "Umývadlo z hlavnej fotografie",
+    name: "Customer",
+    phone: "+421 900 123 456",
+    email: "CUSTOMER@gmail.com",
+    message: "  Môžete mi poslať viac informácií?  ",
+  });
+
+  assert.deepEqual(valid, {
+    productId: null,
+    productIds: [],
+    productName: "Umývadlo z hlavnej fotografie",
+    name: "Customer",
+    phone: "+421 900 123 456",
+    email: "customer@gmail.com",
+    message: "Môžete mi poslať viac informácií?",
+  });
+  assert.equal(
+    parseOrderInput({
+      name: "Customer",
+      phone: "+421 900 123 456",
+      email: "customer@gmail.com",
+    }),
+    null,
+  );
+  assert.equal(
+    parseOrderInput({
+      productName: "Umývadlo",
+      productId: 1,
+      name: "Customer",
+      phone: "+421 900 123 456",
+      email: "customer@gmail.com",
+    }),
+    null,
+  );
+});
+
 test("upload validation enforces image type and 10 MiB size limit", () => {
   assert.deepEqual(
     parseUploadRequest({
