@@ -92,7 +92,9 @@ export function parseSiteContent(input: unknown): SiteContent | null {
   const result = siteContentSchema.safeParse(input);
   if (!result.success) return null;
   const entries = Object.entries(result.data.textOverrides);
-  if (entries.length > 400 || entries.some(([key]) => key.length > 1200)) return null;
+  if (entries.length > 400 || entries.some(([key]) =>
+    key.length > 1200 || key === "__proto__" || key === "constructor" || key === "prototype"
+  )) return null;
   return result.data;
 }
 

@@ -109,7 +109,7 @@ function applyTextOverrides(
       const override = overrides[key];
       const previousOverride = previousOverrides[key];
 
-      if (override && textNode.data === override.source) {
+      if (override && textNode.data === override.source && textNode.data !== override.text) {
         textNode.data = override.text;
       } else if (!override && previousOverride && textNode.data === previousOverride.text) {
         textNode.data = previousOverride.source;
