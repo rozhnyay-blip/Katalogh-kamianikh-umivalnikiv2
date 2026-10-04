@@ -28,6 +28,60 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OwnerStatus"
+  /owner/analytics:
+    get:
+      operationId: getOwnerAnalytics
+      tags: [analytics]
+      summary: Get privacy-safe analytics for the owner dashboard
+      responses:
+        "200":
+          description: Aggregated analytics without visitor identities
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OwnerAnalytics"
+        "401":
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "403":
+          description: Owner access required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /analytics/events:
+    post:
+      operationId: createAnalyticsEvent
+      tags: [analytics]
+      summary: Store an anonymous event after visitor consent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyticsEventInput"
+      responses:
+        "202":
+          description: Event accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsEventReceipt"
+        "400":
+          description: Invalid event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "429":
+          description: Too many events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
   /site-content:
     get:
       operationId: getSiteContent
@@ -393,6 +447,92 @@ paths:
                 $ref: "#/components/schemas/ErrorEnvelope"
 components:
   schemas:
+    AnalyticsEventInput:
+      type: object
+      additionalProperties: false
+      required: [sessionId, eventName]
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+        eventName:
+          type: string
+          enum:
+            - page_view
+            - favorite_add
+            - favorite_remove
+            - enquiry_started
+            - enquiry_submitted
+            - hero_whatsapp_click
+            - contact_phone_click
+            - contact_viber_click
+            - contact_whatsapp_click
+            - contact_instagram_click
+            - catalog_load_more
+        productId:
+          type: integer
+          minimum: 1
+    AnalyticsEventReceipt:
+      type: object
+      required: [accepted]
+      properties:
+        accepted:
+          type: boolean
+    OwnerAnalytics:
+      type: object
+      required:
+        - periodDays
+        - startDate
+        - endDate
+        - visits
+        - uniqueSessions
+        - interactions
+        - enquiries
+        - registeredAccounts
+        - daily
+        - events
+      properties:
+        periodDays: { type: integer }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        visits: { type: integer }
+        uniqueSessions: { type: integer }
+        interactions: { type: integer }
+        enquiries: { type: integer }
+        registeredAccounts: { type: integer }
+        daily:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsDaily"
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsEventCount"
+    AnalyticsDaily:
+      type: object
+      required: [date, visits, uniqueSessions]
+      properties:
+        date: { type: string, format: date }
+        visits: { type: integer }
+        uniqueSessions: { type: integer }
+    AnalyticsEventCount:
+      type: object
+      required: [eventName, count]
+      properties:
+        eventName:
+          type: string
+          enum:
+            - favorite_add
+            - favorite_remove
+            - enquiry_started
+            - enquiry_submitted
+            - hero_whatsapp_click
+            - contact_phone_click
+            - contact_viber_click
+            - contact_whatsapp_click
+            - contact_instagram_click
+            - catalog_load_more
+        count: { type: integer }
     HealthStatus:
       type: object
       properties:
