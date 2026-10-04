@@ -273,7 +273,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   gap: 12px;
   width: 100%;
 }
-.add-to-cart { min-height:44px; padding:0 11px; border:1px solid rgba(217,156,139,.7); border-radius:999px; background:rgba(217,156,139,.13); color:#f2b9a9; font-size:.66rem; white-space:nowrap; }
+.add-to-cart { min-height:44px; padding:0 11px; border:1px solid rgba(217,156,139,.7); border-radius:999px; background:rgba(217,156,139,.13); color:#f2b9a9; font-size:.66rem; white-space:nowrap; transform:translateX(14px); }
 .add-to-cart:hover:not(:disabled) { background:#d99c8b; color:#192b2e; }
 .add-to-cart:disabled { border-color:rgba(236,234,217,.25); color:rgba(236,234,217,.52); }
 .order-link.quiet {
