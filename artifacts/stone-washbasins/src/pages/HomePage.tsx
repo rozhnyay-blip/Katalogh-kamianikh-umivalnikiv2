@@ -324,6 +324,7 @@ export function HomePage() {
           onRemove={(id) => setCartIds((current) => current.filter((itemId) => itemId !== id))}
           onClose={() => setCartOpen(false)}
           onSuccess={() => setCartIds([])}
+          ownerMode={canEdit}
           analyticsEnabled={canTrack}
         />
       )}
@@ -426,7 +427,9 @@ function ProductCard({
             </button>
           </div>
         </div>
-        {product.price?.trim() && <span className="product-price">{formatProductPrice(product.price)}</span>}
+        <span className="product-price">
+          {product.price?.trim() ? formatProductPrice(product.price) : 'Cena na vyžiadanie'}
+        </span>
       </div>
     </article>
   );
@@ -447,12 +450,14 @@ function OrderModal({
   onRemove,
   onClose,
   onSuccess,
+  ownerMode,
   analyticsEnabled,
 }: {
   items: CartEntry[];
   onRemove: (id: number) => void;
   onClose: () => void;
   onSuccess: () => void;
+  ownerMode: boolean;
   analyticsEnabled: boolean;
 }) {
   const [form, setForm] = useState({ name: '', phone: '', email: '' });
@@ -533,6 +538,7 @@ function OrderModal({
             <span className="eyebrow">Košík</span>
             <h2 className="display modal-title" id="order-title">Zatiaľ je prázdny</h2>
             <p>Pridajte si do košíka umývadlá, o ktoré máte záujem, a pošlite jeden spoločný dopyt.</p>
+            {ownerMode && <OwnerCartTools />}
             <button className="button-primary" type="button" onClick={onClose}>Späť do katalógu</button>
           </div>
         ) : (
@@ -564,6 +570,7 @@ function OrderModal({
                 </div>
               ))}
             </div>
+            {ownerMode && <OwnerCartTools />}
             <p className="modal-product">Cena je uvedená pri každom produkte. Dopyt nie je platbou ani záväznou objednávkou.</p>
             <form className="order-form" onSubmit={submitOrder} noValidate>
               <div className="field">
@@ -591,5 +598,15 @@ function OrderModal({
         )}
       </section>
     </div>
+  );
+}
+
+function OwnerCartTools() {
+  return (
+    <nav className="owner-cart-tools" aria-label="Možnosti majiteľa">
+      <span>Možnosti majiteľa</span>
+      <Link href="/admin?tab=products">Správa produktov</Link>
+      <Link href="/admin?tab=orders">Vstupné dopyty</Link>
+    </nav>
   );
 }

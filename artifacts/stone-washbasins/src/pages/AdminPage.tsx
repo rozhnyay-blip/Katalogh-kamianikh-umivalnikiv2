@@ -42,7 +42,10 @@ export function AdminPage() {
   });
   const { signOut } = useClerk();
   
-  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'analytics' | 'site'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'analytics' | 'site'>(() => {
+    const requestedTab = new URLSearchParams(window.location.search).get('tab');
+    return requestedTab === 'orders' ? 'orders' : 'products';
+  });
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isAdding, setIsAdding] = useState(() => new URLSearchParams(window.location.search).get('new') === '1');
 
