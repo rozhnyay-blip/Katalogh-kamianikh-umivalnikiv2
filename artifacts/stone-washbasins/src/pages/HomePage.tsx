@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram, MessageCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram, MessageCircle, Plus } from 'lucide-react';
 import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, useGetSiteContent, type Product } from '@workspace/api-client-react';
 import { useAuth } from '@clerk/react';
 import { Link } from 'wouter';
@@ -13,6 +13,8 @@ import { toInternationalPhoneNumber } from '../lib/phone';
 import heroProductImage from '@assets/image_1789628614912.png';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
+const CATALOG_BATCH_SIZE = 20;
+const MAX_CATALOG_PRODUCTS = 1000;
 
 function getImageUrl(path: string) {
   return `${basePath}/api/storage${path}`;
@@ -36,8 +38,10 @@ export function HomePage() {
   });
   const [savedNotice, setSavedNotice] = useState('');
   const [orderProduct, setOrderProduct] = useState<Product | null>(null);
+  const [visibleProductCount, setVisibleProductCount] = useState(CATALOG_BATCH_SIZE);
 
   const { data: products = [], isLoading, isError, refetch } = useListProducts();
+  const visibleProducts = products.slice(0, visibleProductCount);
   const orderMessage = `Dobrý deň, mám záujem o kamenné umývadlo z hlavnej stránky SKALA. Cena: ${content.hero.price}; rozmery: ${content.hero.dimensions}; hmotnosť: ${content.hero.weight}. Prosím o informácie k objednávke.`;
   const orderHref = `https://wa.me/${toInternationalPhoneNumber(content.contact.phone)}?text=${encodeURIComponent(orderMessage)}`;
 

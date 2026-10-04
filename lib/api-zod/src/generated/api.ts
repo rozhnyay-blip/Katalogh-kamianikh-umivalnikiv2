@@ -720,7 +720,7 @@ export const ListProductsResponseItem = zod.object({
   "kind": zod.string(),
   "images": zod.array(zod.string()).max(listProductsResponseImagesMax)
 })
-export const ListProductsResponse = zod.array(ListProductsResponseItem)
+export const ListProductsResponse = zod.array(ListProductsResponseItem).max(1000)
 
 
 /**
