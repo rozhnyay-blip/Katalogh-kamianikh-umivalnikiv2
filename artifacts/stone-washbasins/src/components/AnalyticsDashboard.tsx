@@ -147,10 +147,6 @@ export function AnalyticsDashboard() {
 
   const hasActivity = data.visits > 0 || data.uniqueSessions > 0 || data.interactions > 0 || data.enquiries > 0 || data.daily.length > 0;
   const orderedEvents = [...data.events].sort((a, b) => b.count - a.count);
-  const enquiryStartCount = data.events.find((event) => event.eventName === 'enquiry_started')?.count ?? 0;
-  const submittedCount = data.events.find((event) => event.eventName === 'enquiry_submitted')?.count ?? data.enquiries;
-  const enquiryRate = enquiryStartCount > 0 ? Math.round((submittedCount / enquiryStartCount) * 100) : null;
-
   return (
     <section className="skala-analytics" aria-label="Prehľad analytiky">
       <style>{analyticsStyles}</style>
@@ -168,14 +164,14 @@ export function AnalyticsDashboard() {
 
       <div className="skala-analytics__privacy">
         <ShieldCheck size={17} strokeWidth={1.8} aria-hidden="true" />
-        <p><strong>Súkromie na prvom mieste.</strong> Návštevy a relácie sú anonymné súhrny; neukazujeme mená ani správanie jednotlivých ľudí.</p>
+        <p><strong>Súkromie na prvom mieste.</strong> Návštevy a interakcie v tomto prehľade pochádzajú iba od návštevníkov so súhlasom; zobrazujeme anonymné súhrny, nie identitu ani individuálne správanie.</p>
       </div>
 
       <div className="skala-analytics__metrics">
         <MetricCard label="Návštevy" value={data.visits} note={`Zobrazenia katalógu · ${data.periodDays}-dňové obdobie`} icon={BarChart3} />
         <MetricCard label="Anonymné relácie" value={data.uniqueSessions} note="Počet relácií, nie počet ľudí" icon={UsersRound} accent="gold" />
         <MetricCard label="Interakcie" value={data.interactions} note="Súčet zaznamenaných akcií v katalógu" icon={Activity} accent="clay" />
-        <MetricCard label="Dopyty" value={data.enquiries} note={enquiryRate === null ? 'Odoslané v zvolenom období' : `${enquiryRate} % začatých dopytov bolo odoslaných`} icon={ArrowUpRight} />
+        <MetricCard label="Dopyty" value={data.enquiries} note="Uložené dopyty za zvolené obdobie" icon={ArrowUpRight} />
       </div>
 
       <div className="skala-analytics__main-grid">

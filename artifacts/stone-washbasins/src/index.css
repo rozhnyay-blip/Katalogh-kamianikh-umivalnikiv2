@@ -81,6 +81,13 @@ button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: .55; }
 :focus-visible { outline: 2px solid #d99c8b; outline-offset: 4px; }
 .saved-toast { position:fixed; z-index:60; bottom:24px; left:50%; transform:translateX(-50%); max-width:calc(100vw - 32px); width:max-content; padding:16px 22px; background:#f5f2e8; color:#192b2e; border:1px solid #b8c2c1; border-radius:12px; box-shadow:var(--shadow-md); font-size:.8rem; }
+.analytics-consent { position:fixed; z-index:45; right:18px; bottom:18px; max-width:min(540px, calc(100vw - 36px)); }
+.analytics-consent-panel { display:grid; gap:15px; padding:18px 20px; border:1px solid rgba(39,73,67,.22); border-radius:16px; background:#f7f4e9; color:#263d3b; box-shadow:0 14px 40px rgba(25,43,46,.2); animation:rise .22s ease both; }
+.analytics-consent-panel h2 { margin:0 0 6px; font:500 1.15rem var(--app-font-serif); }
+.analytics-consent-panel p { margin:0; color:#586b6a; font-size:.72rem; line-height:1.55; }
+.analytics-consent-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:9px; }
+.analytics-consent-actions .button-primary, .analytics-consent-actions .button-quiet { min-height:42px; padding-inline:16px; font-size:.68rem; }
+.analytics-consent-settings { min-height:38px; padding:0 13px; border:1px solid rgba(39,73,67,.2); border-radius:999px; background:#f7f4e9; color:#304f4b; box-shadow:0 7px 20px rgba(25,43,46,.14); font-size:.65rem; font-weight:700; }
 
 /* Global touch targets */
 .round-button, .media-arrow, .save-button, .modal-close,
@@ -577,6 +584,10 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .photo-sheet .field-error { font-size:.8rem; line-height:1.6; margin:16px 0; }
 .upload-item img { object-fit:contain; }
 @media (max-width: 620px) {
+  .analytics-consent { right:12px; bottom:12px; max-width:calc(100vw - 24px); }
+  .analytics-consent-panel { padding:16px; }
+  .analytics-consent-actions { justify-content:stretch; }
+  .analytics-consent-actions button { flex:1; }
   .photo-sheet-backdrop { padding:0; }
   .photo-sheet { border-radius:24px 24px 0 0; padding:28px 24px calc(24px + env(safe-area-inset-bottom)); max-height:90dvh; }
   .product-media { background:#d9ded5; }
