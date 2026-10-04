@@ -9,7 +9,16 @@ import {
   db,
   orders,
 } from "@workspace/db";
-import { and, count, countDistinct, delete as deleteRows, gte, lt, ne, sql } from "drizzle-orm";
+import {
+  and,
+  count,
+  countDistinct,
+  eq,
+  gte,
+  lt,
+  ne,
+  sql,
+} from "drizzle-orm";
 import rateLimit from "express-rate-limit";
 import { Router, type IRouter, type Request, type Response } from "express";
 
