@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram, MessageCircle, Plus } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram, MessageCircle, Plus, ShoppingCart } from 'lucide-react';
 import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, useGetSiteContent, type Product } from '@workspace/api-client-react';
 import { useAuth } from '@clerk/react';
 import { Link } from 'wouter';
@@ -18,6 +18,24 @@ const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 const CATALOG_BATCH_SIZE = 20;
 const MAX_CATALOG_PRODUCTS = 1000;
 
+function readStoredIds(key: string): number[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(key) || '[]');
+    return Array.isArray(stored)
+      ? [...new Set(stored.filter((id): id is number => Number.isSafeInteger(id) && id > 0))]
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function formatProductPrice(price: string): string {
+  const value = price.trim();
+  if (!value || /(?:€|EUR)/iu.test(value)) return value;
+  return /^\d[\d\s.,]*$/u.test(value) ? `${value} €` : value;
+}
+
 function getImageUrl(path: string) {
   return `${basePath}/api/storage${path}`;
 }
@@ -30,21 +48,18 @@ export function HomePage() {
   const canEdit = Boolean(isLoaded && owner?.signedIn && owner?.isOwner);
   const canTrack = Boolean(isLoaded && !ownerStatusPending && owner && !owner.isOwner);
   const { data: content = SITE_CONTENT_DEFAULTS } = useGetSiteContent();
-  const [savedIds, setSavedIds] = useState<number[]>(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const stored = JSON.parse(window.localStorage.getItem('skala-saved') || '[]');
-      return Array.isArray(stored) ? stored.filter((id): id is number => Number.isSafeInteger(id) && id > 0) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [savedIds, setSavedIds] = useState<number[]>(() => readStoredIds('skala-saved'));
+  const [cartIds, setCartIds] = useState<number[]>(() => readStoredIds('skala-cart'));
   const [savedNotice, setSavedNotice] = useState('');
-  const [orderProduct, setOrderProduct] = useState<Product | null>(null);
+  const [cartOpen, setCartOpen] = useState(false);
   const [visibleProductCount, setVisibleProductCount] = useState(CATALOG_BATCH_SIZE);
 
   const { data: products = [], isLoading, isError, refetch } = useListProducts();
   const visibleProducts = products.slice(0, visibleProductCount);
+  const cartItems = cartIds.map((id) => ({
+    id,
+    product: products.find((product) => product.id === id) ?? null,
+  }));
   const orderMessage = `Dobrý deň, mám záujem o kamenné umývadlo z hlavnej stránky SKALA. Cena: ${content.hero.price}; rozmery: ${content.hero.dimensions}; hmotnosť: ${content.hero.weight}. Prosím o informácie k objednávke.`;
   const orderHref = `https://wa.me/${toInternationalPhoneNumber(content.contact.phone)}?text=${encodeURIComponent(orderMessage)}`;
 
@@ -61,6 +76,14 @@ export function HomePage() {
   }, [savedIds]);
 
   useEffect(() => {
+    try {
+      window.localStorage.setItem('skala-cart', JSON.stringify(cartIds));
+    } catch {
+      setSavedNotice('Košík zostane uložený len počas tejto návštevy.');
+    }
+  }, [cartIds]);
+
+  useEffect(() => {
     if (!savedNotice) return;
     const timeout = window.setTimeout(() => setSavedNotice(''), 2400);
     return () => window.clearTimeout(timeout);
@@ -75,9 +98,19 @@ export function HomePage() {
     setSavedNotice(isSaved ? `${product.name} odstránené z uložených` : `${product.name} uložené pre vás`);
   };
 
-  const openOrder = (product: Product) => {
-    if (canTrack) trackSiteEvent('enquiry_started', product.id);
-    setOrderProduct(product);
+  const openCart = () => {
+    if (canTrack) trackSiteEvent('enquiry_started');
+    setCartOpen(true);
+  };
+
+  const addToCart = (product: Product) => {
+    if (!product.available) return;
+    if (cartIds.includes(product.id)) {
+      setCartOpen(true);
+      return;
+    }
+    setCartIds((current) => current.includes(product.id) ? current : [...current, product.id]);
+    setSavedNotice(`${product.name} pridané do košíka`);
   };
 
   return (
