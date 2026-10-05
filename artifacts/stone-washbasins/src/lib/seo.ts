@@ -1,5 +1,5 @@
 const siteDescription =
-  'Objavte luxusné kamenné umývadlá z prírodného kameňa SKALA. Ručne opracované solitéry pre výnimočné kúpeľne, každý kus s jedinečným tvarom a kresbou.';
+  'Objavte luxusné umývadlá z prírodného kameňa SKALA. Ručne opracované solitéry pre výnimočné kúpeľne s jedinečným tvarom a kresbou. Vyberte si svoj kus.';
 const siteName = 'Luxusné kamenné umývadlá z prírodného kameňa | SKALA';
 
 function setMeta(selector: string, value: string): void {
