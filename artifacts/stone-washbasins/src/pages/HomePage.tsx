@@ -6,7 +6,7 @@ import { useAuth } from '@clerk/react';
 import { Link } from 'wouter';
 import { Brand } from '../components/Brand';
 import { useFocusScope } from '../hooks/useFocusScope';
-import { ProductImage } from '../components/ProductImage';
+import { preloadProductImage, ProductImage } from '../components/ProductImage';
 import { EditableProductMedia } from '../components/EditableProductMedia';
 import { SavedItemsDialog, type SavedItem } from '../components/SavedItemsDialog';
 import { SiteTextEditorOverlay } from '../components/SiteTextEditorOverlay';
@@ -438,13 +438,25 @@ function ProductCard({
   const [imageIndex, setImageIndex] = useState(0);
   const imageCount = Math.min(product.images.length, 10);
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const preloadedImages = useRef(new Map<string, HTMLImageElement>());
   useEffect(() => {
     setImageIndex(0);
     swipeStart.current = null;
+    preloadedImages.current.clear();
   }, [product.images.join('|')]);
 
   const nextImage = () => setImageIndex((current) => (current + 1) % imageCount);
   const previousImage = () => setImageIndex((current) => (current - 1 + imageCount) % imageCount);
+  const preloadImageAt = (index: number) => {
+    const path = product.images[index];
+    if (!path || preloadedImages.current.has(path)) return;
+    preloadedImages.current.set(path, preloadProductImage(path));
+  };
+  const preloadAdjacentImages = () => {
+    if (imageCount < 2) return;
+    preloadImageAt((imageIndex + 1) % imageCount);
+    preloadImageAt((imageIndex - 1 + imageCount) % imageCount);
+  };
   const startImageSwipe = (event: ReactTouchEvent<HTMLDivElement>) => {
     if (imageCount < 2 || event.touches.length !== 1) {
       swipeStart.current = null;
@@ -456,6 +468,16 @@ function ProductCard({
     }
     const touch = event.touches[0];
     swipeStart.current = { x: touch.clientX, y: touch.clientY };
+  };
+  const moveImageSwipe = (event: ReactTouchEvent<HTMLDivElement>) => {
+    const start = swipeStart.current;
+    const touch = event.touches[0];
+    if (!start || !touch || imageCount < 2) return;
+
+    const distanceX = touch.clientX - start.x;
+    const distanceY = touch.clientY - start.y;
+    if (Math.abs(distanceX) < 8 || Math.abs(distanceY) > Math.abs(distanceX)) return;
+    preloadImageAt((imageIndex + (distanceX < 0 ? 1 : imageCount - 1)) % imageCount);
   };
   const finishImageSwipe = (event: ReactTouchEvent<HTMLDivElement>) => {
     const start = swipeStart.current;
@@ -477,6 +499,7 @@ function ProductCard({
         <div
           className="product-gallery"
           onTouchStart={startImageSwipe}
+          onTouchMove={moveImageSwipe}
           onTouchEnd={finishImageSwipe}
           onTouchCancel={() => { swipeStart.current = null; }}
         >
@@ -485,6 +508,7 @@ function ProductCard({
               className="product-image"
               path={product.images[imageIndex] || product.images[0]}
               alt={`Umývadlo ${product.name}`}
+              onLoad={preloadAdjacentImages}
             />
           ) : (
             <div className="product-image-placeholder flex items-center justify-center h-full bg-[#3e5e60] text-[#eef0dd] text-xs font-mono tracking-widest">BEZ FOTOGRAFIE</div>
