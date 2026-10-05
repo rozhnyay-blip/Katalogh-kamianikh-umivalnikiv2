@@ -4,3 +4,4 @@
 - [Owner asset imports](owner-asset-imports.md) — imported photos must use the verified owner identity or the editor cannot later validate and manage them.
 - [API TypeScript tests](api-typescript-tests.md) — Node 24’s native TS stripping doesn’t resolve extensionless test imports; bundle them with the existing esbuild before `node --test`.
 - [Цільова аудиторія SKALA](premium-audience.md) — Дорогі умивальники з природного каменю орієнтовані на заможних покупців.
+- [Vite SEO metadata paths](vite-seo-metadata-paths.md) — Vite can prefix root-relative OG image and icon URLs with the artifact BASE_PATH during build.
