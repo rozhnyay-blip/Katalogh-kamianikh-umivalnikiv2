@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type TouchEvent as ReactTouchEvent } from 'react';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram, MessageCircle, Plus, ShoppingCart } from 'lucide-react';
 import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, getGetSiteContentQueryKey, useGetSiteContent, useUpdateSiteContent, type Product, type SiteContent } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -437,7 +437,7 @@ function ProductCard({
 }) {
   const [imageIndex, setImageIndex] = useState(0);
   const imageCount = Math.min(product.images.length, 10);
-  const swipeStart = useRef<{ x: number; y: number; pointerId: number } | null>(null);
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
   useEffect(() => {
     setImageIndex(0);
     swipeStart.current = null;
@@ -445,26 +445,28 @@ function ProductCard({
 
   const nextImage = () => setImageIndex((current) => (current + 1) % imageCount);
   const previousImage = () => setImageIndex((current) => (current - 1 + imageCount) % imageCount);
-  const startImageSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (
-      imageCount < 2 ||
-      !event.isPrimary ||
-      event.button !== 0 ||
-      (event.target as HTMLElement).closest('button, a, input')
-    ) return;
-    swipeStart.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
-    event.currentTarget.setPointerCapture(event.pointerId);
+  const startImageSwipe = (event: ReactTouchEvent<HTMLDivElement>) => {
+    if (imageCount < 2 || event.touches.length !== 1) {
+      swipeStart.current = null;
+      return;
+    }
+    if ((event.target as HTMLElement).closest('button, a, input')) {
+      swipeStart.current = null;
+      return;
+    }
+    const touch = event.touches[0];
+    swipeStart.current = { x: touch.clientX, y: touch.clientY };
   };
-  const finishImageSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
+  const finishImageSwipe = (event: ReactTouchEvent<HTMLDivElement>) => {
     const start = swipeStart.current;
     swipeStart.current = null;
-    if (!start || start.pointerId !== event.pointerId || imageCount < 2) return;
+    const touch = event.changedTouches[0];
+    if (!start || !touch || imageCount < 2) return;
 
-    const distanceX = event.clientX - start.x;
-    const distanceY = event.clientY - start.y;
-    if (Math.abs(distanceX) < 44 || Math.abs(distanceX) < Math.abs(distanceY) * 1.25) return;
+    const distanceX = touch.clientX - start.x;
+    const distanceY = touch.clientY - start.y;
+    if (Math.abs(distanceX) < 36 || Math.abs(distanceX) < Math.abs(distanceY) * 1.2) return;
 
-    event.preventDefault();
     if (distanceX < 0) nextImage();
     else previousImage();
   };
@@ -474,9 +476,9 @@ function ProductCard({
       <EditableProductMedia product={product} canEdit={canEdit}>
         <div
           className="product-gallery"
-          onPointerDown={startImageSwipe}
-          onPointerUp={finishImageSwipe}
-          onPointerCancel={() => { swipeStart.current = null; }}
+          onTouchStart={startImageSwipe}
+          onTouchEnd={finishImageSwipe}
+          onTouchCancel={() => { swipeStart.current = null; }}
         >
           {product.images.length > 0 ? (
             <ProductImage
