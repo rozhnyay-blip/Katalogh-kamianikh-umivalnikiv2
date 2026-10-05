@@ -24,8 +24,13 @@ export function applySeoMetadata(): void {
   const logoUrl = new URL(`${basePath || ''}/logo.svg`, siteOrigin).href;
 
   document.documentElement.lang = 'sk';
-  const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-  if (canonical) canonical.href = canonicalUrl;
+  let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement('link');
+    canonical.rel = 'canonical';
+    document.head.append(canonical);
+  }
+  canonical.href = canonicalUrl;
 
   setMeta('meta[property="og:url"]', canonicalUrl);
   setMeta('meta[property="og:image"]', socialImageUrl);
