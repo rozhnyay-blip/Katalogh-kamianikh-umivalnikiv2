@@ -3,3 +3,4 @@
 - [Mobile photo integrity](mobile-photo-integrity.md) — captured files need retry retention; adding photos must be an idempotent append, not a client-side list replacement.
 - [Owner asset imports](owner-asset-imports.md) — imported photos must use the verified owner identity or the editor cannot later validate and manage them.
 - [API TypeScript tests](api-typescript-tests.md) — Node 24’s native TS stripping doesn’t resolve extensionless test imports; bundle them with the existing esbuild before `node --test`.
+- [Цільова аудиторія SKALA](premium-audience.md) — Дорогі умивальники з природного каменю орієнтовані на заможних покупців.
