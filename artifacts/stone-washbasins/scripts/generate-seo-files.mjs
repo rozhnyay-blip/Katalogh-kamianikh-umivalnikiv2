@@ -52,7 +52,9 @@ html = html.replace(
   `<head>\n    <link rel="canonical" href="${siteUrl}" />\n    <meta property="og:url" content="${siteUrl}" />`,
 );
 html = html
-  .replaceAll('content="/images/og-skala.webp"', `content="${socialImageUrl}"`)
+  .replaceAll(`content="${basePath}/images/og-skala.webp"`, `content="${socialImageUrl}"`)
+  .replaceAll(`content="/images/og-skala.webp"`, `content="${socialImageUrl}"`)
+  .replaceAll(`href="${basePath}/logo.svg"`, `href="${logoUrl}"`)
   .replaceAll('href="/logo.svg"', `href="${logoUrl}"`);
 await Promise.all([
   writeFile(indexPath, html, 'utf8'),
