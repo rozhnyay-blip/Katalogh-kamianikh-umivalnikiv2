@@ -14,9 +14,9 @@ import { ContactDock } from '../components/ContactDock';
 import { AnalyticsConsent } from '../components/AnalyticsConsent';
 import { trackSiteEvent, trackSitePageView } from '../lib/analytics';
 import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
-import heroProductImage from '@assets/image_1789628614912.png';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
+const heroProductImage = `${basePath}/images/hero-basin.webp`;
 const CATALOG_BATCH_SIZE = 20;
 const MAX_CATALOG_PRODUCTS = 1000;
 
@@ -199,7 +199,15 @@ export function HomePage() {
             </div>
             <div className="hero-visual" aria-label={content.hero.visualAria}>
                <span className="hero-index">{content.hero.visualIndex}</span>
-               <img className="hero-product-image" src={heroProductImage} alt="" />
+                <img
+                  className="hero-product-image"
+                  src={heroProductImage}
+                  alt="Ručne opracované luxusné umývadlo z prírodného kameňa SKALA"
+                  width={1600}
+                  height={1183}
+                  loading="eager"
+                  fetchPriority="high"
+                />
                <div className="hero-stamp"><span>{content.hero.stampLine1}<br />{content.hero.stampLine2}<br />{content.hero.stampLine3}</span></div>
               <dl className="hero-product-details" aria-label="Informácie o umývadle">
                 <div><dt>Cena</dt><dd>{content.hero.price}</dd></div>
