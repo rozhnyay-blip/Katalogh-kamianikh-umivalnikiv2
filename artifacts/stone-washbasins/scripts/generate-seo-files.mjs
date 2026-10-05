@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 const configuredSiteUrl = process.env.VITE_PUBLIC_SITE_URL?.trim();
@@ -29,7 +29,19 @@ const robots = [
 ].join('\n');
 
 const publicDir = resolve(import.meta.dirname, '../dist/public');
+const indexPath = resolve(publicDir, 'index.html');
+let html = await readFile(indexPath, 'utf8');
+const socialImageUrl = new URL('/images/og-skala.webp', parsedUrl.origin).href;
+const logoUrl = new URL('/logo.svg', parsedUrl.origin).href;
+html = html.replace(
+  '<head>',
+  `<head>\n    <link rel="canonical" href="${siteUrl}" />\n    <meta property="og:url" content="${siteUrl}" />`,
+);
+html = html
+  .replaceAll('content="/images/og-skala.webp"', `content="${socialImageUrl}"`)
+  .replaceAll('href="/logo.svg"', `href="${logoUrl}"`);
 await Promise.all([
+  writeFile(indexPath, html, 'utf8'),
   writeFile(resolve(publicDir, 'sitemap.xml'), sitemap, 'utf8'),
   writeFile(resolve(publicDir, 'robots.txt'), robots, 'utf8'),
 ]);
