@@ -5,3 +5,4 @@
 - [API TypeScript tests](api-typescript-tests.md) — Node 24’s native TS stripping doesn’t resolve extensionless test imports; bundle them with the existing esbuild before `node --test`.
 - [Цільова аудиторія SKALA](premium-audience.md) — Дорогі умивальники з природного каменю орієнтовані на заможних покупців.
 - [Vite SEO metadata paths](vite-seo-metadata-paths.md) — Vite can prefix root-relative OG image and icon URLs with the artifact BASE_PATH during build.
+- [SEO fallback visibility](seo-fallback-visibility.md) — SKALA should not flash a visible SEO text panel before React mounts; keep SEO metadata separate.
