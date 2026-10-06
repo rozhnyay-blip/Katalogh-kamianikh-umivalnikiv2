@@ -1,6 +1,6 @@
 const siteDescription =
-  'Objavte luxusné umývadlá z prírodného kameňa SKALA. Ručne opracované solitéry pre výnimočné kúpeľne s jedinečným tvarom a kresbou. Vyberte si svoj kus.';
-const siteName = 'Luxusné kamenné umývadlá z prírodného kameňa | SKALA';
+  'Luxusné kamenné umývadlá SKALA z mramoru, granitu (žuly), labradoritu a pieskovca. Vyrábame aj na objednávku. Každý kus ručne opracujeme s dôrazom na detail.';
+const siteName = 'Kamenné umývadlá na objednávku z prírodného kameňa | SKALA';
 
 function setMeta(selector: string, value: string): void {
   const tag = document.querySelector<HTMLMetaElement>(selector);
@@ -24,6 +24,12 @@ export function applySeoMetadata(): void {
   const logoUrl = new URL(`${basePath || ''}/logo.svg`, siteOrigin).href;
 
   document.documentElement.lang = 'sk';
+  document.title = siteName;
+  setMeta('meta[name="description"]', siteDescription);
+  setMeta('meta[property="og:title"]', siteName);
+  setMeta('meta[property="og:description"]', siteDescription);
+  setMeta('meta[name="twitter:title"]', siteName);
+  setMeta('meta[name="twitter:description"]', siteDescription);
   let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
   if (!canonical) {
     canonical = document.createElement('link');
@@ -46,7 +52,8 @@ export function applySeoMetadata(): void {
           '@id': `${canonicalUrl}#organization`,
           name: 'SKALA',
           url: canonicalUrl,
-          description: 'Ručne opracované luxusné umývadlá z prírodného kameňa.',
+          description:
+            'Luxusné kamenné umývadlá SKALA z mramoru, granitu (žuly), labradoritu a pieskovca. Vyrábame aj na objednávku.',
           logo: logoUrl,
           sameAs: ['https://www.instagram.com/skala_sk_/'],
         },
