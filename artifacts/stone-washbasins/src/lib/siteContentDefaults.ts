@@ -44,8 +44,8 @@ export const SITE_CONTENT_DEFAULTS: SiteContent = {
   },
   catalog: {
     eyebrow: '02 / hotové tvary',
-    titleLead: 'Vyberte si svoj',
-    titleEmphasis: 'solitér.',
+    titleLead: 'Vyberte si svoje',
+    titleEmphasis: 'umývadlo.',
     intro: 'Každé umývadlo SKALA je ručne opracovaný originál z prírodného kameňa. Objavte solitéry pre výnimočné kúpeľne.',
     ownerToolbarTitle: 'Vaše fotografie, priamo v katalógu',
     ownerToolbarHelp: 'Podržte prst na fotografii alebo klepnite na Pridať fotografiu.',
