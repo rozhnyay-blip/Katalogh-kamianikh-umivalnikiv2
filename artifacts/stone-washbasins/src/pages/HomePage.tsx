@@ -245,6 +245,9 @@ export function HomePage() {
               <div>
                  <span className="eyebrow">{content.catalog.eyebrow}</span>
                  <h2 className="display catalog-title">{content.catalog.titleLead}<br /><em>{content.catalog.titleEmphasis}</em></h2>
+                  <p className="catalog-materials-note">
+                    V ponuke SKALA nájdete kamenné umývadlá z mramoru, granitu (žuly), labradoritu a pieskovca. Každý kus má osobitú kresbu prírodného kameňa. Vyrábame aj na objednávku.
+                  </p>
               </div>
                <p className="catalog-intro">{content.catalog.intro}</p>
             </div>
