@@ -34,8 +34,6 @@ app.use((_req, res, next) => {
   next();
 });
 
-app.use("/api", apiRateLimiter);
-
 app.use(
   pinoHttp({
     logger,
@@ -55,6 +53,8 @@ app.use(
     },
   }),
 );
+
+app.use("/api", apiRateLimiter);
 
 // The Clerk proxy streams raw bytes and must be mounted before body parsers.
 app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
