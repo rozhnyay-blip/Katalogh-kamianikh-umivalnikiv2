@@ -35,6 +35,7 @@ import { composeProductSubtitle, parseProductDetails } from '../lib/productDetai
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 const MAX_CATALOG_PRODUCTS = 1000;
+const PRODUCT_MATERIAL_OPTIONS = ['Granit', 'Mramor', 'Pieskovec', 'Labradorit'];
 
 function getImageUrl(path: string) {
   return `${basePath}/api/storage${path}`;
@@ -674,6 +675,12 @@ function ProductEditor({ product, ownerId, onClose }: {
     setError('');
   };
 
+  const selectedStandardMaterial = PRODUCT_MATERIAL_OPTIONS.find(
+    (material) => material.toLocaleLowerCase('sk') === form.material.trim().toLocaleLowerCase('sk'),
+  );
+  const materialSelectValue = selectedStandardMaterial ?? form.material.trim();
+  const legacyMaterial = selectedStandardMaterial || !form.material.trim() ? '' : form.material.trim();
+
   return (
     <div ref={modalRef} className="admin-card">
       <div className="flex justify-between items-center mb-6">
@@ -706,7 +713,11 @@ function ProductEditor({ product, ownerId, onClose }: {
           </div>
           <div className="field">
             <label htmlFor="product-material">Materiál</label>
-            <input id="product-material" maxLength={500} type="text" placeholder="Napr. prírodný kameň alebo granit" value={form.material} onChange={e => handleField('material', e.target.value)} disabled={isSaving || isUploading} />
+            <select id="product-material" value={materialSelectValue} onChange={e => handleField('material', e.target.value)} disabled={isSaving || isUploading}>
+              <option value="">Vyberte materiál</option>
+              {PRODUCT_MATERIAL_OPTIONS.map((material) => <option key={material} value={material}>{material}</option>)}
+              {legacyMaterial && <option value={legacyMaterial}>{legacyMaterial} (pôvodný údaj)</option>}
+            </select>
           </div>
           <div className="field">
             <label htmlFor="product-dimensions">Rozmery</label>
