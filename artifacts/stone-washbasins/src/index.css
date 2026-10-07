@@ -381,8 +381,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .order-form { padding-top:25px; display:grid; gap:16px; }
 .field { display:grid; gap:7px; }
 .field label { font: .62rem var(--app-font-mono); letter-spacing:.09em; text-transform:uppercase; }
-.field input { border:0; border-bottom:1px solid hsl(var(--border)); background:transparent; color:hsl(var(--foreground)); border-radius:0; padding:10px 0; outline:0; font-size:.88rem; }
-.field input:focus { border-bottom-color:hsl(var(--primary)); }
+.field input, .field select { width:100%; border:0; border-bottom:1px solid hsl(var(--border)); background:transparent; color:hsl(var(--foreground)); border-radius:0; padding:10px 0; outline:0; font-size:.88rem; }
+.field input:focus, .field select:focus { border-bottom-color:hsl(var(--primary)); }
 .field textarea { width:100%; min-height:100px; resize:vertical; border:1px solid hsl(var(--border)); border-radius:8px; background:transparent; color:hsl(var(--foreground)); padding:11px 12px; outline:0; font: .82rem/1.55 var(--app-font-sans); }
 .field textarea:focus { border-color:hsl(var(--primary)); }
 .field-error { color:hsl(var(--destructive)); font-size:.66rem; }
