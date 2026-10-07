@@ -14,6 +14,7 @@ import { ContactDock } from '../components/ContactDock';
 import { AnalyticsConsent } from '../components/AnalyticsConsent';
 import { trackSiteEvent, trackSitePageView } from '../lib/analytics';
 import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
+import { formatProductDetailLines } from '../lib/productDetails';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 const heroProductImage = `${basePath}/images/hero-basin.webp`;
@@ -590,14 +591,6 @@ function ProductCard({
       </div>
     </article>
   );
-}
-
-function formatProductDetailLines(subtitle: string): string[] {
-  return subtitle
-    .replace(/\s+(?=(?:Vonkajšie|Vonkajsie|Vnútorné|Vnutorne|Hmotnosť|Hmotnost|Rozmery|Materiál|Material|Strana|Priemer|Výška|Vyska|Šírka|Sirka|Hĺbka|Hlbka)(?::|：|\s|$))/giu, '\n')
-    .split(/\n+|\s*[·•|]\s*/u)
-    .map((line) => line.trim())
-    .filter(Boolean);
 }
 
 type CartEntry = { id: number; product: Product | null };
