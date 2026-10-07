@@ -734,7 +734,7 @@ function ProductEditor({ product, ownerId, onClose }: {
           <div className="grid grid-cols-2 gap-4">
             <div className="field">
               <label htmlFor="product-kind">Kolekcia alebo typ</label>
-              <input id="product-kind" maxLength={200} type="text" value={form.kind} onChange={e => handleField('kind', e.target.value)} required disabled={isSaving || isUploading} />
+              <input id="product-kind" maxLength={200} type="text" value={form.kind} onChange={e => handleField('kind', e.target.value)} placeholder="Umývadlá, Batérie, Dávkovače mydla alebo Doplnky" required disabled={isSaving || isUploading} />
             </div>
             <div className="field">
               <label htmlFor="product-price">Cena v EUR (so znakom €)</label>

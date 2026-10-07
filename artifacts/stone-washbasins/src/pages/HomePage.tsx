@@ -21,6 +21,58 @@ const heroProductImage = `${basePath}/images/hero-basin.webp`;
 const CATALOG_BATCH_SIZE = 20;
 const MAX_CATALOG_PRODUCTS = 1000;
 
+const CATALOG_CATEGORIES = [
+  {
+    id: 'washbasins',
+    label: 'Umývadlá',
+    detail: 'Kamenné solitéry',
+    terms: ['umyvad', 'washbasin', 'basin', 'sink'],
+  },
+  {
+    id: 'faucets',
+    label: 'Batérie',
+    detail: 'Kúpeľňové batérie',
+    terms: ['bateri', 'kohutik', 'vodovodna bateria', 'faucet', 'tap'],
+  },
+  {
+    id: 'dispensers',
+    label: 'Dávkovače mydla',
+    detail: 'Doplnky k umývadlu',
+    terms: ['davkovac', 'dispenser', 'soap', 'mydl'],
+  },
+  {
+    id: 'accessories',
+    label: 'Doplnky',
+    detail: 'Mlynčeky a poháre na zubné kefky',
+    terms: ['doplnk', 'mlyncek', 'pohar', 'zubn', 'kefk', 'toothbrush'],
+  },
+] as const;
+
+type CatalogCategoryId = (typeof CATALOG_CATEGORIES)[number]['id'];
+
+function normalizeCatalogText(value: string): string {
+  return value
+    .toLocaleLowerCase('sk')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function matchesCatalogCategory(product: Product, categoryId: CatalogCategoryId): boolean {
+  const searchableText = normalizeCatalogText(`${product.name} ${product.subtitle} ${product.kind}`);
+  const category = CATALOG_CATEGORIES.find((item) => item.id === categoryId);
+  if (!category) return true;
+
+  if (categoryId === 'washbasins') {
+    const otherCategories = CATALOG_CATEGORIES.filter((item) => item.id !== 'washbasins');
+    const isAccessory = otherCategories.some((item) =>
+      item.terms.some((term) => searchableText.includes(normalizeCatalogText(term))),
+    );
+    return !isAccessory || category.terms.some((term) => searchableText.includes(normalizeCatalogText(term)));
+  }
+
+  return category.terms.some((term) => searchableText.includes(normalizeCatalogText(term)));
+}
+
 function readStoredIds(key: string): number[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -61,9 +113,17 @@ export function HomePage() {
   const [cartOpen, setCartOpen] = useState(false);
   const [heroOrderOpen, setHeroOrderOpen] = useState(false);
   const [visibleProductCount, setVisibleProductCount] = useState(CATALOG_BATCH_SIZE);
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
+  const [activeCatalogCategory, setActiveCatalogCategory] = useState<CatalogCategoryId | null>(null);
+  const categoryPickerRef = useRef<HTMLDivElement>(null);
+  const categoryTriggerRef = useRef<HTMLButtonElement>(null);
 
   const { data: products = [], isLoading, isError, refetch } = useListProducts();
-  const visibleProducts = products.slice(0, visibleProductCount);
+  const activeCategory = CATALOG_CATEGORIES.find((category) => category.id === activeCatalogCategory);
+  const catalogProducts = activeCatalogCategory
+    ? products.filter((product) => matchesCatalogCategory(product, activeCatalogCategory))
+    : products;
+  const visibleProducts = catalogProducts.slice(0, visibleProductCount);
   const cartItems = cartIds.map((id) => ({
     id,
     product: products.find((product) => product.id === id) ?? null,
@@ -97,6 +157,42 @@ export function HomePage() {
     const timeout = window.setTimeout(() => setSavedNotice(''), 2400);
     return () => window.clearTimeout(timeout);
   }, [savedNotice]);
+
+  useEffect(() => {
+    if (!categoryMenuOpen) return;
+
+    const closeOnOutsidePress = (event: PointerEvent) => {
+      if (event.target instanceof Node && !categoryPickerRef.current?.contains(event.target)) {
+        setCategoryMenuOpen(false);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setCategoryMenuOpen(false);
+      categoryTriggerRef.current?.focus();
+    };
+
+    document.addEventListener('pointerdown', closeOnOutsidePress);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsidePress);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [categoryMenuOpen]);
+
+  const selectCatalogCategory = (categoryId: CatalogCategoryId) => {
+    setActiveCatalogCategory(categoryId);
+    setVisibleProductCount(CATALOG_BATCH_SIZE);
+    setCategoryMenuOpen(false);
+    window.requestAnimationFrame(() => {
+      document.getElementById('katalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
+  const showAllCatalogProducts = () => {
+    setActiveCatalogCategory(null);
+    setVisibleProductCount(CATALOG_BATCH_SIZE);
+  };
 
   const toggleSaved = (product: Product) => {
     const isSaved = savedIds.includes(product.id);
@@ -193,8 +289,39 @@ export function HomePage() {
                <span className="eyebrow">{content.hero.eyebrow}</span>
                <h1 className="display hero-title">{content.hero.titleLead}<br />{content.hero.titleMiddle} <em>{content.hero.titleEmphasis}</em></h1>
                <p className="hero-lede">{content.hero.lede}</p>
-              <div className="hero-actions">
-                 <a className="button-primary" href="#katalog">{content.hero.primaryCta} <ChevronDown size={15} /></a>
+               <div className="hero-actions">
+                  <div className={`hero-category-picker ${categoryMenuOpen ? 'is-open' : ''}`} ref={categoryPickerRef}>
+                    <button
+                      className="button-primary hero-category-trigger"
+                      type="button"
+                      ref={categoryTriggerRef}
+                      aria-expanded={categoryMenuOpen}
+                      aria-controls="hero-category-menu"
+                      onClick={() => setCategoryMenuOpen((open) => !open)}
+                    >
+                      {content.hero.primaryCta}
+                      <ChevronDown className={categoryMenuOpen ? 'is-rotated' : ''} size={15} aria-hidden="true" />
+                    </button>
+                    {categoryMenuOpen && (
+                      <div className="hero-category-menu" id="hero-category-menu" role="group" aria-label="Vybrať kategóriu">
+                        {CATALOG_CATEGORIES.map((category) => (
+                          <button
+                            className="hero-category-option"
+                            key={category.id}
+                            type="button"
+                            aria-pressed={activeCatalogCategory === category.id}
+                            onClick={() => selectCatalogCategory(category.id)}
+                          >
+                            <span className="hero-category-option-copy">
+                              <strong>{category.label}</strong>
+                              <small>{category.detail}</small>
+                            </span>
+                            <ArrowRight size={15} aria-hidden="true" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                  <a className="button-quiet" href="#pribeh">{content.hero.secondaryCta}</a>
               </div>
             </div>
@@ -256,6 +383,13 @@ export function HomePage() {
                <div><strong>{content.catalog.ownerToolbarTitle}</strong><p>{content.catalog.ownerToolbarHelp}</p></div>
             </div>}
 
+            {activeCategory && (
+              <div className="catalog-active-filter" aria-live="polite">
+                <span>Zvolená kategória: <strong>{activeCategory.label}</strong></span>
+                <button type="button" onClick={showAllCatalogProducts}>Zobraziť všetky produkty</button>
+              </div>
+            )}
+
             {isLoading ? (
               <div className="catalog-status">
                 <p>Načítavam katalóg...</p>
@@ -265,9 +399,10 @@ export function HomePage() {
                 <p>Nepodarilo sa načítať katalóg.</p>
                 <button className="button-quiet" onClick={() => refetch()}>Skúsiť znova</button>
               </div>
-            ) : products.length === 0 ? (
+            ) : catalogProducts.length === 0 ? (
               <div className="catalog-status">
-                 <p>{content.catalog.emptyMessage}</p>
+                 <p>{activeCategory ? `V kategórii ${activeCategory.label} zatiaľ nie sú produkty.` : content.catalog.emptyMessage}</p>
+                 {activeCategory && <button className="button-quiet" type="button" onClick={showAllCatalogProducts}>Zobraziť všetky produkty</button>}
               </div>
             ) : (
               <div className="catalog-grid">
@@ -284,7 +419,7 @@ export function HomePage() {
                 ))}
               </div>
             )}
-            {!isLoading && !isError && visibleProductCount < MAX_CATALOG_PRODUCTS && products.length > visibleProducts.length && (
+            {!isLoading && !isError && visibleProductCount < MAX_CATALOG_PRODUCTS && catalogProducts.length > visibleProducts.length && (
               <button
                 className="catalog-show-more"
                 type="button"
@@ -293,7 +428,7 @@ export function HomePage() {
                   setVisibleProductCount((count) => Math.min(count + CATALOG_BATCH_SIZE, MAX_CATALOG_PRODUCTS));
                 }}
               >
-                Zobraziť ďalších {Math.min(CATALOG_BATCH_SIZE, products.length - visibleProducts.length)} inzerátov
+                Zobraziť ďalších {Math.min(CATALOG_BATCH_SIZE, catalogProducts.length - visibleProducts.length)} produktov
               </button>
             )}
             {canEdit && !isLoading && !isError && (
