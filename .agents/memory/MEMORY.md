@@ -6,3 +6,4 @@
 - [Цільова аудиторія SKALA](premium-audience.md) — Дорогі умивальники з природного каменю орієнтовані на заможних покупців.
 - [Vite SEO metadata paths](vite-seo-metadata-paths.md) — Vite can prefix root-relative OG image and icon URLs with the artifact BASE_PATH during build.
 - [SEO fallback visibility](seo-fallback-visibility.md) — SKALA should not flash a visible SEO text panel before React mounts; keep SEO metadata separate.
+- [Admin product drafts](admin-product-drafts.md) — new-product drafts are browser-local and owner-scoped; don't treat them as saved catalog data.

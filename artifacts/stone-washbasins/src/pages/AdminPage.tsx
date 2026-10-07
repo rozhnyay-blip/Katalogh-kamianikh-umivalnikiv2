@@ -31,6 +31,7 @@ import {
   saveNewProductDraft,
   type ProductEditorForm,
 } from '../lib/productDraft';
+import { composeProductSubtitle, parseProductDetails } from '../lib/productDetails';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 const MAX_CATALOG_PRODUCTS = 1000;
@@ -501,11 +502,11 @@ function ProductEditor({ product, ownerId, onClose }: {
   const [form, setForm] = useState<ProductEditorForm>(() => product
     ? {
         name: product.name,
-        subtitle: product.subtitle,
         price: product.price,
         kind: product.kind,
         available: product.available,
         images: [...product.images],
+        ...parseProductDetails(product.subtitle),
       }
     : restoredDraft?.form ?? createEmptyProductForm());
   const [error, setError] = useState('');
@@ -570,8 +571,17 @@ function ProductEditor({ product, ownerId, onClose }: {
     if (isSaving || isUploading) return;
     setError('');
 
-    if (!form.name || !form.subtitle || !form.price || !form.kind) {
-      setError('Všetky textové polia musia byť vyplnené.');
+    if (!form.name.trim() || !form.price.trim() || !form.kind.trim()) {
+      setError('Vyplňte názov, kolekciu alebo typ a cenu.');
+      return;
+    }
+    const subtitle = composeProductSubtitle(form);
+    if (!subtitle) {
+      setError('Vyplňte aspoň jeden údaj: materiál, rozmery, hmotnosť alebo ďalšie informácie.');
+      return;
+    }
+    if (subtitle.length > 500) {
+      setError('Súhrn údajov o produkte môže mať najviac 500 znakov.');
       return;
     }
     if (form.images.length === 0) {
@@ -581,7 +591,7 @@ function ProductEditor({ product, ownerId, onClose }: {
 
     const payload = {
       name: form.name,
-      subtitle: form.subtitle,
+      subtitle,
       price: form.price,
       kind: form.kind,
       available: form.available,
@@ -695,8 +705,20 @@ function ProductEditor({ product, ownerId, onClose }: {
             <input id="product-name" maxLength={200} type="text" value={form.name} onChange={e => handleField('name', e.target.value)} required disabled={isSaving || isUploading} />
           </div>
           <div className="field">
-            <label htmlFor="product-subtitle">Materiál, rozmery a hmotnosť</label>
-            <input id="product-subtitle" maxLength={500} type="text" placeholder="Napr. prírodný kameň · 56 × 32 × 13 cm · 40 kg" value={form.subtitle} onChange={e => handleField('subtitle', e.target.value)} required disabled={isSaving || isUploading} />
+            <label htmlFor="product-material">Materiál</label>
+            <input id="product-material" maxLength={500} type="text" placeholder="Napr. prírodný kameň alebo granit" value={form.material} onChange={e => handleField('material', e.target.value)} disabled={isSaving || isUploading} />
+          </div>
+          <div className="field">
+            <label htmlFor="product-dimensions">Rozmery</label>
+            <input id="product-dimensions" maxLength={500} type="text" placeholder="Napr. 56 × 32 × 13 cm" value={form.dimensions} onChange={e => handleField('dimensions', e.target.value)} disabled={isSaving || isUploading} />
+          </div>
+          <div className="field">
+            <label htmlFor="product-weight">Hmotnosť</label>
+            <input id="product-weight" maxLength={500} type="text" placeholder="Napr. 40 kg" value={form.weight} onChange={e => handleField('weight', e.target.value)} disabled={isSaving || isUploading} />
+          </div>
+          <div className="field">
+            <label htmlFor="product-additional-details">Ďalšie informácie (nepovinné)</label>
+            <input id="product-additional-details" maxLength={500} type="text" placeholder="Napr. vnútorné rozmery alebo skladom" value={form.additionalDetails} onChange={e => handleField('additionalDetails', e.target.value)} disabled={isSaving || isUploading} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="field">
