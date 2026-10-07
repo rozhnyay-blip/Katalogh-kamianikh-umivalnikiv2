@@ -15,6 +15,23 @@ import { API_ERRORS, logFailure } from "./lib/errors";
 const app: Express = express();
 // The service is reached through the shared reverse proxy, not directly.
 app.set("trust proxy", 1);
+app.disable("x-powered-by");
+
+const apiRateLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: API_ERRORS.tooManyRequests },
+});
+
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  next();
+});
 
 app.use(
   pinoHttp({
@@ -58,6 +75,7 @@ app.use(
 
 app.use(sameOriginUnsafeRequests);
 
+app.use("/api", apiRateLimiter);
 app.use("/api", router);
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: API_ERRORS.notFound });
