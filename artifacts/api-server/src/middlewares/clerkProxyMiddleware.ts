@@ -25,6 +25,7 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 
 const CLERK_FAPI = "https://frontend-api.clerk.dev";
 export const CLERK_PROXY_PATH = "/api/__clerk";
+const MAX_BUFFERED_CLERK_RESPONSE_BYTES = 2 * 1024 * 1024;
 
 /**
  * Returns the first effective public hostname for the given request,
@@ -65,6 +66,7 @@ export function clerkProxyMiddleware(): RequestHandler {
   return createProxyMiddleware({
     target: CLERK_FAPI,
     changeOrigin: true,
+    proxyTimeout: 30_000,
     // Take over the response so it can be re-sent with a Content-Length (see
     // proxyRes); the deployment edge rejects chunked proxied responses.
     selfHandleResponse: true,
@@ -124,14 +126,31 @@ export function clerkProxyMiddleware(): RequestHandler {
         }
 
         const chunks: Buffer[] = [];
-        proxyRes.on("data", (chunk: Buffer) => chunks.push(chunk));
+        let bufferedBytes = 0;
+        let responseTooLarge = false;
+        proxyRes.on("data", (chunk: Buffer) => {
+          if (responseTooLarge) return;
+          bufferedBytes += chunk.length;
+          if (bufferedBytes > MAX_BUFFERED_CLERK_RESPONSE_BYTES) {
+            responseTooLarge = true;
+            proxyRes.destroy();
+            if (!res.headersSent) {
+              res.writeHead(502, { "content-length": "0" });
+            }
+            res.end();
+            return;
+          }
+          chunks.push(chunk);
+        });
         proxyRes.on("end", () => {
+          if (responseTooLarge) return;
           const body = Buffer.concat(chunks);
           headers["content-length"] = String(body.length);
           res.writeHead(status, headers);
           res.end(body);
         });
         proxyRes.on("error", () => {
+          if (responseTooLarge) return;
           if (!res.headersSent) {
             // Set a length so the empty 502 isn't sent chunked (which would
             // reject it at the deployment edge just like the original response).
