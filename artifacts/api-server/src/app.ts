@@ -1,4 +1,5 @@
 import express, { type Express } from "express";
+import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
@@ -32,6 +33,8 @@ app.use((_req, res, next) => {
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   next();
 });
+
+app.use("/api", apiRateLimiter);
 
 app.use(
   pinoHttp({
@@ -75,7 +78,6 @@ app.use(
 
 app.use(sameOriginUnsafeRequests);
 
-app.use("/api", apiRateLimiter);
 app.use("/api", router);
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: API_ERRORS.notFound });
