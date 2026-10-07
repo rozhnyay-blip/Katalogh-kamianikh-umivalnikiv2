@@ -160,3 +160,11 @@ overrides:
   esbuild: "0.28.2"
   # orval pins js-yaml to an exact version older than the CVE fix (>=4.3.2)
   js-yaml: '4.3.2'
+  # Security fixes for vulnerable transitive dependency ranges.
+  proxy-addr: 2.0.8
+  brace-expansion: 5.0.12
+  fast-uri: 3.1.8
+  source-map-js: 1.2.2
+  postcss-selector-parser: 7.1.6
+  # gaxios only calls uuid.v4(); v11 preserves the CommonJS API it uses.
+  uuid: 11.1.1
