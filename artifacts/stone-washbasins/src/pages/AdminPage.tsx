@@ -24,6 +24,13 @@ import { usePhotoUpload } from '../hooks/usePhotoUpload';
 import { PhotoPickerSheet } from '../components/PhotoPickerSheet';
 import { ProductImage } from '../components/ProductImage';
 import { AnalyticsDashboard } from '../components/AnalyticsDashboard';
+import {
+  createEmptyProductForm,
+  readNewProductDraft,
+  removeNewProductDraft,
+  saveNewProductDraft,
+  type ProductEditorForm,
+} from '../lib/productDraft';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 const MAX_CATALOG_PRODUCTS = 1000;
@@ -33,7 +40,7 @@ function getImageUrl(path: string) {
 }
 
 export function AdminPage() {
-  const { isLoaded } = useAuth();
+  const { isLoaded, userId } = useAuth();
   const { data: status, isPending: statusLoading, isError: statusError, refetch: retryStatus } = useGetOwnerStatus({
     query: {
       enabled: isLoaded,
@@ -108,6 +115,7 @@ export function AdminPage() {
         {(editingProduct || isAdding) ? (
           <ProductEditor 
             product={editingProduct} 
+            ownerId={userId ?? null}
             onClose={() => { setEditingProduct(null); setIsAdding(false); }} 
           />
         ) : (
@@ -483,17 +491,28 @@ function ContentField({ label, value, onChange, multiline = false, type = 'text'
   );
 }
 
-function ProductEditor({ product, onClose }: { product: Product | null, onClose: () => void }) {
-  const [form, setForm] = useState({
-    name: product?.name || '',
-    subtitle: product?.subtitle || '',
-    price: product?.price || '',
-    kind: product?.kind || '',
-    available: product?.available ?? true,
-    images: product?.images || []
-  });
+function ProductEditor({ product, ownerId, onClose }: {
+  product: Product | null;
+  ownerId: string | null;
+  onClose: () => void;
+}) {
+  const draftOwnerId = product ? null : ownerId;
+  const [restoredDraft] = useState(() => draftOwnerId ? readNewProductDraft(draftOwnerId) : null);
+  const [form, setForm] = useState<ProductEditorForm>(() => product
+    ? {
+        name: product.name,
+        subtitle: product.subtitle,
+        price: product.price,
+        kind: product.kind,
+        available: product.available,
+        images: [...product.images],
+      }
+    : restoredDraft?.form ?? createEmptyProductForm());
   const [error, setError] = useState('');
   const [draggedImageIndex, setDraggedImageIndex] = useState<number | null>(null);
+  const [draftTouched, setDraftTouched] = useState(Boolean(restoredDraft));
+  const [draftWasRestored, setDraftWasRestored] = useState(Boolean(restoredDraft));
+  const [draftStorageError, setDraftStorageError] = useState(false);
   
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
@@ -501,14 +520,49 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
   const [pickerOpen, setPickerOpen] = useState(false);
   const isUploading = Boolean(uploadProgress);
   const modalRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef(form);
+  const draftTouchedRef = useRef(draftTouched);
+  formRef.current = form;
+  draftTouchedRef.current = draftTouched;
 
   const isSaving = createProduct.isPending || updateProduct.isPending;
   useFocusScope(modalRef, onClose, isUploading || isSaving, !pickerOpen);
   const openPicker = () => { if (!isSaving && !isUploading) { clearError(); setPickerOpen(true); } };
   const photoPress = useLongPress(openPicker, !isSaving && !isUploading);
 
-  const handleField = (field: string, value: string | boolean) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+  useEffect(() => {
+    if (!draftOwnerId || !draftTouched) return;
+    setDraftStorageError(saveNewProductDraft(draftOwnerId, form) === null);
+  }, [draftOwnerId, draftTouched, form]);
+
+  useEffect(() => {
+    if (!draftOwnerId) return;
+    const saveBeforeLeaving = () => {
+      if (draftTouchedRef.current) saveNewProductDraft(draftOwnerId, formRef.current);
+    };
+    const saveWhenHidden = () => {
+      if (document.visibilityState === 'hidden') saveBeforeLeaving();
+    };
+    window.addEventListener('pagehide', saveBeforeLeaving);
+    document.addEventListener('visibilitychange', saveWhenHidden);
+    return () => {
+      window.removeEventListener('pagehide', saveBeforeLeaving);
+      document.removeEventListener('visibilitychange', saveWhenHidden);
+    };
+  }, [draftOwnerId]);
+
+  const updateForm = (update: (current: ProductEditorForm) => ProductEditorForm) => {
+    const next = update(formRef.current);
+    formRef.current = next;
+    setForm(next);
+    if (draftOwnerId) {
+      draftTouchedRef.current = true;
+      setDraftTouched(true);
+    }
+  };
+
+  const handleField = <K extends keyof ProductEditorForm>(field: K, value: ProductEditorForm[K]) => {
+    updateForm(current => ({ ...current, [field]: value }));
   };
 
   const handleSave = (e: React.FormEvent) => {
@@ -555,6 +609,10 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
       createProduct.mutate({ data: payload }, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
+          if (draftOwnerId) {
+            removeNewProductDraft(draftOwnerId);
+            draftTouchedRef.current = false;
+          }
           onClose();
         },
         onError: (err) => setError(extractError(err))
@@ -564,12 +622,14 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
 
   const handleFiles = async (files: File[]) => {
     const result = await upload(files, 10 - form.images.length);
-    setForm(prev => ({ ...prev, images: [...prev.images, ...result.paths] }));
+    if (result.paths.length) {
+      updateForm(prev => ({ ...prev, images: [...prev.images, ...result.paths] }));
+    }
     if (!result.failed) setPickerOpen(false);
   };
 
   const removeImage = (index: number) => {
-    setForm(prev => {
+    updateForm(prev => {
       const copy = [...prev.images];
       copy.splice(index, 1);
       return { ...prev, images: copy };
@@ -578,7 +638,7 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
 
   const moveImage = (fromIndex: number, toIndex: number) => {
     if (fromIndex === toIndex || toIndex < 0 || toIndex >= form.images.length) return;
-    setForm(prev => {
+    updateForm(prev => {
       const copy = [...prev.images];
       const [item] = copy.splice(fromIndex, 1);
       copy.splice(toIndex, 0, item);
@@ -588,12 +648,45 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
 
   const setAsCover = (index: number) => moveImage(index, 0);
 
+  const discardDraft = () => {
+    if (!draftOwnerId || !window.confirm('Naozaj chcete zahodiť tento koncept? Údaje a odkazy na fotografie sa odstránia z tohto prehliadača; už nahraté fotografie zostanú v úložisku.')) return;
+    if (!removeNewProductDraft(draftOwnerId)) {
+      setDraftStorageError(true);
+      return;
+    }
+    const emptyForm = createEmptyProductForm();
+    formRef.current = emptyForm;
+    draftTouchedRef.current = false;
+    setForm(emptyForm);
+    setDraftTouched(false);
+    setDraftWasRestored(false);
+    setDraftStorageError(false);
+    setError('');
+  };
+
   return (
     <div ref={modalRef} className="admin-card">
       <div className="flex justify-between items-center mb-6">
         <h2 className="admin-title text-2xl">{product ? 'Upraviť produkt' : 'Pridať nový produkt'}</h2>
         <button className="modal-close relative" aria-label="Zavrieť editor" onClick={onClose} disabled={isSaving || isUploading}><X size={20} /></button>
       </div>
+
+      {!product && (
+        <div className="mb-5">
+          <p role="status" className="text-sm text-muted-foreground">
+            {draftStorageError
+              ? 'Koncept sa nepodarilo uložiť v tomto prehliadači.'
+              : draftWasRestored
+                ? 'Obnovený koncept. Zmeny sa priebežne ukladajú v tomto prehliadači.'
+                : 'Rozpracovaný produkt sa priebežne ukladá v tomto prehliadači.'}
+          </p>
+          {draftTouched && (
+            <button type="button" className="button-quiet mt-3" onClick={discardDraft} disabled={isSaving || isUploading}>
+              Zahodiť koncept
+            </button>
+          )}
+        </div>
+      )}
 
       <form onSubmit={handleSave} className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-6">
@@ -710,7 +803,7 @@ function ProductEditor({ product, onClose }: { product: Product | null, onClose:
         <div className="col-span-1 md:col-span-2 pt-4 border-t border-border flex items-center justify-between">
           {error ? <span className="text-destructive text-sm">{error}</span> : <div></div>}
           <div className="flex gap-4">
-            <button type="button" className="button-quiet" onClick={onClose} disabled={isSaving || isUploading}>Zrušiť</button>
+            <button type="button" className="button-quiet" onClick={onClose} disabled={isSaving || isUploading}>{product ? 'Zrušiť' : 'Odložiť'}</button>
             <button type="submit" className="button-primary" disabled={isSaving || isUploading}>
               {isSaving ? 'Ukladám...' : 'Uložiť produkt'}
             </button>
