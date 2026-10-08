@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type TouchEvent as ReactTouchEvent } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, X, Instagram, MessageCircle, Plus, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Heart, Menu, X, Instagram, MessageCircle, Plus, ShoppingCart } from 'lucide-react';
 import { useListProducts, useCreateOrder, useGetOwnerStatus, getGetOwnerStatusQueryKey, getGetSiteContentQueryKey, useGetSiteContent, useUpdateSiteContent, type Product, type SiteContent } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@clerk/react';
@@ -86,9 +86,12 @@ export function HomePage() {
   const [heroOrderOpen, setHeroOrderOpen] = useState(false);
   const [visibleProductCount, setVisibleProductCount] = useState(CATALOG_BATCH_SIZE);
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
+  const [toplineMenuOpen, setToplineMenuOpen] = useState(false);
   const [activeCatalogCategory, setActiveCatalogCategory] = useState<CatalogCategoryId | null>(null);
   const categoryPickerRef = useRef<HTMLDivElement>(null);
   const categoryTriggerRef = useRef<HTMLButtonElement>(null);
+  const toplineRef = useRef<HTMLDivElement>(null);
+  const toplineMenuTriggerRef = useRef<HTMLButtonElement>(null);
 
   const { data: products = [], isLoading, isError, refetch } = useListProducts();
   const activeCategory = CATALOG_CATEGORIES.find((category) => category.id === activeCatalogCategory);
@@ -152,10 +155,33 @@ export function HomePage() {
     };
   }, [categoryMenuOpen]);
 
+  useEffect(() => {
+    if (!toplineMenuOpen) return;
+
+    const closeOnOutsidePress = (event: PointerEvent) => {
+      if (event.target instanceof Node && !toplineRef.current?.contains(event.target)) {
+        setToplineMenuOpen(false);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setToplineMenuOpen(false);
+      toplineMenuTriggerRef.current?.focus();
+    };
+
+    document.addEventListener('pointerdown', closeOnOutsidePress);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsidePress);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [toplineMenuOpen]);
+
   const selectCatalogCategory = (categoryId: CatalogCategoryId) => {
     setActiveCatalogCategory(categoryId);
     setVisibleProductCount(CATALOG_BATCH_SIZE);
     setCategoryMenuOpen(false);
+    setToplineMenuOpen(false);
     window.requestAnimationFrame(() => {
       document.getElementById('katalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
@@ -176,6 +202,7 @@ export function HomePage() {
   };
 
   const openCart = () => {
+    setToplineMenuOpen(false);
     if (canTrack) trackSiteEvent('enquiry_started');
     setCartOpen(true);
   };
@@ -215,15 +242,33 @@ export function HomePage() {
 
   return (
     <div className="site-shell">
-      <div className="topline">
+      <div className="topline" ref={toplineRef}>
         <div className="container-wide topline-inner">
-           <span>{content.topline.tagline}</span>
+           <div className="topline-brand">
+             <button
+               ref={toplineMenuTriggerRef}
+               className="topline-menu-toggle"
+               type="button"
+               aria-label={toplineMenuOpen ? 'Zavrieť menu' : 'Otvoriť menu'}
+               aria-expanded={toplineMenuOpen}
+               aria-controls="topline-menu"
+               onClick={() => setToplineMenuOpen((open) => !open)}
+             >
+               {toplineMenuOpen ? <X size={18} aria-hidden="true" /> : <Menu size={18} aria-hidden="true" />}
+             </button>
+             <a className="topline-tagline" href="#domov" onClick={() => setToplineMenuOpen(false)}>
+               {content.topline.tagline}
+             </a>
+           </div>
            <div className="topline-actions">
              <span className="topline-note">{content.topline.note}</span>
              <button
                className="topline-saved-button"
                type="button"
-               onClick={() => setSavedOpen(true)}
+                onClick={() => {
+                  setToplineMenuOpen(false);
+                  setSavedOpen(true);
+                }}
                aria-haspopup="dialog"
                aria-label={`Obľúbené produkty, ${savedIds.length} položiek`}
              >
@@ -237,6 +282,29 @@ export function HomePage() {
              </button>
            </div>
         </div>
+        {toplineMenuOpen && (
+          <nav className="topline-menu-panel" id="topline-menu" aria-label="Hlavné menu">
+            <span className="topline-menu-heading">Kolekcie</span>
+            {CATALOG_CATEGORIES.map((category) => (
+              <button
+                className="topline-menu-category"
+                key={category.id}
+                type="button"
+                aria-pressed={activeCatalogCategory === category.id}
+                onClick={() => selectCatalogCategory(category.id)}
+              >
+                <span>{category.label}</span>
+                <ArrowRight size={15} aria-hidden="true" />
+              </button>
+            ))}
+            <div className="topline-menu-links">
+              <a href="#katalog" onClick={() => setToplineMenuOpen(false)}>{content.nav.catalog}</a>
+              <a href="#pribeh" onClick={() => setToplineMenuOpen(false)}>{content.nav.story}</a>
+              <a href="#detaily" onClick={() => setToplineMenuOpen(false)}>{content.nav.details}</a>
+              <a href="#kontakty" onClick={() => setToplineMenuOpen(false)}>Kontakt</a>
+            </div>
+          </nav>
+        )}
       </div>
 
       <header className="container-wide nav">
