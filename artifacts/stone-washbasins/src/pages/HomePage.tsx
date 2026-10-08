@@ -15,40 +15,12 @@ import { AnalyticsConsent } from '../components/AnalyticsConsent';
 import { trackSiteEvent, trackSitePageView } from '../lib/analytics';
 import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
 import { formatProductDetailLines } from '../lib/productDetails';
+import { CATALOG_CATEGORIES, type CatalogCategoryId } from '../lib/catalogCategories';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 const heroProductImage = `${basePath}/images/hero-basin.webp`;
 const CATALOG_BATCH_SIZE = 20;
 const MAX_CATALOG_PRODUCTS = 1000;
-
-const CATALOG_CATEGORIES = [
-  {
-    id: 'washbasins',
-    label: 'Umývadlá',
-    detail: 'Kamenné solitéry',
-    terms: ['umyvad', 'washbasin', 'basin', 'sink'],
-  },
-  {
-    id: 'faucets',
-    label: 'Batérie',
-    detail: 'Kúpeľňové batérie',
-    terms: ['bateri', 'kohutik', 'vodovodna bateria', 'faucet', 'tap'],
-  },
-  {
-    id: 'dispensers',
-    label: 'Dávkovače mydla',
-    detail: 'Doplnky k umývadlu',
-    terms: ['davkovac', 'dispenser', 'soap', 'mydl'],
-  },
-  {
-    id: 'accessories',
-    label: 'Doplnky',
-    detail: 'Mlynčeky a poháre na zubné kefky',
-    terms: ['doplnk', 'mlyncek', 'pohar', 'zubn', 'kefk', 'toothbrush'],
-  },
-] as const;
-
-type CatalogCategoryId = (typeof CATALOG_CATEGORIES)[number]['id'];
 
 function normalizeCatalogText(value: string): string {
   return value

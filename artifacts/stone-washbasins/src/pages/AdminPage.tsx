@@ -32,6 +32,7 @@ import {
   type ProductEditorForm,
 } from '../lib/productDraft';
 import { composeProductSubtitle, parseProductDetails } from '../lib/productDetails';
+import { CATALOG_CATEGORIES } from '../lib/catalogCategories';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 const MAX_CATALOG_PRODUCTS = 1000;
@@ -680,6 +681,11 @@ function ProductEditor({ product, ownerId, onClose }: {
   );
   const materialSelectValue = selectedStandardMaterial ?? form.material.trim();
   const legacyMaterial = selectedStandardMaterial || !form.material.trim() ? '' : form.material.trim();
+  const selectedCollection = CATALOG_CATEGORIES.find(
+    (category) => category.label.toLocaleLowerCase('sk') === form.kind.trim().toLocaleLowerCase('sk'),
+  );
+  const collectionSelectValue = selectedCollection?.label ?? form.kind.trim();
+  const legacyCollection = selectedCollection || !form.kind.trim() ? '' : form.kind.trim();
 
   return (
     <div ref={modalRef} className="admin-card">
@@ -734,7 +740,11 @@ function ProductEditor({ product, ownerId, onClose }: {
           <div className="grid grid-cols-2 gap-4">
             <div className="field">
               <label htmlFor="product-kind">Kolekcia alebo typ</label>
-              <input id="product-kind" maxLength={200} type="text" value={form.kind} onChange={e => handleField('kind', e.target.value)} placeholder="Umývadlá, Batérie, Dávkovače mydla alebo Doplnky" required disabled={isSaving || isUploading} />
+              <select id="product-kind" value={collectionSelectValue} onChange={e => handleField('kind', e.target.value)} required disabled={isSaving || isUploading}>
+                <option value="">Vyberte kolekciu</option>
+                {CATALOG_CATEGORIES.map((category) => <option key={category.id} value={category.label}>{category.label}</option>)}
+                {legacyCollection && <option value={legacyCollection}>{legacyCollection} (pôvodný údaj)</option>}
+              </select>
             </div>
             <div className="field">
               <label htmlFor="product-price">Cena v EUR (so znakom €)</label>
