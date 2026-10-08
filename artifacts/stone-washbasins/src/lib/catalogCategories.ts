@@ -6,22 +6,34 @@ export const CATALOG_CATEGORIES = [
     terms: ['umyvad', 'washbasin', 'basin', 'sink'],
   },
   {
+    id: 'dispensers',
+    label: 'Dávkovače mydla',
+    detail: 'Dávkovače mydla',
+    terms: ['davkovac', 'dispenser', 'soap dispenser', 'soapdispenser'],
+  },
+  {
+    id: 'toothbrush-cups',
+    label: 'Poháre na zubné kefky',
+    detail: 'Poháre na zubné kefky',
+    terms: ['pohar', 'zubn', 'kefk', 'toothbrush'],
+  },
+  {
+    id: 'soap-dishes',
+    label: 'Mydelničky na mydlo',
+    detail: 'Mydelničky na mydlo',
+    terms: ['mydelnic', 'soap dish', 'soapdish'],
+  },
+  {
     id: 'faucets',
     label: 'Batérie',
     detail: 'Kúpeľňové batérie',
     terms: ['bateri', 'kohutik', 'vodovodna bateria', 'faucet', 'tap'],
   },
   {
-    id: 'dispensers',
-    label: 'Dávkovače mydla',
-    detail: 'Doplnky k umývadlu',
-    terms: ['davkovac', 'dispenser', 'soap', 'mydl'],
-  },
-  {
-    id: 'accessories',
-    label: 'Doplnky',
-    detail: 'Mlynčeky a poháre na zubné kefky',
-    terms: ['doplnk', 'mlyncek', 'pohar', 'zubn', 'kefk', 'toothbrush'],
+    id: 'click-clack-valves',
+    label: 'Ventily Click-Clack',
+    detail: 'Výpuste do umývadla',
+    terms: ['click-clack', 'click clack', 'clickclack', 'ventil', 'vypust', 'drain'],
   },
 ] as const;
 
