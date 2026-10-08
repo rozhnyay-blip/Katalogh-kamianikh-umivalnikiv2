@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 const base = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 export const originalImageUrl = (path: string) => `${base}/api/storage${path}`;
-export const PRODUCT_IMAGE_SIZES = '(max-width: 620px) calc(100vw - 32px), (max-width: 900px) 70vw, 45vw';
+export const PRODUCT_IMAGE_SIZES = '(max-width: 620px) calc(100vw - 32px), (max-width: 900px) 70vw, min(35vw, 480px)';
 
 /** Browser selects a sharp, uncropped variant for its screen pixel density. */
 export function ProductImage({ path, alt, className, sizes = PRODUCT_IMAGE_SIZES, onLoad }: {

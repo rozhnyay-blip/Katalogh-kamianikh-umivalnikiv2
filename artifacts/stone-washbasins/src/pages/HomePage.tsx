@@ -599,10 +599,9 @@ function ProductCard({
     if (!path || preloadedImages.current.has(path)) return;
     preloadedImages.current.set(path, preloadProductImage(path));
   };
-  const preloadAdjacentImages = () => {
-    if (imageCount < 2) return;
-    preloadImageAt((imageIndex + 1) % imageCount);
-    preloadImageAt((imageIndex - 1 + imageCount) % imageCount);
+  const preloadNextImage = () => {
+    if (imageCount < 2 || imageIndex >= imageCount - 1) return;
+    preloadImageAt(imageIndex + 1);
   };
   const startImageSwipe = (event: ReactTouchEvent<HTMLDivElement>) => {
     if (imageCount < 2 || event.touches.length !== 1) {
@@ -655,7 +654,7 @@ function ProductCard({
               className="product-image"
               path={product.images[imageIndex] || product.images[0]}
               alt={`Umývadlo ${product.name}`}
-              onLoad={preloadAdjacentImages}
+              onLoad={preloadNextImage}
             />
           ) : (
             <div className="product-image-placeholder flex items-center justify-center h-full bg-[#3e5e60] text-[#eef0dd] text-xs font-mono tracking-widest">BEZ FOTOGRAFIE</div>
@@ -674,10 +673,24 @@ function ProductCard({
           </div>
           {imageCount > 1 && (
             <div className="product-arrows">
-              <button className="media-arrow" type="button" onClick={previousImage} aria-label="Predchádzajúca fotka">
+              <button
+                className="media-arrow"
+                type="button"
+                onClick={previousImage}
+                onPointerEnter={() => preloadImageAt((imageIndex - 1 + imageCount) % imageCount)}
+                onFocus={() => preloadImageAt((imageIndex - 1 + imageCount) % imageCount)}
+                aria-label="Predchádzajúca fotka"
+              >
                 <ArrowLeft size={14} />
               </button>
-              <button className="media-arrow" type="button" onClick={nextImage} aria-label="Nasledujúca fotka">
+              <button
+                className="media-arrow"
+                type="button"
+                onClick={nextImage}
+                onPointerEnter={() => preloadImageAt((imageIndex + 1) % imageCount)}
+                onFocus={() => preloadImageAt((imageIndex + 1) % imageCount)}
+                aria-label="Nasledujúca fotka"
+              >
                 <ArrowRight size={14} />
               </button>
             </div>
