@@ -4,8 +4,9 @@ import {
   setAnalyticsConsent,
   trackSitePageView,
 } from "../lib/analytics";
+import { translate, type Locale } from "../lib/localization";
 
-export function AnalyticsConsent() {
+export function AnalyticsConsent({ locale }: { locale: Locale }) {
   const [consent, setConsent] = useState<"accepted" | "rejected" | null>(
     () => getAnalyticsConsent(),
   );
@@ -23,7 +24,7 @@ export function AnalyticsConsent() {
       {isOpen ? (
         <section className="analytics-consent-panel" aria-labelledby="analytics-consent-title">
           <div>
-            <h2 id="analytics-consent-title">Voliteľná anonymná analytika</h2>
+            <h2 id="analytics-consent-title">{translate(locale, "Voliteľná anonymná analytika")}</h2>
             <p>
               V prehľade SKALA po súhlase zaznamenáme návštevy a vybrané akcie pod náhodným ID
               relácie a prípadne ID produktu. Neukladáme IP adresu, meno,
@@ -32,10 +33,10 @@ export function AnalyticsConsent() {
           </div>
           <div className="analytics-consent-actions">
             <button type="button" className="button-quiet" onClick={() => choose("rejected")}>
-              Odmietnuť
+              {translate(locale, "Odmietnuť")}
             </button>
             <button type="button" className="button-primary" onClick={() => choose("accepted")}>
-              Povoliť analytiku
+              {translate(locale, "Povoliť analytiku")}
             </button>
           </div>
         </section>
