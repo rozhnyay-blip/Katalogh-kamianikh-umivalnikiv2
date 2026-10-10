@@ -15,7 +15,7 @@ import { AnalyticsConsent } from '../components/AnalyticsConsent';
 import { trackSiteEvent, trackSitePageView } from '../lib/analytics';
 import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
 import { LOCALES, localizeProduct, localizeSiteContent, translate, translateTemplate, type Locale } from '../lib/localization';
-import { formatProductDetailLines } from '../lib/productDetails';
+import { formatProductDetailLines, parseProductDetails } from '../lib/productDetails';
 import { CATALOG_CATEGORIES, type CatalogCategoryId } from '../lib/catalogCategories';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
@@ -44,6 +44,25 @@ function matchesCatalogCategory(product: Product, categoryId: CatalogCategoryId)
   }
 
   return category.terms.some((term) => searchableText.includes(normalizeCatalogText(term)));
+}
+
+function getMaterialKey(product: Product): string {
+  const material = parseProductDetails(product.subtitle).material.trim();
+  const normalized = normalizeCatalogText(material);
+  if (/mramor|marble|мармур/u.test(normalized)) return 'mramor';
+  if (/granit|zula|granite|граніт/u.test(normalized)) return 'žula';
+  if (/labradorit|labradorite/u.test(normalized)) return 'labradorit';
+  if (/pieskovec|sandstone|пісковик/u.test(normalized)) return 'pieskovec';
+  return material;
+}
+
+function getWeightKg(product: Product): number | null {
+  const weight = parseProductDetails(product.subtitle).weight;
+  const match = weight.match(/(\d+(?:[.,]\d+)?)\s*(kg|g)?/iu);
+  if (!match) return null;
+  const value = Number(match[1].replace(',', '.'));
+  if (!Number.isFinite(value)) return null;
+  return match[2]?.toLocaleLowerCase() === 'g' ? value / 1000 : value;
 }
 
 function readStoredIds(key: string): number[] {
@@ -98,6 +117,9 @@ export function HomePage() {
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
   const [toplineMenuOpen, setToplineMenuOpen] = useState(false);
   const [activeCatalogCategory, setActiveCatalogCategory] = useState<CatalogCategoryId | null>(null);
+  const [materialFilter, setMaterialFilter] = useState('');
+  const [minWeightFilter, setMinWeightFilter] = useState('');
+  const [maxWeightFilter, setMaxWeightFilter] = useState('');
   const categoryPickerRef = useRef<HTMLDivElement>(null);
   const categoryTriggerRef = useRef<HTMLButtonElement>(null);
   const toplineRef = useRef<HTMLDivElement>(null);
@@ -118,7 +140,24 @@ export function HomePage() {
   const catalogProducts = activeCatalogCategory
     ? products.filter((product) => matchesCatalogCategory(product, activeCatalogCategory))
     : products;
-  const visibleProducts = catalogProducts.slice(0, visibleProductCount);
+  const materialOptions = [...new Set(products.map(getMaterialKey).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, locale));
+  const filteredCatalogProducts = catalogProducts.filter((product) => {
+    if (materialFilter && normalizeCatalogText(getMaterialKey(product)) !== normalizeCatalogText(materialFilter)) return false;
+    const weight = getWeightKg(product);
+    if ((minWeightFilter || maxWeightFilter) && weight === null) return false;
+    if (minWeightFilter && weight! < Number(minWeightFilter)) return false;
+    if (maxWeightFilter && weight! > Number(maxWeightFilter)) return false;
+    return true;
+  });
+  const filtersApplied = Boolean(materialFilter || minWeightFilter || maxWeightFilter);
+  const clearProductFilters = () => {
+    setMaterialFilter('');
+    setMinWeightFilter('');
+    setMaxWeightFilter('');
+    setVisibleProductCount(CATALOG_BATCH_SIZE);
+  };
+  const visibleProducts = filteredCatalogProducts.slice(0, visibleProductCount);
   const cartItems = cartIds.map((id) => ({
     id,
     product: products.find((product) => product.id === id) ?? null,
@@ -476,6 +515,36 @@ export function HomePage() {
               </div>
             )}
 
+            {!isLoading && !isError && products.length > 0 && (
+              <div className="catalog-product-filters" aria-label={translate(locale, 'Filtrovať podľa kameňa a hmotnosti')}>
+                <label className="catalog-filter-material">
+                  <span>{translate(locale, 'Typ kameňa')}</span>
+                  <select value={materialFilter} onChange={(event) => { setMaterialFilter(event.target.value); setVisibleProductCount(CATALOG_BATCH_SIZE); }}>
+                    <option value="">{translate(locale, 'Všetky druhy kameňa')}</option>
+                    {materialOptions.map((material) => (
+                      <option key={material} value={material}>{translate(locale, material)}</option>
+                    ))}
+                  </select>
+                </label>
+                <div className="catalog-filter-weight">
+                  <span className="catalog-filter-group-label">{translate(locale, 'Hmotnosť (kg)')}</span>
+                  <label>
+                    <span>{translate(locale, 'Od')}</span>
+                    <input type="number" min="0" step="0.1" inputMode="decimal" value={minWeightFilter} onChange={(event) => { setMinWeightFilter(event.target.value); setVisibleProductCount(CATALOG_BATCH_SIZE); }} />
+                  </label>
+                  <label>
+                    <span>{translate(locale, 'Do')}</span>
+                    <input type="number" min="0" step="0.1" inputMode="decimal" value={maxWeightFilter} onChange={(event) => { setMaxWeightFilter(event.target.value); setVisibleProductCount(CATALOG_BATCH_SIZE); }} />
+                  </label>
+                </div>
+                {filtersApplied && (
+                  <button className="catalog-filter-reset" type="button" onClick={clearProductFilters}>
+                    {translate(locale, 'Vymazať filtre')}
+                  </button>
+                )}
+              </div>
+            )}
+
             {isLoading ? (
               <div className="catalog-status">
                 <p>{translate(locale, 'Načítavam katalóg...')}</p>
@@ -484,6 +553,11 @@ export function HomePage() {
               <div className="catalog-status error-state">
                 <p>{translate(locale, 'Nepodarilo sa načítať katalóg.')}</p>
                 <button className="button-quiet" onClick={() => refetch()}>{translate(locale, 'Skúsiť znova')}</button>
+              </div>
+            ) : catalogProducts.length > 0 && filteredCatalogProducts.length === 0 ? (
+              <div className="catalog-status">
+                <p>{translate(locale, 'Žiadne produkty nezodpovedajú filtrom.')}</p>
+                <button className="button-quiet" type="button" onClick={clearProductFilters}>{translate(locale, 'Vymazať filtre')}</button>
               </div>
             ) : catalogProducts.length === 0 ? (
               <div className="catalog-status">
@@ -506,7 +580,7 @@ export function HomePage() {
                 ))}
               </div>
             )}
-            {!isLoading && !isError && visibleProductCount < MAX_CATALOG_PRODUCTS && catalogProducts.length > visibleProducts.length && (
+            {!isLoading && !isError && visibleProductCount < MAX_CATALOG_PRODUCTS && filteredCatalogProducts.length > visibleProducts.length && (
               <button
                 className="catalog-show-more"
                 type="button"
@@ -515,7 +589,7 @@ export function HomePage() {
                   setVisibleProductCount((count) => Math.min(count + CATALOG_BATCH_SIZE, MAX_CATALOG_PRODUCTS));
                 }}
               >
-                Zobraziť ďalších {Math.min(CATALOG_BATCH_SIZE, catalogProducts.length - visibleProducts.length)} produktov
+                {translateTemplate(locale, 'Zobraziť ďalších {count} produktov', { count: Math.min(CATALOG_BATCH_SIZE, filteredCatalogProducts.length - visibleProducts.length) })}
               </button>
             )}
             {canEdit && !isLoading && !isError && (
