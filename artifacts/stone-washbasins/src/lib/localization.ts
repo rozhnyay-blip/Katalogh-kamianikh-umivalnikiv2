@@ -177,7 +177,7 @@ const phrases: Record<string, Record<Exclude<Locale, 'sk'>, string>> = {
   'Váš výber —': { cs: 'Váš výběr —', en: 'Your selection —', uk: 'Ваш вибір —' },
   'na jednom mieste': { cs: 'na jednom místě', en: 'all in one place', uk: 'в одному місці' },
   'Správa': { cs: 'Správa', en: 'Manage', uk: 'Керування' },
-  'Prihlásenie majiteľa': { cs: 'Přihlášení majitele', en: 'Owner sign in', uk: 'Вхід власника' },
+  'Prihlásenie': { cs: 'Přihlášení', en: 'Sign in', uk: 'Вхід' },
   'Dopyt': { cs: 'Poptávka', en: 'Enquiry', uk: 'Запит' },
   'Správa produktov': { cs: 'Správa produktů', en: 'Manage products', uk: 'Керування товарами' },
   'Vstupné dopyty': { cs: 'Příchozí poptávky', en: 'Incoming enquiries', uk: 'Вхідні запити' },

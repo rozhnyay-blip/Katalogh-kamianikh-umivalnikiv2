@@ -401,7 +401,7 @@ export function HomePage() {
            <a href="#detaily">{content.nav.details}</a>
         </nav>
         <div className="nav-contact">
-          <Link className="owner-nav-link" href="/admin">{canEdit ? 'Správa' : 'Prihlásenie majiteľa'}</Link>
+          <Link className="owner-nav-link" href="/admin">{canEdit ? 'Správa' : translate(locale, 'Prihlásenie')}</Link>
           <a className="round-button" href={content.nav.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <Instagram size={16} />
           </a>
@@ -666,7 +666,7 @@ export function HomePage() {
           <div className="footer-bottom">
             <span>© {new Date().getFullYear()} SKALA</span>
              <span>{content.footer.bottomSlogan}</span>
-            <Link href="/admin" className="admin-link">Prihlásenie majiteľa</Link>
+             <Link href="/admin" className="admin-link">{translate(locale, 'Prihlásenie')}</Link>
           </div>
         </div>
       </footer>
