@@ -205,7 +205,7 @@ const phrases: Record<string, Record<Exclude<Locale, 'sk'>, string>> = {
   'mramor': { cs: 'Mramor', en: 'Marble', uk: 'Мармур' },
   'žula': { cs: 'Žula', en: 'Granite', uk: 'Граніт' },
   'labradorit': { cs: 'Labradorit', en: 'Labradorite', uk: 'Лабрадорит' },
-  'pieskovec': { cs: 'Pískovec', en: 'Sandstone', uk: 'Пісковc' },
+  'pieskovec': { cs: 'Pískovec', en: 'Sandstone', uk: 'Пісковик' },
   'V prehľade SKALA po súhlase zaznamenáme návštevy a vybrané akcie pod náhodným ID relácie a prípadne ID produktu. Neukladáme IP adresu, meno, telefón ani e-mail. Voľbu môžete kedykoľvek zmeniť.': {
     cs: 'V přehledu SKALA po souhlasu zaznamenáme návštěvy a vybrané akce pod náhodným ID relace a případně ID produktu. Neukládáme IP adresu, jméno, telefon ani e-mail. Volbu můžete kdykoli změnit.',
     en: 'With your consent, SKALA records visits and selected actions in its overview under a random session ID and, where relevant, a product ID. We do not store your IP address, name, phone number or email. You can change your choice at any time.',
