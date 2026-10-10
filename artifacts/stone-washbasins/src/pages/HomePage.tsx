@@ -48,6 +48,7 @@ function matchesCatalogCategory(product: Product, categoryId: CatalogCategoryId)
 
 function getMaterialKey(product: Product): string {
   const material = parseProductDetails(product.subtitle).material.trim();
+  if (!material || /^(?:[-—–]|n\/?a|unknown)$/iu.test(material)) return '';
   const normalized = normalizeCatalogText(material);
   if (/mramor|marble|мармур/u.test(normalized)) return 'mramor';
   if (/granit|zula|granite|граніт/u.test(normalized)) return 'žula';
