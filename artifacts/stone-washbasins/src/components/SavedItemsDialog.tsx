@@ -57,22 +57,22 @@ export function SavedItemsDialog({
           {translate(locale, 'Uložené')}<br /><em>{translate(locale, 'umývadlá.')}</em>
         </h2>
         <p className="saved-items-intro">
-          Produkty označené srdiečkom nájdete tu. Môžete ich pridať do košíka alebo odstrániť zo zoznamu.
+          {translate(locale, 'Produkty označené srdiečkom nájdete tu. Môžete ich pridať do košíka alebo odstrániť zo zoznamu.')}
         </p>
 
         {isLoading ? (
-          <div className="saved-items-state" role="status">Načítavam uložené produkty...</div>
+          <div className="saved-items-state" role="status">{translate(locale, 'Načítavam uložené produkty...')}</div>
         ) : isError ? (
           <div className="saved-items-state">
-            <p>Nepodarilo sa načítať katalóg.</p>
-            <button className="button-quiet" type="button" onClick={onRetry}>Skúsiť znova</button>
+            <p>{translate(locale, 'Nepodarilo sa načítať katalóg.')}</p>
+            <button className="button-quiet" type="button" onClick={onRetry}>{translate(locale, 'Skúsiť znova')}</button>
           </div>
         ) : items.length === 0 ? (
           <div className="saved-items-state">
-            Zatiaľ tu nič nie je. Uložte si produkt klepnutím na srdiečko v katalógu.
+            {translate(locale, 'Zatiaľ tu nič nie je. Uložte si produkt klepnutím na srdiečko v katalógu.')}
           </div>
         ) : (
-          <div className="saved-items-list" aria-label="Uložené produkty">
+          <div className="saved-items-list" aria-label={translate(locale, 'Uložené produkty')}>
             {items.map(({ id, product }) => {
               const isInCart = cartIds.includes(id);
               const displayProduct = product ? localizeProduct(product, locale) : null;
@@ -88,7 +88,7 @@ export function SavedItemsDialog({
                         sizes="72px"
                       />
                     ) : (
-                      <div className="cart-item-card-placeholder">BEZ FOTOGRAFIE</div>
+                      <div className="cart-item-card-placeholder">{translate(locale, 'BEZ FOTOGRAFIE')}</div>
                     )}
                   </div>
                   <div className="cart-item-card-content">
@@ -107,7 +107,7 @@ export function SavedItemsDialog({
                         className="cart-item-remove"
                         type="button"
                         onClick={() => onRemove({ id, product })}
-                        aria-label={`Odstrániť ${product?.name ?? 'produkt'} z uložených`}
+                        aria-label={`${translate(locale, 'Odstrániť')} ${displayProduct?.name ?? translate(locale, 'produkt')} ${translate(locale, 'z uložených')}`}
                       >
                         <X size={16} aria-hidden="true" />
                       </button>

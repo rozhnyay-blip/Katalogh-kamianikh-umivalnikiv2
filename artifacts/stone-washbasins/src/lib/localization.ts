@@ -11,6 +11,7 @@ export const LOCALES: { code: Locale; flag: string; label: string }[] = [
 
 const phrases: Record<string, Record<Exclude<Locale, 'sk'>, string>> = {
   'Kameň, ktorý si pamätá vodu': { cs: 'Kámen, který si pamatuje vodu', en: 'Stone that remembers water', uk: 'Камінь, що пам’ятає воду' },
+  'Kameň, ktorý si pamätá vodu ': { cs: 'Kámen, který si pamatuje vodu ', en: 'Stone that remembers water ', uk: 'Камінь, що пам’ятає воду ' },
   'Prírodný kameň · Ručná práca': { cs: 'Přírodní kámen · Ruční práce', en: 'Natural stone · Handcrafted', uk: 'Натуральний камінь · Ручна робота' },
   'Katalóg': { cs: 'Katalog', en: 'Catalogue', uk: 'Каталог' },
   'Príbeh': { cs: 'Příběh', en: 'Our story', uk: 'Історія' },
@@ -132,7 +133,6 @@ const phrases: Record<string, Record<Exclude<Locale, 'sk'>, string>> = {
   'Späť do katalógu': { cs: 'Zpět do katalogu', en: 'Back to catalogue', uk: 'Назад до каталогу' },
   'Zatiaľ je prázdny': { cs: 'Zatím je prázdný', en: 'Your basket is empty', uk: 'Поки що порожній' },
   'Pridajte si do košíka umývadlá, o ktoré máte záujem, a pošlite jeden spoločný dopyt.': { cs: 'Přidejte do košíku umyvadla, která vás zajímají, a odešlete jednu společnou poptávku.', en: 'Add the washbasins you are interested in and send one combined enquiry.', uk: 'Додайте до кошика умивальники, які вас цікавлять, і надішліть один спільний запит.' },
-  'Meno a priezvisko': { cs: 'Jméno a příjmení', en: 'Full name', uk: 'Ім’я та прізвище' },
   'Telefón': { cs: 'Telefon', en: 'Phone', uk: 'Телефон' },
   'Gmail': { cs: 'E-mail', en: 'Email', uk: 'Електронна пошта' },
   'Ako vás môžeme oslovovať?': { cs: 'Jak vás můžeme oslovovat?', en: 'How should we address you?', uk: 'Як до вас звертатися?' },
@@ -145,10 +145,94 @@ const phrases: Record<string, Record<Exclude<Locale, 'sk'>, string>> = {
   'Umývadlo z prírodného kameňa': { cs: 'Umyvadlo z přírodního kamene', en: 'Natural stone washbasin', uk: 'Умивальник із натурального каменю' },
   'KOLEKCIA': { cs: 'KOLEKCE', en: 'COLLECTION', uk: 'КОЛЕКЦІЯ' },
   'Dávkovač mydla': { cs: 'Dávkovač mýdla', en: 'Soap dispenser', uk: 'Дозатор мила' },
+  'Obľúbené produkty,': { cs: 'Oblíbené produkty,', en: 'Favourite products,', uk: 'Обрані товари,' },
+  'Uložené umývadlá': { cs: 'Uložená umyvadla', en: 'Saved washbasins', uk: 'Збережені умивальники' },
+  'Produkty označené srdiečkom nájdete tu. Môžete ich pridať do košíka alebo odstrániť zo zoznamu.': { cs: 'Zde najdete produkty označené srdíčkem. Můžete je přidat do košíku nebo odebrat ze seznamu.', en: 'Products you marked with a heart appear here. Add them to your basket or remove them from the list.', uk: 'Тут зібрані товари, позначені сердечком. Їх можна додати до кошика або видалити зі списку.' },
+  'Načítavam uložené produkty...': { cs: 'Načítám uložené produkty...', en: 'Loading saved products...', uk: 'Завантажуємо збережені товари...' },
+  'Zatiaľ tu nič nie je. Uložte si produkt klepnutím na srdiečko v katalógu.': { cs: 'Zatím tu nic není. Uložte si produkt klepnutím na srdíčko v katalogu.', en: 'Nothing here yet. Tap a heart in the catalogue to save a product.', uk: 'Поки що тут порожньо. Натисніть сердечко в каталозі, щоб зберегти товар.' },
+  'Uložený produkt': { cs: 'Uložený produkt', en: 'Saved product', uk: 'Збережений товар' },
+  'Produkt už nie je v katalógu': { cs: 'Produkt už není v katalogu', en: 'Product is no longer in the catalogue', uk: 'Товару більше немає в каталозі' },
+  'Už nie je dostupný': { cs: 'Již není dostupný', en: 'No longer available', uk: 'Більше недоступний' },
+  'Košík je prázdny.': { cs: 'Košík je prázdný.', en: 'Your basket is empty.', uk: 'Кошик порожній.' },
+  'Niektorý produkt už nie je dostupný. Odstráňte ho z košíka a skúste znova.': { cs: 'Některý produkt již není dostupný. Odeberte ho z košíku a zkuste to znovu.', en: 'A product is no longer available. Remove it from your basket and try again.', uk: 'Один із товарів більше недоступний. Видаліть його з кошика й спробуйте ще раз.' },
+  'Váš dopyt bol prijatý': { cs: 'Vaše poptávka byla přijata', en: 'Your enquiry has been received', uk: 'Ваш запит отримано' },
+  'Hlavná ponuka': { cs: 'Hlavní nabídka', en: 'Featured item', uk: 'Головна пропозиція' },
+  'Vybrané produkty': { cs: 'Vybrané produkty', en: 'Selected products', uk: 'Вибрані товари' },
+  'Cena je uvedená pri každom produkte. Dopyt nie je platbou ani záväznou objednávkou.': { cs: 'Cena je uvedena u každého produktu. Poptávka není platbou ani závaznou objednávkou.', en: 'Prices are shown for each product. An enquiry is not a payment or binding order.', uk: 'Ціна вказана біля кожного товару. Запит не є оплатою чи обов’язковим замовленням.' },
+  'Správa stránok': { cs: 'Správa stránky', en: 'Site management', uk: 'Керування сайтом' },
+  'Zmeniť jazyk': { cs: 'Změnit jazyk', en: 'Change language', uk: 'Змінити мову' },
+  'V ponuke SKALA nájdete kamenné umývadlá z mramoru, granitu (žuly), labradoritu a pieskovca. Každý kus má osobitú kresbu prírodného kameňa. Vyrábame aj na objednávku.': {
+    cs: 'V nabídce SKALA najdete kamenná umyvadla z mramoru, granitu, labradoritu a pískovce. Každý kus má jedinečnou kresbu přírodního kamene. Vyrábíme také na objednávku.',
+    en: 'SKALA offers stone washbasins in marble, granite, labradorite and sandstone. Each piece has a distinctive natural pattern. Made to order is also available.',
+    uk: 'У SKALA представлені кам’яні умивальники з мармуру, граніту, лабрадориту та пісковику. Кожен виріб має унікальний малюнок. Також виготовляємо на замовлення.',
+  },
+  'Dopyt sa nepodarilo odoslať. Skontrolujte, či sú vybrané produkty stále dostupné, a skúste to znova.': { cs: 'Poptávku se nepodařilo odeslat. Zkontrolujte dostupnost vybraných produktů a zkuste to znovu.', en: 'The enquiry could not be sent. Check that the selected products are still available and try again.', uk: 'Не вдалося надіслати запит. Перевірте, чи вибрані товари ще доступні, і спробуйте ще раз.' },
+  'Zavrieť formulár': { cs: 'Zavřít formulář', en: 'Close form', uk: 'Закрити форму' },
+  'Zavrieť uložené produkty': { cs: 'Zavřít uložené produkty', en: 'Close saved products', uk: 'Закрити збережені товари' },
+  'Správa produktu': { cs: 'Správa produktu', en: 'Product management', uk: 'Керування товаром' },
+  'Dopyt · hlavné umývadlo': { cs: 'Poptávka · hlavní umyvadlo', en: 'Enquiry · featured washbasin', uk: 'Запит · головний умивальник' },
+  'Košík · spoločný dopyt': { cs: 'Košík · společná poptávka', en: 'Basket · combined enquiry', uk: 'Кошик · спільний запит' },
+  'Máte záujem?': { cs: 'Máte zájem?', en: 'Interested?', uk: 'Зацікавило?' },
+  'Napíšte nám.': { cs: 'Napište nám.', en: 'Get in touch.', uk: 'Напишіть нам.' },
+  'Váš výber —': { cs: 'Váš výběr —', en: 'Your selection —', uk: 'Ваш вибір —' },
+  'na jednom mieste': { cs: 'na jednom místě', en: 'all in one place', uk: 'в одному місці' },
+  'Správa': { cs: 'Správa', en: 'Manage', uk: 'Керування' },
+  'Prihlásenie majiteľa': { cs: 'Přihlášení majitele', en: 'Owner sign in', uk: 'Вхід власника' },
+  'Dopyt': { cs: 'Poptávka', en: 'Enquiry', uk: 'Запит' },
+  'Správa produktov': { cs: 'Správa produktů', en: 'Manage products', uk: 'Керування товарами' },
+  'Vstupné dopyty': { cs: 'Příchozí poptávky', en: 'Incoming enquiries', uk: 'Вхідні запити' },
+  'Meno a priezvisko': { cs: 'Jméno a příjmení', en: 'Full name', uk: 'Ім’я та прізвище' },
+  'Správa majiteľa': { cs: 'Správa majitele', en: 'Owner tools', uk: 'Інструменти власника' },
+  'Spoločný dopyt': { cs: 'Společná poptávka', en: 'Combined enquiry', uk: 'Спільний запит' },
+  'Kontaktné údaje a správu odošlete majiteľovi SKALA, aby vám mohol odpovedať na dopyt.': { cs: 'Kontaktní údaje a zprávu odešlete majiteli SKALA, aby vám mohl odpovědět na poptávku.', en: 'Your contact details and message will be sent to the owner of SKALA so they can reply to your enquiry.', uk: 'Ваші контактні дані та повідомлення буде надіслано власнику SKALA, щоб він міг відповісти на запит.' },
+  'Kontaktné údaje a správu odošlete majiteľovi SKALA, aby mohol vybaviť spoločný dopyt.': { cs: 'Kontaktní údaje a zprávu odešlete majiteli SKALA, aby mohl vyřídit společnou poptávku.', en: 'Your contact details and message will be sent to the owner of SKALA to handle your combined enquiry.', uk: 'Ваші контактні дані та повідомлення буде надіслано власнику SKALA для обробки спільного запиту.' },
+  'Správa (voliteľná)': { cs: 'Zpráva (volitelná)', en: 'Message (optional)', uk: 'Повідомлення (необов’язково)' },
+  'Čo by ste sa chceli opýtať?': { cs: 'Na co byste se chtěli zeptat?', en: 'What would you like to ask?', uk: 'Про що ви хотіли б запитати?' },
+  'Odosielam...': { cs: 'Odesílám...', en: 'Sending...', uk: 'Надсилання...' },
+  'Odoslať dopyt': { cs: 'Odeslat poptávku', en: 'Send enquiry', uk: 'Надіслати запит' },
+  'Váš dopyt č.': { cs: 'Vaše poptávka č.', en: 'Your enquiry no.', uk: 'Ваш запит №' },
+  'Language': { cs: 'Jazyk', en: 'Language', uk: 'Мова' },
+  'Umývadlo z hlavnej fotografie': { cs: 'Umyvadlo z hlavní fotografie', en: 'Featured washbasin', uk: 'Умивальник на головному фото' },
+  'V prehľade SKALA po súhlase zaznamenáme návštevy a vybrané akcie pod náhodným ID relácie a prípadne ID produktu. Neukladáme IP adresu, meno, telefón ani e-mail. Voľbu môžete kedykoľvek zmeniť.': {
+    cs: 'V přehledu SKALA po souhlasu zaznamenáme návštěvy a vybrané akce pod náhodným ID relace a případně ID produktu. Neukládáme IP adresu, jméno, telefon ani e-mail. Volbu můžete kdykoli změnit.',
+    en: 'With your consent, SKALA records visits and selected actions in its overview under a random session ID and, where relevant, a product ID. We do not store your IP address, name, phone number or email. You can change your choice at any time.',
+    uk: 'За вашою згодою в аналітиці SKALA ми фіксуємо відвідування та вибрані дії за випадковим ID сеансу, а за потреби — ID товару. Ми не зберігаємо IP-адресу, ім’я, телефон чи електронну пошту. Ви можете змінити вибір будь-коли.',
+  },
+  'Zmeniť nastavenie analytiky': { cs: 'Změnit nastavení analytiky', en: 'Change analytics settings', uk: 'Змінити налаштування аналітики' },
+  'Nastavenie analytiky': { cs: 'Nastavení analytiky', en: 'Analytics settings', uk: 'Налаштування аналітики' },
+  'povolená': { cs: 'povolena', en: 'enabled', uk: 'увімкнена' },
+  'odmietnutá': { cs: 'odmítnuta', en: 'declined', uk: 'відхилена' },
+  '01 — TVAR / VODA': { cs: '01 — TVAR / VODA', en: '01 — FORM / WATER', uk: '01 — ФОРМА / ВОДА' },
+  '01 — Nájsť': { cs: '01 — Najít', en: '01 — Find', uk: '01 — Знайти' },
+  'Dopriať kameňu čas': { cs: 'Dopřát kameni čas', en: 'Give the stone time', uk: 'Дати каменю час' },
+  'Vyberáme kusy s prirodzenou plasticitou a hustou štruktúrou.': { cs: 'Vybíráme kusy s přirozenou plasticitou a hustou strukturou.', en: 'We select pieces with natural form and a dense structure.', uk: 'Ми обираємо камінь із природною пластикою та щільною структурою.' },
+  '02 — Precítiť': { cs: '02 — Procítit', en: '02 — Feel', uk: '02 — Відчути' },
+  'Uvidieť tvar': { cs: 'Uvidět tvar', en: 'See the form', uk: 'Побачити форму' },
+  'Najskôr počúvame faktúru. Potom opatrne odhaľujeme misu bez zmazania charakteru.': { cs: 'Nejprve vnímáme strukturu. Poté opatrně odhalujeme mísu, aniž bychom smazali její charakter.', en: 'First, we read the stone’s texture. Then we carefully reveal the basin without erasing its character.', uk: 'Спершу ми відчуваємо фактуру, а потім обережно відкриваємо чашу, не стираючи її характеру.' },
+  '03 — Odovzdať': { cs: '03 — Předat', en: '03 — Deliver', uk: '03 — Передати' },
+  'Poslať ďalej': { cs: 'Poslat dál', en: 'Send it on', uk: 'Передати далі' },
+  'Kameň ošetríme, otestujeme s vodou a bezpečne zabalíme na cestu k vám.': { cs: 'Kámen ošetříme, otestujeme vodou a bezpečně zabalíme na cestu k vám.', en: 'We treat the stone, test it with water and pack it securely for its journey to you.', uk: 'Ми обробляємо камінь, перевіряємо його водою та надійно пакуємо для доставки.' },
+  'Váš dopyt č. {id} na {product} bol uložený. Majiteľ vás bude kontaktovať s ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.': {
+    cs: 'Vaše poptávka č. {id} na {product} byla uložena. Majitel vás bude kontaktovat s dalšími informacemi. Odeslání formuláře není platbou ani závaznou objednávkou.',
+    en: 'Your enquiry no. {id} for {product} has been saved. The owner will contact you with more information. Sending this form is not a payment or binding order.',
+    uk: 'Ваш запит № {id} щодо товару «{product}» збережено. Власник зв’яжеться з вами та надасть додаткову інформацію. Надсилання форми не є оплатою чи обов’язковим замовленням.',
+  },
+  'Váš spoločný dopyt č. {id} na vybrané produkty bol uložený. Majiteľ vás bude kontaktovať s potvrdením dostupnosti a ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.': {
+    cs: 'Vaše společná poptávka č. {id} na vybrané produkty byla uložena. Majitel vás bude kontaktovat s potvrzením dostupnosti a dalšími informacemi. Odeslání formuláře není platbou ani závaznou objednávkou.',
+    en: 'Your combined enquiry no. {id} for the selected products has been saved. The owner will contact you to confirm availability and provide more information. Sending this form is not a payment or binding order.',
+    uk: 'Ваш спільний запит № {id} щодо вибраних товарів збережено. Власник зв’яжеться з вами, підтвердить наявність і надасть додаткову інформацію. Надсилання форми не є оплатою чи обов’язковим замовленням.',
+  },
 };
 
 export function translate(locale: Locale, source: string): string {
   return locale === 'sk' ? source : phrases[source]?.[locale] ?? source;
+}
+
+export function translateTemplate(locale: Locale, source: string, values: Record<string, string | number>): string {
+  return Object.entries(values).reduce(
+    (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
+    translate(locale, source),
+  );
 }
 
 function mapStrings<T>(value: T, locale: Locale): T {
@@ -164,9 +248,7 @@ function mapStrings<T>(value: T, locale: Locale): T {
 }
 
 export function localizeSiteContent(content: SiteContent, locale: Locale): SiteContent {
-  const localized = mapStrings(content, locale);
-  if (locale !== 'sk') localized.textOverrides = {};
-  return localized;
+  return mapStrings(content, locale);
 }
 
 const productCopy: Record<number, Partial<Record<Exclude<Locale, 'sk'>, Pick<Product, 'name' | 'subtitle' | 'kind'>>>> = {
