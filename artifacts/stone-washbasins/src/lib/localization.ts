@@ -1,0 +1,197 @@
+import type { Product, SiteContent } from '@workspace/api-client-react';
+
+export type Locale = 'cs' | 'en' | 'sk' | 'uk';
+
+export const LOCALES: { code: Locale; flag: string; label: string }[] = [
+  { code: 'cs', flag: '🇨🇿', label: 'Čeština' },
+  { code: 'en', flag: '🇬🇧', label: 'English' },
+  { code: 'sk', flag: '🇸🇰', label: 'Slovenčina' },
+  { code: 'uk', flag: '🇺🇦', label: 'Українська' },
+];
+
+const phrases: Record<string, Record<Exclude<Locale, 'sk'>, string>> = {
+  'Kameň, ktorý si pamätá vodu': { cs: 'Kámen, který si pamatuje vodu', en: 'Stone that remembers water', uk: 'Камінь, що пам’ятає воду' },
+  'Prírodný kameň · Ručná práca': { cs: 'Přírodní kámen · Ruční práce', en: 'Natural stone · Handcrafted', uk: 'Натуральний камінь · Ручна робота' },
+  'Katalóg': { cs: 'Katalog', en: 'Catalogue', uk: 'Каталог' },
+  'Príbeh': { cs: 'Příběh', en: 'Our story', uk: 'Історія' },
+  'Detaily': { cs: 'Detaily', en: 'Details', uk: 'Деталі' },
+  'Kontaktujte nás': { cs: 'Kontaktujte nás', en: 'Contact us', uk: 'Зв’яжіться з нами' },
+  'Tvar · Kameň · Voda': { cs: 'Tvar · Kámen · Voda', en: 'Form · Stone · Water', uk: 'Форма · Камінь · Вода' },
+  'Luxusné': { cs: 'Luxusní', en: 'Luxury', uk: 'Розкішні' },
+  'kamenné': { cs: 'kamenná', en: 'stone', uk: 'кам’яні' },
+  'umývadlá.': { cs: 'umyvadla.', en: 'washbasins.', uk: 'умивальники.' },
+  'Ručne opracované solitéry z prírodného kameňa pre výnimočné kúpeľne. Každý kus má vlastný tvar a kresbu.': {
+    cs: 'Ručně opracované solitéry z přírodního kamene pro výjimečné koupelny. Každý kus má vlastní tvar a kresbu.',
+    en: 'Hand-finished natural stone pieces for distinctive bathrooms. Every piece has its own shape and grain.',
+    uk: 'Вироби з натурального каменю ручної обробки для особливих ванних кімнат. Кожен має власну форму й малюнок.',
+  },
+  'Pozrieť kolekciu': { cs: 'Prohlédnout kolekci', en: 'Explore collection', uk: 'Переглянути колекцію' },
+  'Ako to vzniká': { cs: 'Jak vzniká', en: 'How it is made', uk: 'Як це створюється' },
+  'Skulpturálne umývadlo z prírodného kameňa': { cs: 'Sochařské umyvadlo z přírodního kamene', en: 'Sculptural natural stone washbasin', uk: 'Скульптурний умивальник із натурального каменю' },
+  'prírodný': { cs: 'přírodní', en: 'natural', uk: 'натуральний' },
+  'kameň': { cs: 'kámen', en: 'stone', uk: 'камінь' },
+  'Objednať': { cs: 'Nezávazně poptat', en: 'Enquire', uk: 'Надіслати запит' },
+  'ručná práca': { cs: 'ruční práce', en: 'handcrafted', uk: 'ручна робота' },
+  'prírodný kameň': { cs: 'přírodní kámen', en: 'natural stone', uk: 'натуральний камінь' },
+  'jediný exemplár': { cs: 'jediný originál', en: 'one of a kind', uk: 'єдиний екземпляр' },
+  'pokojné rána': { cs: 'klidná rána', en: 'calm mornings', uk: 'спокійні ранки' },
+  '01 / náš prístup': { cs: '01 / náš přístup', en: '01 / our approach', uk: '01 / наш підхід' },
+  'Nie ideálny.': { cs: 'Ne dokonalý.', en: 'Not perfect.', uk: 'Не ідеальний.' },
+  'Skutočný.': { cs: 'Skutečný.', en: 'Real.', uk: 'Справжній.' },
+  'V SKALA neopravujeme prírodu. Odhaľujeme ju — brúsime líniu, zachovávame žilky, ponechávame haptickosť. Každý tvar sa rodí z konkrétneho kameňa, nie naopak.': {
+    cs: 'V SKALA přírodu neopravujeme. Odhalujeme ji — brousíme linii, zachováváme žilky i přirozený povrch. Každý tvar vzniká z konkrétního kamene, ne naopak.',
+    en: 'At SKALA, we do not correct nature. We reveal it—refining the lines, preserving the veins and natural feel. Each form begins with a particular stone, not the other way around.',
+    uk: 'У SKALA ми не виправляємо природу, а відкриваємо її: шліфуємо лінії, зберігаємо прожилки й фактуру. Кожна форма народжується з конкретного каменю, а не навпаки.',
+  },
+  'Kameň spracúvame ručne s dôrazom na detail a rešpektom k materiálu.': {
+    cs: 'Kámen opracováváme ručně s důrazem na detail a respektem k materiálu.',
+    en: 'We work the stone by hand, with attention to detail and respect for the material.',
+    uk: 'Ми обробляємо камінь вручну, уважно до деталей і з повагою до матеріалу.',
+  },
+  '02 / hotové tvary': { cs: '02 / hotové tvary', en: '02 / finished pieces', uk: '02 / готові форми' },
+  'Vyberte si svoje': { cs: 'Vyberte si své', en: 'Find your', uk: 'Оберіть свій' },
+  'umývadlo.': { cs: 'umyvadlo.', en: 'washbasin.', uk: 'умивальник.' },
+  'Každé umývadlo SKALA je ručne opracovaný originál z prírodného kameňa. Objavte solitéry pre výnimočné kúpeľne.': {
+    cs: 'Každé umyvadlo SKALA je ručně opracovaný originál z přírodního kamene. Objevte solitéry pro výjimečné koupelny.',
+    en: 'Every SKALA washbasin is a hand-finished natural stone original. Discover statement pieces for distinctive bathrooms.',
+    uk: 'Кожен умивальник SKALA — оригінал із натурального каменю ручної обробки. Відкрийте для себе виразні вироби для особливих ванних кімнат.',
+  },
+  'Vaše fotografie, priamo v katalógu': { cs: 'Vaše fotografie přímo v katalogu', en: 'Your photos, right in the catalogue', uk: 'Ваші фото безпосередньо в каталозі' },
+  'Podržte prst na fotografii alebo klepnite na Pridať fotografiu.': { cs: 'Podržte prst na fotografii nebo klepněte na Přidat fotografii.', en: 'Press and hold a photo or tap Add photo.', uk: 'Натисніть і утримуйте фото або торкніться «Додати фото».' },
+  'Pridať umývadlo': { cs: 'Přidat umyvadlo', en: 'Add a washbasin', uk: 'Додати умивальник' },
+  'Zatiaľ tu nie sú žiadne umývadlá. Sledujte náš Instagram pre novinky.': { cs: 'Zatím tu nejsou žádná umyvadla. Sledujte novinky na Instagramu.', en: 'No washbasins here yet. Follow us on Instagram for updates.', uk: 'Поки що умивальників немає. Стежте за новинами в Instagram.' },
+  'Pridať prvé umývadlo a fotografie': { cs: 'Přidat první umyvadlo a fotografie', en: 'Add the first washbasin and photos', uk: 'Додати перший умивальник і фото' },
+  '03 / detaily, na ktorých záleží': { cs: '03 / detaily, na kterých záleží', en: '03 / details that matter', uk: '03 / важливі деталі' },
+  'Kameň si pýta': { cs: 'Kámen si žádá', en: 'Stone deserves', uk: 'Камінь потребує' },
+  'pozornosť.': { cs: 'pozornost.', en: 'attention.', uk: 'уваги.' },
+  'Pri výbere si pozrite fotografie, materiál a rozmery konkrétneho umývadla. Na podrobnosti o montáži, údržbe a doručení sa môžete opýtať v dopyte alebo na Instagrame.': {
+    cs: 'Při výběru si prohlédněte fotografie, materiál a rozměry konkrétního umyvadla. Na podrobnosti o montáži, údržbě a doručení se můžete zeptat v poptávce nebo na Instagramu.',
+    en: 'When choosing, review the photos, material and dimensions of each washbasin. Ask us about installation, care and delivery in an enquiry or on Instagram.',
+    uk: 'Під час вибору перегляньте фото, матеріал і розміри конкретного умивальника. Про монтаж, догляд і доставку можна запитати у зверненні або в Instagram.',
+  },
+  'Materiál a rozmery': { cs: 'Materiál a rozměry', en: 'Material and dimensions', uk: 'Матеріал і розміри' },
+  'Pri konkrétnom výrobku': { cs: 'U konkrétního výrobku', en: 'See each product', uk: 'Для кожного виробу' },
+  'Fotografie': { cs: 'Fotografie', en: 'Photos', uk: 'Фотографії' },
+  'Detail každého kusu': { cs: 'Detail každého kusu', en: 'Details of each piece', uk: 'Деталі кожного виробу' },
+  'Príslušenstvo a montáž': { cs: 'Příslušenství a montáž', en: 'Accessories and installation', uk: 'Аксесуари та монтаж' },
+  'Informácie na vyžiadanie': { cs: 'Informace na vyžádání', en: 'Details on request', uk: 'Інформація за запитом' },
+  'Dodanie': { cs: 'Doručení', en: 'Delivery', uk: 'Доставка' },
+  'Podľa dohody': { cs: 'Dle dohody', en: 'By arrangement', uk: 'За домовленістю' },
+  'Umývadlá z prírodného kameňa. Tvar pre vaše každodenné rituály.': { cs: 'Umyvadla z přírodního kamene. Tvar pro vaše každodenní rituály.', en: 'Natural stone washbasins. Form for your everyday rituals.', uk: 'Умивальники з натурального каменю. Форма для щоденних ритуалів.' },
+  'Navigácia': { cs: 'Navigace', en: 'Navigation', uk: 'Навігація' },
+  'Katalóg výrobkov': { cs: 'Katalog výrobků', en: 'Product catalogue', uk: 'Каталог товарів' },
+  'O nás': { cs: 'O nás', en: 'About us', uk: 'Про нас' },
+  'Starostlivosť o kameň': { cs: 'Péče o kámen', en: 'Stone care', uk: 'Догляд за каменем' },
+  'Sledujte nás': { cs: 'Sledujte nás', en: 'Follow us', uk: 'Стежте за нами' },
+  'Kameň sa neopakuje. A to je dobre.': { cs: 'Kámen se neopakuje. A to je dobře.', en: 'No two stones are alike. That is a good thing.', uk: 'Камінь не повторюється. І це добре.' },
+  'Kolekcie': { cs: 'Kolekce', en: 'Collections', uk: 'Колекції' },
+  'Umývadlá': { cs: 'Umyvadla', en: 'Washbasins', uk: 'Умивальники' },
+  'Dávkovače mydla': { cs: 'Dávkovače mýdla', en: 'Soap dispensers', uk: 'Дозатори мила' },
+  'Poháre na zubné kefky': { cs: 'Kelímky na zubní kartáčky', en: 'Toothbrush cups', uk: 'Склянки для зубних щіток' },
+  'Mydelničky na mydlo': { cs: 'Mýdlenky', en: 'Soap dishes', uk: 'Мильниці' },
+  'Batérie': { cs: 'Vodovodní baterie', en: 'Faucets', uk: 'Змішувачі' },
+  'Ventily Click-Clack': { cs: 'Ventily Click-Clack', en: 'Click-Clack valves', uk: 'Клапани Click-Clack' },
+  'Vybrať kategóriu': { cs: 'Vybrat kategorii', en: 'Choose a category', uk: 'Вибрати категорію' },
+  'Zobraziť všetky produkty': { cs: 'Zobrazit všechny produkty', en: 'Show all products', uk: 'Показати всі товари' },
+  'Zvolená kategória:': { cs: 'Vybraná kategorie:', en: 'Selected category:', uk: 'Вибрана категорія:' },
+  'V kategórii': { cs: 'V kategorii', en: 'There are no products in', uk: 'У категорії' },
+  'zatiaľ nie sú produkty.': { cs: 'zatím nejsou žádné produkty.', en: 'there are no products yet.', uk: 'поки що немає товарів.' },
+  'Načítavam katalóg...': { cs: 'Načítám katalog...', en: 'Loading catalogue...', uk: 'Завантажуємо каталог...' },
+  'Nepodarilo sa načítať katalóg.': { cs: 'Katalog se nepodařilo načíst.', en: 'Could not load the catalogue.', uk: 'Не вдалося завантажити каталог.' },
+  'Skúsiť znova': { cs: 'Zkusit znovu', en: 'Try again', uk: 'Спробувати знову' },
+  'Cena': { cs: 'Cena', en: 'Price', uk: 'Ціна' },
+  'Rozmery': { cs: 'Rozměry', en: 'Dimensions', uk: 'Розміри' },
+  'Hmotnosť': { cs: 'Hmotnost', en: 'Weight', uk: 'Вага' },
+  'Materiál': { cs: 'Materiál', en: 'Material', uk: 'Матеріал' },
+  'Cena na vyžiadanie': { cs: 'Cena na vyžádání', en: 'Price on request', uk: 'Ціна за запитом' },
+  'V ponuke': { cs: 'V nabídce', en: 'Available', uk: 'У наявності' },
+  'PREDANÉ': { cs: 'PRODÁNO', en: 'SOLD', uk: 'ПРОДАНО' },
+  'BEZ FOTOGRAFIE': { cs: 'BEZ FOTOGRAFIE', en: 'NO PHOTO', uk: 'БЕЗ ФОТО' },
+  'Predchádzajúca fotka': { cs: 'Předchozí fotografie', en: 'Previous photo', uk: 'Попереднє фото' },
+  'Nasledujúca fotka': { cs: 'Další fotografie', en: 'Next photo', uk: 'Наступне фото' },
+  'Uložiť': { cs: 'Uložit', en: 'Save', uk: 'Зберегти' },
+  'Uložené': { cs: 'Uloženo', en: 'Saved', uk: 'Збережено' },
+  'Do košíka': { cs: 'Do košíku', en: 'Add to basket', uk: 'До кошика' },
+  'Pridať do košíka': { cs: 'Přidat do košíku', en: 'Add to basket', uk: 'Додати до кошика' },
+  'V košíku': { cs: 'V košíku', en: 'In basket', uk: 'У кошику' },
+  'Nedostupné': { cs: 'Nedostupné', en: 'Unavailable', uk: 'Недоступно' },
+  'Obľúbené': { cs: 'Oblíbené', en: 'Favourites', uk: 'Обране' },
+  'Zavrieť': { cs: 'Zavřít', en: 'Close', uk: 'Закрити' },
+  'Zavrieť menu': { cs: 'Zavřít nabídku', en: 'Close menu', uk: 'Закрити меню' },
+  'Otvoriť menu': { cs: 'Otevřít nabídku', en: 'Open menu', uk: 'Відкрити меню' },
+  'Košík': { cs: 'Košík', en: 'Basket', uk: 'Кошик' },
+  'Kontakt': { cs: 'Kontakt', en: 'Contact', uk: 'Контакти' },
+  'Zavrieť kontakty': { cs: 'Zavřít kontakty', en: 'Close contacts', uk: 'Закрити контакти' },
+  'Zavolať': { cs: 'Zavolat', en: 'Call', uk: 'Зателефонувати' },
+  'Dopyt prijatý': { cs: 'Poptávka odeslána', en: 'Enquiry received', uk: 'Запит надіслано' },
+  'Späť do katalógu': { cs: 'Zpět do katalogu', en: 'Back to catalogue', uk: 'Назад до каталогу' },
+  'Zatiaľ je prázdny': { cs: 'Zatím je prázdný', en: 'Your basket is empty', uk: 'Поки що порожній' },
+  'Pridajte si do košíka umývadlá, o ktoré máte záujem, a pošlite jeden spoločný dopyt.': { cs: 'Přidejte do košíku umyvadla, která vás zajímají, a odešlete jednu společnou poptávku.', en: 'Add the washbasins you are interested in and send one combined enquiry.', uk: 'Додайте до кошика умивальники, які вас цікавлять, і надішліть один спільний запит.' },
+  'Meno a priezvisko': { cs: 'Jméno a příjmení', en: 'Full name', uk: 'Ім’я та прізвище' },
+  'Telefón': { cs: 'Telefon', en: 'Phone', uk: 'Телефон' },
+  'Gmail': { cs: 'E-mail', en: 'Email', uk: 'Електронна пошта' },
+  'Ako vás môžeme oslovovať?': { cs: 'Jak vás můžeme oslovovat?', en: 'How should we address you?', uk: 'Як до вас звертатися?' },
+  'Zadajte platné telefónne číslo': { cs: 'Zadejte platné telefonní číslo', en: 'Enter a valid phone number', uk: 'Введіть коректний номер телефону' },
+  'Uveďte, prosím, vaše meno': { cs: 'Uveďte prosím své jméno', en: 'Please enter your name', uk: 'Вкажіть, будь ласка, ваше ім’я' },
+  'Zadajte platnú Gmail adresu': { cs: 'Zadejte platnou e-mailovou adresu', en: 'Enter a valid Gmail address', uk: 'Введіть коректну адресу Gmail' },
+  'Voliteľná anonymná analytika': { cs: 'Volitelná anonymní analytika', en: 'Optional anonymous analytics', uk: 'Необов’язкова анонімна аналітика' },
+  'Odmietnuť': { cs: 'Odmítnout', en: 'Decline', uk: 'Відхилити' },
+  'Povoliť analytiku': { cs: 'Povolit analytiku', en: 'Allow analytics', uk: 'Дозволити аналітику' },
+  'Umývadlo z prírodného kameňa': { cs: 'Umyvadlo z přírodního kamene', en: 'Natural stone washbasin', uk: 'Умивальник із натурального каменю' },
+  'KOLEKCIA': { cs: 'KOLEKCE', en: 'COLLECTION', uk: 'КОЛЕКЦІЯ' },
+  'Dávkovač mydla': { cs: 'Dávkovač mýdla', en: 'Soap dispenser', uk: 'Дозатор мила' },
+};
+
+export function translate(locale: Locale, source: string): string {
+  return locale === 'sk' ? source : phrases[source]?.[locale] ?? source;
+}
+
+function mapStrings<T>(value: T, locale: Locale): T {
+  if (typeof value === 'string') return translate(locale, value) as T;
+  if (Array.isArray(value)) return value.map((item) => mapStrings(item, locale)) as T;
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [
+      key,
+      key === 'instagramUrl' ? item : mapStrings(item, locale),
+    ])) as T;
+  }
+  return value;
+}
+
+export function localizeSiteContent(content: SiteContent, locale: Locale): SiteContent {
+  const localized = mapStrings(content, locale);
+  if (locale !== 'sk') localized.textOverrides = {};
+  return localized;
+}
+
+const productCopy: Record<number, Partial<Record<Exclude<Locale, 'sk'>, Pick<Product, 'name' | 'subtitle' | 'kind'>>>> = {
+  1: {
+    cs: { name: 'Umyvadlo z přírodního kamene', kind: 'KOLEKCE', subtitle: 'Vnější 37,5/30/12,5 cm · Vnitřní 31/21,5/9 cm · Hmotnost: 22,5 kg · Materiál: mramor' },
+    en: { name: 'Natural stone washbasin', kind: 'COLLECTION', subtitle: 'Outer: 37.5/30/12.5 cm · Inner: 31/21.5/9 cm · Weight: 22.5 kg · Material: marble' },
+    uk: { name: 'Умивальник із натурального каменю', kind: 'КОЛЕКЦІЯ', subtitle: 'Зовнішні: 37,5/30/12,5 см · Внутрішні: 31/21,5/9 см · Вага: 22,5 кг · Матеріал: мармур' },
+  },
+  2: {
+    cs: { name: 'Umyvadlo z přírodního kamene 😎😎😎', kind: '1', subtitle: 'Skladem · Materiál: žula · Rozměry: 52 × 43 × 13 cm · Hmotnost: 40 kg' },
+    en: { name: 'Natural stone washbasin 😎😎😎', kind: '1', subtitle: 'In stock · Material: granite · Dimensions: 52 × 43 × 13 cm · Weight: 40 kg' },
+    uk: { name: 'Умивальник із натурального каменю 😎😎😎', kind: '1', subtitle: 'У наявності · Матеріал: граніт · Розміри: 52 × 43 × 13 см · Вага: 40 кг' },
+  },
+  3: {
+    cs: { name: 'Umyvadlo z přírodního kamene', kind: '1', subtitle: 'Vnější: 55/43,5 × 30/13,5 cm · Vnitřní: 42/31 × 20/10 cm · Hmotnost: 41 kg' },
+    en: { name: 'Natural stone washbasin', kind: '1', subtitle: 'Outer: 55/43.5 × 30/13.5 cm · Inner: 42/31 × 20/10 cm · Weight: 41 kg' },
+    uk: { name: 'Умивальник із натурального каменю', kind: '1', subtitle: 'Зовнішні: 55/43,5 × 30/13,5 см · Внутрішні: 42/31 × 20/10 см · Вага: 41 кг' },
+  },
+  4: {
+    cs: { name: 'Umyvadlo z přírodního kamene · skladem', kind: '1', subtitle: 'Skladem · Rozměry: 58/36/15 cm' },
+    en: { name: 'Natural stone washbasin · in stock', kind: '1', subtitle: 'In stock · Dimensions: 58/36/15 cm' },
+    uk: { name: 'Умивальник із натурального каменю · у наявності', kind: '1', subtitle: 'У наявності · Розміри: 58/36/15 см' },
+  },
+  5: {
+    cs: { name: 'Dávkovač mýdla', kind: 'Dávkovače mýdla', subtitle: 'Materiál: mramor · Rozměry: 20-15-10 · Hmotnost: 2 · Єєє' },
+    en: { name: 'Soap dispenser', kind: 'Soap dispenser', subtitle: 'Material: marble · Dimensions: 20-15-10 · Weight: 2 · Єєє' },
+    uk: { name: 'Дозатор мила', kind: 'Дозатори мила', subtitle: 'Матеріал: мармур · Розміри: 20-15-10 · Вага: 2 · Єєє' },
+  },
+};
+
+export function localizeProduct(product: Product, locale: Locale): Product {
+  return locale === 'sk' ? product : { ...product, ...productCopy[product.id]?.[locale] };
+}
