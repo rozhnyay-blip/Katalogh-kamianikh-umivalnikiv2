@@ -14,6 +14,7 @@ import { ContactDock } from '../components/ContactDock';
 import { AnalyticsConsent } from '../components/AnalyticsConsent';
 import { trackSiteEvent, trackSitePageView } from '../lib/analytics';
 import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
+import { LOCALES, localizeProduct, localizeSiteContent, translate, type Locale } from '../lib/localization';
 import { formatProductDetailLines } from '../lib/productDetails';
 import { CATALOG_CATEGORIES, type CatalogCategoryId } from '../lib/catalogCategories';
 
@@ -68,6 +69,15 @@ function getImageUrl(path: string) {
 }
 
 export function HomePage() {
+  const [locale, setLocale] = useState<Locale>(() => {
+    try {
+      const saved = window.localStorage.getItem('skala-locale');
+      return LOCALES.some((item) => item.code === saved) ? saved as Locale : 'sk';
+    } catch {
+      return 'sk';
+    }
+  });
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const { isLoaded, userId } = useAuth();
   const { data: owner, isPending: ownerStatusPending } = useGetOwnerStatus({
     query: { enabled: isLoaded, queryKey: [...getGetOwnerStatusQueryKey(), userId] },
@@ -75,7 +85,7 @@ export function HomePage() {
   const canEdit = Boolean(isLoaded && owner?.signedIn && owner?.isOwner);
   const canTrack = Boolean(isLoaded && !ownerStatusPending && owner && !owner.isOwner);
   const { data: storedContent, isLoading: contentLoading, isError: contentError } = useGetSiteContent();
-  const content = storedContent ?? SITE_CONTENT_DEFAULTS;
+  const content = localizeSiteContent(storedContent ?? SITE_CONTENT_DEFAULTS, locale);
   const queryClient = useQueryClient();
   const updateSiteContent = useUpdateSiteContent();
   const [savedIds, setSavedIds] = useState<number[]>(() => readStoredIds('skala-saved'));
@@ -92,6 +102,16 @@ export function HomePage() {
   const categoryTriggerRef = useRef<HTMLButtonElement>(null);
   const toplineRef = useRef<HTMLDivElement>(null);
   const toplineMenuTriggerRef = useRef<HTMLButtonElement>(null);
+  const languagePickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('skala-locale', locale);
+    } catch {
+      // Keep the selected language for this visit if storage is unavailable.
+    }
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const { data: products = [], isLoading, isError, refetch } = useListProducts();
   const activeCategory = CATALOG_CATEGORIES.find((category) => category.id === activeCatalogCategory);
@@ -176,6 +196,22 @@ export function HomePage() {
       document.removeEventListener('keydown', closeOnEscape);
     };
   }, [toplineMenuOpen]);
+
+  useEffect(() => {
+    if (!languageMenuOpen) return;
+    const closeOnOutsidePress = (event: PointerEvent) => {
+      if (event.target instanceof Node && !languagePickerRef.current?.contains(event.target)) setLanguageMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setLanguageMenuOpen(false);
+    };
+    document.addEventListener('pointerdown', closeOnOutsidePress);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsidePress);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [languageMenuOpen]);
 
   const selectCatalogCategory = (categoryId: CatalogCategoryId) => {
     setActiveCatalogCategory(categoryId);
@@ -277,9 +313,19 @@ export function HomePage() {
              </button>
              <button className="topline-cart-button" type="button" onClick={openCart} aria-haspopup="dialog" aria-label={`Košík, ${cartIds.length} položiek`}>
                <ShoppingCart size={18} aria-hidden="true" />
-               <span>Košík</span>
+                <span>{translate(locale, 'Košík')}</span>
                <span className="topline-cart-count" aria-live="polite">{cartIds.length}</span>
              </button>
+              <div className="language-picker" ref={languagePickerRef}>
+                <button className="language-picker-trigger" type="button" aria-label={`Language: ${LOCALES.find((item) => item.code === locale)?.label}`} aria-expanded={languageMenuOpen} onClick={() => setLanguageMenuOpen((open) => !open)}>
+                  {LOCALES.find((item) => item.code === locale)?.flag}
+                </button>
+                {languageMenuOpen && <div className="language-picker-menu" role="group" aria-label="Language">
+                  {LOCALES.map((item) => <button key={item.code} type="button" aria-pressed={locale === item.code} onClick={() => { setLocale(item.code); setLanguageMenuOpen(false); }}>
+                    <span aria-hidden="true">{item.flag}</span><span>{item.label}</span>
+                  </button>)}
+                </div>}
+              </div>
            </div>
         </div>
         {toplineMenuOpen && (
@@ -293,7 +339,7 @@ export function HomePage() {
                 aria-pressed={activeCatalogCategory === category.id}
                 onClick={() => selectCatalogCategory(category.id)}
               >
-                <span>{category.label}</span>
+                <span>{translate(locale, category.label)}</span>
                 <ArrowRight size={15} aria-hidden="true" />
               </button>
             ))}
