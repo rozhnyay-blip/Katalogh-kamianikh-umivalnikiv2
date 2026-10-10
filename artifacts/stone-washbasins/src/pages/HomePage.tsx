@@ -330,7 +330,7 @@ export function HomePage() {
         </div>
         {toplineMenuOpen && (
           <nav className="topline-menu-panel" id="topline-menu" aria-label="Hlavné menu">
-            <span className="topline-menu-heading">Kolekcie</span>
+            <span className="topline-menu-heading">{translate(locale, 'Kolekcie')}</span>
             {CATALOG_CATEGORIES.map((category) => (
               <button
                 className="topline-menu-category"
@@ -399,8 +399,8 @@ export function HomePage() {
                             onClick={() => selectCatalogCategory(category.id)}
                           >
                             <span className="hero-category-option-copy">
-                              <strong>{category.label}</strong>
-                              <small>{category.detail}</small>
+                              <strong>{translate(locale, category.label)}</strong>
+                              <small>{translate(locale, category.detail)}</small>
                             </span>
                             <ArrowRight size={15} aria-hidden="true" />
                           </button>
@@ -471,24 +471,24 @@ export function HomePage() {
 
             {activeCategory && (
               <div className="catalog-active-filter" aria-live="polite">
-                <span>Zvolená kategória: <strong>{activeCategory.label}</strong></span>
-                <button type="button" onClick={showAllCatalogProducts}>Zobraziť všetky produkty</button>
+                <span>{translate(locale, 'Zvolená kategória:')} <strong>{translate(locale, activeCategory.label)}</strong></span>
+                <button type="button" onClick={showAllCatalogProducts}>{translate(locale, 'Zobraziť všetky produkty')}</button>
               </div>
             )}
 
             {isLoading ? (
               <div className="catalog-status">
-                <p>Načítavam katalóg...</p>
+                <p>{translate(locale, 'Načítavam katalóg...')}</p>
               </div>
             ) : isError ? (
               <div className="catalog-status error-state">
-                <p>Nepodarilo sa načítať katalóg.</p>
-                <button className="button-quiet" onClick={() => refetch()}>Skúsiť znova</button>
+                <p>{translate(locale, 'Nepodarilo sa načítať katalóg.')}</p>
+                <button className="button-quiet" onClick={() => refetch()}>{translate(locale, 'Skúsiť znova')}</button>
               </div>
             ) : catalogProducts.length === 0 ? (
               <div className="catalog-status">
-                 <p>{activeCategory ? `V kategórii ${activeCategory.label} zatiaľ nie sú produkty.` : content.catalog.emptyMessage}</p>
-                 {activeCategory && <button className="button-quiet" type="button" onClick={showAllCatalogProducts}>Zobraziť všetky produkty</button>}
+                 <p>{activeCategory ? `${translate(locale, 'V kategórii')} ${translate(locale, activeCategory.label)} ${translate(locale, 'zatiaľ nie sú produkty.')}` : content.catalog.emptyMessage}</p>
+                 {activeCategory && <button className="button-quiet" type="button" onClick={showAllCatalogProducts}>{translate(locale, 'Zobraziť všetky produkty')}</button>}
               </div>
             ) : (
               <div className="catalog-grid">
@@ -496,6 +496,7 @@ export function HomePage() {
                   <ProductCard
                     key={product.id}
                     product={product}
+                    locale={locale}
                     canEdit={canEdit}
                     saved={savedIds.includes(product.id)}
                     isInCart={cartIds.includes(product.id)}
@@ -598,6 +599,7 @@ export function HomePage() {
       {savedNotice && <div className="saved-toast" role="status">{savedNotice}</div>}
       {savedOpen && (
         <SavedItemsDialog
+          locale={locale}
           items={savedItems}
           cartIds={cartIds}
           isLoading={isLoading}
@@ -638,12 +640,13 @@ export function HomePage() {
           }}
           ownerMode={canEdit}
           analyticsEnabled={canTrack}
+          locale={locale}
         />
       )}
-      <ContactDock content={content} analyticsEnabled={canTrack} />
-      {canTrack && <AnalyticsConsent />}
+      <ContactDock content={content} analyticsEnabled={canTrack} locale={locale} />
+      {canTrack && <AnalyticsConsent locale={locale} />}
       <SiteTextEditorOverlay
-        enabled={canEdit && Boolean(storedContent) && !contentLoading && !contentError}
+        enabled={canEdit && locale === 'sk' && Boolean(storedContent) && !contentLoading && !contentError}
         overrides={content.textOverrides}
         isSaving={updateSiteContent.isPending}
         onSave={saveTextOverride}
@@ -655,6 +658,7 @@ export function HomePage() {
 
 function ProductCard({
   product,
+  locale,
   canEdit,
   saved,
   isInCart,
@@ -662,6 +666,7 @@ function ProductCard({
   onAddToCart,
 }: {
   product: Product;
+  locale: Locale;
   canEdit: boolean;
   saved: boolean;
   isInCart: boolean;
@@ -669,6 +674,7 @@ function ProductCard({
   onAddToCart: (product: Product) => void;
 }) {
   const [imageIndex, setImageIndex] = useState(0);
+  const displayProduct = localizeProduct(product, locale);
   const imageCount = Math.min(product.images.length, 10);
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
   const preloadedImages = useRef(new Map<string, HTMLImageElement>());
@@ -739,7 +745,7 @@ function ProductCard({
             <ProductImage
               className="product-image"
               path={product.images[imageIndex] || product.images[0]}
-              alt={`Umývadlo ${product.name}`}
+              alt={`${translate(locale, 'Umývadlá')} ${displayProduct.name}`}
               onLoad={preloadNextImage}
             />
           ) : (
@@ -747,12 +753,12 @@ function ProductCard({
           )}
           <span className="media-shade" aria-hidden="true" />
           <div className="product-meta-top">
-            <span className="product-kind">{product.kind}</span>
+            <span className="product-kind">{displayProduct.kind}</span>
             <button
               className={`save-button ${saved ? 'is-saved' : ''}`}
               type="button"
               onClick={() => onToggleSaved(product)}
-              aria-label={saved ? `Odstrániť ${product.name} z uložených` : `Uložiť ${product.name}`}
+              aria-label={saved ? `${translate(locale, 'Odstrániť')} ${displayProduct.name} ${translate(locale, 'z uložených')}` : `${translate(locale, 'Uložiť')} ${displayProduct.name}`}
             >
               <Heart size={15} strokeWidth={saved ? 2.6 : 1.7} fill={saved ? 'currentColor' : 'none'} />
             </button>
@@ -765,7 +771,7 @@ function ProductCard({
                 onClick={previousImage}
                 onPointerEnter={() => preloadImageAt((imageIndex - 1 + imageCount) % imageCount)}
                 onFocus={() => preloadImageAt((imageIndex - 1 + imageCount) % imageCount)}
-                aria-label="Predchádzajúca fotka"
+                aria-label={translate(locale, 'Predchádzajúca fotka')}
               >
                 <ArrowLeft size={14} />
               </button>
@@ -775,7 +781,7 @@ function ProductCard({
                 onClick={nextImage}
                 onPointerEnter={() => preloadImageAt((imageIndex + 1) % imageCount)}
                 onFocus={() => preloadImageAt((imageIndex + 1) % imageCount)}
-                aria-label="Nasledujúca fotka"
+                aria-label={translate(locale, 'Nasledujúca fotka')}
               >
                 <ArrowRight size={14} />
               </button>
@@ -787,21 +793,21 @@ function ProductCard({
             </span>
           )}
           {!product.available && (
-            <div className="product-badge-unavailable">PREDANÉ</div>
+            <div className="product-badge-unavailable">{translate(locale, 'PREDANÉ')}</div>
           )}
         </div>
       </EditableProductMedia>
       <div className="product-info">
         <div className="product-info-main">
-          <h3 className="product-name">{product.name}</h3>
+          <h3 className="product-name">{displayProduct.name}</h3>
           <p className="product-details">
-            {formatProductDetailLines(product.subtitle).map((line, index) => (
+            {formatProductDetailLines(displayProduct.subtitle).map((line, index) => (
               <span key={`${index}-${line}`}>{line}</span>
             ))}
           </p>
         </div>
         <span className="product-price">
-          {product.price?.trim() ? formatProductPrice(product.price) : 'Cena na vyžiadanie'}
+          {product.price?.trim() ? formatProductPrice(product.price) : translate(locale, 'Cena na vyžiadanie')}
         </span>
         <div className="product-actions">
           <button
@@ -809,16 +815,16 @@ function ProductCard({
             type="button"
             onClick={() => onToggleSaved(product)}
           >
-            {saved ? 'Uložené' : 'Uložiť'}
+            {translate(locale, saved ? 'Uložené' : 'Uložiť')}
           </button>
           <button
             className="order-link primary add-to-cart"
             type="button"
             onClick={() => onAddToCart(product)}
             disabled={!product.available}
-            aria-label={isInCart ? `${product.name} je v košíku` : `Pridať ${product.name} do košíka`}
+            aria-label={isInCart ? `${displayProduct.name} ${translate(locale, 'je v košíku')}` : `${translate(locale, 'Pridať')} ${displayProduct.name} ${translate(locale, 'do košíka')}`}
           >
-            {isInCart ? 'V košíku' : product.available ? 'Pridať do košíka' : 'Nedostupné'}
+            {translate(locale, isInCart ? 'V košíku' : product.available ? 'Pridať do košíka' : 'Nedostupné')}
             {isInCart ? <Check size={14} /> : <ShoppingCart size={14} />}
           </button>
         </div>
