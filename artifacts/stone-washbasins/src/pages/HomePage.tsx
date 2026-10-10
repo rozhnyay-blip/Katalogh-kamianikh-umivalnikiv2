@@ -14,7 +14,7 @@ import { ContactDock } from '../components/ContactDock';
 import { AnalyticsConsent } from '../components/AnalyticsConsent';
 import { trackSiteEvent, trackSitePageView } from '../lib/analytics';
 import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
-import { LOCALES, localizeProduct, localizeSiteContent, translate, type Locale } from '../lib/localization';
+import { LOCALES, localizeProduct, localizeSiteContent, translate, translateTemplate, type Locale } from '../lib/localization';
 import { formatProductDetailLines } from '../lib/productDetails';
 import { CATALOG_CATEGORIES, type CatalogCategoryId } from '../lib/catalogCategories';
 
@@ -460,7 +460,7 @@ export function HomePage() {
                  <span className="eyebrow">{content.catalog.eyebrow}</span>
                  <h2 className="display catalog-title">{content.catalog.titleLead}<br /><em>{content.catalog.titleEmphasis}</em></h2>
                   <p className="catalog-materials-note">
-                    V ponuke SKALA nájdete kamenné umývadlá z mramoru, granitu (žuly), labradoritu a pieskovca. Každý kus má osobitú kresbu prírodného kameňa. Vyrábame aj na objednávku.
+                    {translate(locale, 'V ponuke SKALA nájdete kamenné umývadlá z mramoru, granitu (žuly), labradoritu a pieskovca. Každý kus má osobitú kresbu prírodného kameňa. Vyrábame aj na objednávku.')}
                   </p>
               </div>
                <p className="catalog-intro">{content.catalog.intro}</p>
@@ -621,13 +621,13 @@ export function HomePage() {
         <OrderModal
           items={heroOrderOpen ? [] : cartItems}
           featured={heroOrderOpen ? {
-            productName: 'Umývadlo z hlavnej fotografie',
-            name: 'Umývadlo z hlavnej fotografie',
+            productName: translate(locale, 'Umývadlo z hlavnej fotografie'),
+            name: translate(locale, 'Umývadlo z hlavnej fotografie'),
             image: heroProductImage,
             details: [
-              `Cena: ${content.hero.price}`,
-              `Rozmery: ${content.hero.dimensions}`,
-              `Hmotnosť: ${content.hero.weight}`,
+              `${translate(locale, 'Cena')}: ${content.hero.price}`,
+              `${translate(locale, 'Rozmery')}: ${content.hero.dimensions}`,
+              `${translate(locale, 'Hmotnosť')}: ${content.hero.weight}`,
             ],
           } : undefined}
           onRemove={(id) => setCartIds((current) => current.filter((itemId) => itemId !== id))}
@@ -843,6 +843,7 @@ type FeaturedInquiry = {
 };
 
 function OrderModal({
+  locale,
   items,
   featured,
   onRemove,
@@ -851,6 +852,7 @@ function OrderModal({
   ownerMode,
   analyticsEnabled,
 }: {
+  locale: Locale;
   items: CartEntry[];
   featured?: FeaturedInquiry;
   onRemove: (id: number) => void;
@@ -880,15 +882,15 @@ function OrderModal({
     event.preventDefault();
     if (createOrder.isPending) return;
     const nextErrors: Record<string, string> = {};
-    if (!hasEnquiryTarget) nextErrors.form = 'Košík je prázdny.';
+    if (!hasEnquiryTarget) nextErrors.form = translate(locale, 'Košík je prázdny.');
     if (hasUnavailableProducts) {
-      nextErrors.form = 'Niektorý produkt už nie je dostupný. Odstráňte ho z košíka a skúste znova.';
+      nextErrors.form = translate(locale, 'Niektorý produkt už nie je dostupný. Odstráňte ho z košíka a skúste znova.');
     }
-    if (form.name.trim().length < 2) nextErrors.name = 'Uveďte, prosím, vaše meno';
+    if (form.name.trim().length < 2) nextErrors.name = translate(locale, 'Uveďte, prosím, vaše meno');
     const phoneDigits = form.phone.replace(/\D/g, '');
-    if (!/^[+0-9\s()\-]+$/.test(form.phone.trim()) || phoneDigits.length < 7 || phoneDigits.length > 15) nextErrors.phone = 'Zadajte platné telefónne číslo';
+    if (!/^[+0-9\s()\-]+$/.test(form.phone.trim()) || phoneDigits.length < 7 || phoneDigits.length > 15) nextErrors.phone = translate(locale, 'Zadajte platné telefónne číslo');
     if (!/^[^\s@]+@gmail\.com$/i.test(form.email.trim())) {
-      nextErrors.email = 'Zadajte platnú Gmail adresu';
+      nextErrors.email = translate(locale, 'Zadajte platnú Gmail adresu');
     }
     
     setErrors(nextErrors);
@@ -915,7 +917,7 @@ function OrderModal({
           setSubmitted(true);
         },
         onError: () => {
-          setErrors({ form: 'Dopyt sa nepodarilo odoslať. Skontrolujte, či sú vybrané produkty stále dostupné, a skúste to znova.' });
+          setErrors({ form: translate(locale, 'Dopyt sa nepodarilo odoslať. Skontrolujte, či sú vybrané produkty stále dostupné, a skúste to znova.') });
         }
       });
     }
@@ -928,31 +930,31 @@ function OrderModal({
   return (
     <div className="modal-backdrop" role="presentation" onMouseDown={(event) => !createOrder.isPending && event.target === event.currentTarget && onClose()}>
       <section ref={modalRef} className="order-modal" role="dialog" aria-modal="true" aria-labelledby="order-title">
-        <button className="modal-close" type="button" onClick={onClose} disabled={createOrder.isPending} aria-label="Zavrieť formulár">
+        <button className="modal-close" type="button" onClick={onClose} disabled={createOrder.isPending} aria-label={translate(locale, 'Zavrieť formulár')}>
           <X size={19} />
         </button>
         {submitted && receiptId ? (
           <div className="success-state">
             <div className="success-mark"><Check size={25} /></div>
-            <h2 className="display" id="order-title">Dopyt prijatý</h2>
+            <h2 className="display" id="order-title">{translate(locale, 'Dopyt prijatý')}</h2>
             <p>{featured
-              ? `Váš dopyt č. ${receiptId} na ${featured.productName.toLowerCase()} bol uložený. Majiteľ vás bude kontaktovať s ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.`
-              : `Váš spoločný dopyt č. ${receiptId} na vybrané produkty bol uložený. Majiteľ vás bude kontaktovať s potvrdením dostupnosti a ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.`}</p>
-            <button className="button-primary" type="button" onClick={onClose}>Späť do katalógu</button>
+              ? translateTemplate(locale, 'Váš dopyt č. {id} na {product} bol uložený. Majiteľ vás bude kontaktovať s ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.', { id: receiptId, product: featured.productName.toLowerCase() })
+              : translateTemplate(locale, 'Váš spoločný dopyt č. {id} na vybrané produkty bol uložený. Majiteľ vás bude kontaktovať s potvrdením dostupnosti a ďalšími informáciami. Odoslanie formulára nie je platbou ani záväznou objednávkou.', { id: receiptId })}</p>
+            <button className="button-primary" type="button" onClick={onClose}>{translate(locale, 'Späť do katalógu')}</button>
           </div>
         ) : items.length === 0 && !featured ? (
           <div className="cart-empty-state">
-            <span className="eyebrow">Košík</span>
-            <h2 className="display modal-title" id="order-title">Zatiaľ je prázdny</h2>
-            <p>Pridajte si do košíka umývadlá, o ktoré máte záujem, a pošlite jeden spoločný dopyt.</p>
+            <span className="eyebrow">{translate(locale, 'Košík')}</span>
+            <h2 className="display modal-title" id="order-title">{translate(locale, 'Zatiaľ je prázdny')}</h2>
+            <p>{translate(locale, 'Pridajte si do košíka umývadlá, o ktoré máte záujem, a pošlite jeden spoločný dopyt.')}</p>
             {ownerMode && <OwnerCartTools />}
-            <button className="button-primary" type="button" onClick={onClose}>Späť do katalógu</button>
+            <button className="button-primary" type="button" onClick={onClose}>{translate(locale, 'Späť do katalógu')}</button>
           </div>
         ) : (
           <>
-            <span className="eyebrow">{featured ? 'Dopyt · hlavné umývadlo' : 'Košík · spoločný dopyt'}</span>
+            <span className="eyebrow">{translate(locale, featured ? 'Dopyt · hlavné umývadlo' : 'Košík · spoločný dopyt')}</span>
             <h2 className="display modal-title" id="order-title">
-              {featured ? <>Máte záujem?<br /><em>Napíšte nám.</em></> : <>Váš výber —<br /><em>na jednom mieste</em></>}
+              {featured ? <>{translate(locale, 'Máte záujem?')}<br /><em>{translate(locale, 'Napíšte nám.')}</em></> : <>{translate(locale, 'Váš výber —')}<br /><em>{translate(locale, 'na jednom mieste')}</em></>}
             </h2>
             <div className="cart-items-list" aria-label="Vybrané produkty">
               {featured && (
@@ -984,11 +986,11 @@ function OrderModal({
                     )}
                   </div>
                   <div className="cart-item-card-content">
-                    <span className="cart-item-kind">{product?.kind ?? 'Produkt'}</span>
-                    <strong className="cart-item-name">{product?.name ?? `Produkt #${id}`}</strong>
+                    <span className="cart-item-kind">{product ? localizeProduct(product, locale).kind : translate(locale, 'Produkt')}</span>
+                    <strong className="cart-item-name">{product ? localizeProduct(product, locale).name : `Produkt #${id}`}</strong>
                     {product?.subtitle && (
                       <p className="cart-item-details">
-                        {formatProductDetailLines(product.subtitle).map((line, index) => (
+                        {formatProductDetailLines(localizeProduct(product, locale).subtitle).map((line, index) => (
                           <span key={`${index}-${line}`}>{line}</span>
                         ))}
                       </p>
@@ -1014,37 +1016,37 @@ function OrderModal({
               ))}
             </div>
             {ownerMode && <OwnerCartTools />}
-            <p className="modal-product">Cena je uvedená pri každom produkte. Dopyt nie je platbou ani záväznou objednávkou.</p>
+          <p className="modal-product">{translate(locale, 'Cena je uvedená pri každom produkte. Dopyt nie je platbou ani záväznou objednávkou.')}</p>
             <form className="order-form" onSubmit={submitOrder} noValidate>
               <div className="field">
-                <label htmlFor="order-name">Meno a priezvisko</label>
-                <input id="order-name" type="text" value={form.name} onChange={(event) => updateField('name', event.target.value)} placeholder="Ako vás môžeme oslovovať?" autoComplete="name" disabled={createOrder.isPending} />
+              <label htmlFor="order-name">{translate(locale, 'Meno a priezvisko')}</label>
+                <input id="order-name" type="text" value={form.name} onChange={(event) => updateField('name', event.target.value)} placeholder={translate(locale, 'Ako vás môžeme oslovovať?')} autoComplete="name" disabled={createOrder.isPending} />
                 {errors.name && <span className="field-error">{errors.name}</span>}
               </div>
               <div className="field">
-                <label htmlFor="order-phone">Telefón</label>
+              <label htmlFor="order-phone">{translate(locale, 'Telefón')}</label>
                 <input id="order-phone" type="tel" value={form.phone} onChange={(event) => updateField('phone', event.target.value)} placeholder="+421 900 000 000" autoComplete="tel" disabled={createOrder.isPending} />
                 {errors.phone && <span className="field-error">{errors.phone}</span>}
               </div>
               <div className="field">
-                <label htmlFor="order-email">Gmail</label>
+              <label htmlFor="order-email">{translate(locale, 'Gmail')}</label>
                 <input id="order-email" type="email" value={form.email} onChange={(event) => updateField('email', event.target.value)} placeholder="vasa.adresa@gmail.com" autoComplete="email" disabled={createOrder.isPending} />
                 {errors.email && <span className="field-error">{errors.email}</span>}
               </div>
               <div className="field">
-                <label htmlFor="order-message">Správa (voliteľná)</label>
-                <textarea id="order-message" value={form.message} onChange={(event) => updateField('message', event.target.value)} placeholder="Čo by ste sa chceli opýtať?" maxLength={2000} rows={4} disabled={createOrder.isPending} />
+                <label htmlFor="order-message">{translate(locale, 'Správa (voliteľná)')}</label>
+                <textarea id="order-message" value={form.message} onChange={(event) => updateField('message', event.target.value)} placeholder={translate(locale, 'Čo by ste sa chceli opýtať?')} maxLength={2000} rows={4} disabled={createOrder.isPending} />
               </div>
               {errors.form && <div className="field-error">{errors.form}</div>}
-              <p className="text-xs text-muted-foreground">{featured
+              <p className="text-xs text-muted-foreground">{translate(locale, featured
                 ? 'Kontaktné údaje a správu odošlete majiteľovi SKALA, aby vám mohol odpovedať na dopyt.'
-                : 'Kontaktné údaje a správu odošlete majiteľovi SKALA, aby mohol vybaviť spoločný dopyt.'}</p>
+                : 'Kontaktné údaje a správu odošlete majiteľovi SKALA, aby mohol vybaviť spoločný dopyt.')}</p>
               <button className="form-submit" type="submit" disabled={createOrder.isPending || hasUnavailableProducts}>
                 {createOrder.isPending
-                  ? 'Odosielam...'
+                  ? translate(locale, 'Odosielam...')
                   : featured
-                    ? 'Odoslať dopyt'
-                    : `Odoslať spoločný dopyt (${availableProducts.length})`} <ArrowRight size={16} />
+                    ? translate(locale, 'Odoslať dopyt')
+                    : `${translate(locale, 'Spoločný dopyt')} (${availableProducts.length})`} <ArrowRight size={16} />
               </button>
             </form>
           </>

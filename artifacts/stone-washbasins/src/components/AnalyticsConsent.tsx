@@ -26,9 +26,7 @@ export function AnalyticsConsent({ locale }: { locale: Locale }) {
           <div>
             <h2 id="analytics-consent-title">{translate(locale, "Voliteľná anonymná analytika")}</h2>
             <p>
-              V prehľade SKALA po súhlase zaznamenáme návštevy a vybrané akcie pod náhodným ID
-              relácie a prípadne ID produktu. Neukladáme IP adresu, meno,
-              telefón ani e-mail. Voľbu môžete kedykoľvek zmeniť.
+              {translate(locale, "V prehľade SKALA po súhlase zaznamenáme návštevy a vybrané akcie pod náhodným ID relácie a prípadne ID produktu. Neukladáme IP adresu, meno, telefón ani e-mail. Voľbu môžete kedykoľvek zmeniť.")}
             </p>
           </div>
           <div className="analytics-consent-actions">
@@ -45,9 +43,9 @@ export function AnalyticsConsent({ locale }: { locale: Locale }) {
           type="button"
           className="analytics-consent-settings"
           onClick={() => setIsOpen(true)}
-          aria-label="Zmeniť nastavenie analytiky"
+          aria-label={translate(locale, "Zmeniť nastavenie analytiky")}
         >
-          Nastavenie analytiky: {consent === "accepted" ? "povolená" : "odmietnutá"}
+          {translate(locale, "Nastavenie analytiky")}: {translate(locale, consent === "accepted" ? "povolená" : "odmietnutá")}
         </button>
       )}
     </div>
