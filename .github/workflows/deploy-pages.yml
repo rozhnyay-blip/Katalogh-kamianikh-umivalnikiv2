@@ -3,7 +3,7 @@ name: Deploy SKALA to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - replit-agent
   workflow_dispatch:
 
 permissions:
