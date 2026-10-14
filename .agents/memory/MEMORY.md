@@ -8,3 +8,4 @@
 - [SEO fallback visibility](seo-fallback-visibility.md) — SKALA should not flash a visible SEO text panel before React mounts; keep SEO metadata separate.
 - [Admin product drafts](admin-product-drafts.md) — new-product drafts are browser-local and owner-scoped; don't treat them as saved catalog data.
 - [SKALA translations](skala-translations.md) — translate each new site addition into every supported language and check the translations.
+- [GitHub Pages source verification](github-pages-source.md) — verify the active publisher and deployment run, not just the presence of a Pages workflow.
