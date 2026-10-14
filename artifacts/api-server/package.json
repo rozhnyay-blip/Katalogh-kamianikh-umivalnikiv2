@@ -21,7 +21,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
     "google-auth-library": "^11.0.2",
-    "http-proxy": "^1.18.1",
+    "http-proxy-middleware": "^4.2.0",
     "pino": "^9.14.0",
     "pino-http": "^10.5.0",
     "sharp": "^0.35.5"
@@ -30,7 +30,6 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/http-proxy": "^1.17.17",
     "@types/node": "catalog:",
     "esbuild": "0.28.2",
     "esbuild-plugin-pino": "^2.3.3",
