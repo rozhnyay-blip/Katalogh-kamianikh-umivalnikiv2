@@ -36,6 +36,15 @@ jobs:
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check Clerk publishable key
+        env:
+          CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$CLERK_PUBLISHABLE_KEY" ]; then
+            echo "::error::Add the GitHub Actions secret VITE_CLERK_PUBLISHABLE_KEY before deploying Pages."
+            exit 1
+          fi
+
       - name: Build the complete SKALA frontend
         run: pnpm --filter @workspace/stone-washbasins run build
         env:
