@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="sk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f0ede4" />
+    <meta
+      id="page-description"
+      name="description"
+      content="SKALA — ručne opracované umývadlá z prírodného kameňa."
+    />
+    <title>SKALA — Kamenné umývadlá</title>
+    <link rel="icon" href="./artifacts/stone-washbasins/public/favicon.svg" />
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #203735;
+        background: #f0ede4;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      a { color: inherit; }
+      .page { min-height: 100vh; overflow: hidden; }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        min-height: 58px;
+        padding: 12px max(24px, calc((100vw - 1160px) / 2));
+        background: #315450;
+        color: #f4f0e6;
+        font-size: 12px;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+      .brand { font-weight: 800; letter-spacing: .2em; }
+      .top-actions { display: flex; align-items: center; gap: 18px; }
+      .top-note { opacity: .82; }
+      .languages { display: flex; gap: 5px; }
+      .languages button {
+        min-width: 34px;
+        min-height: 34px;
+        padding: 0 7px;
+        border: 1px solid rgba(244, 240, 230, .38);
+        border-radius: 999px;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-size: 10px;
+        letter-spacing: .04em;
+        cursor: pointer;
+      }
+      .languages button[aria-pressed="true"] { background: #f4f0e6; color: #315450; }
+      main {
+        width: min(1160px, calc(100% - 48px));
+        min-height: calc(100vh - 58px);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: .9fr 1.1fr;
+        align-items: center;
+        gap: clamp(32px, 7vw, 90px);
+        padding: 72px 0;
+      }
+      .eyebrow {
+        color: #66817a;
+        font-size: 11px;
+        letter-spacing: .2em;
+        line-height: 1.6;
+        text-transform: uppercase;
+      }
+      h1 {
+        max-width: 600px;
+        margin: 18px 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(48px, 7vw, 88px);
+        font-weight: 400;
+        letter-spacing: -.055em;
+        line-height: .98;
+      }
+      h1 em { color: #bd826f; font-weight: 400; }
+      .description {
+        max-width: 410px;
+        color: #64716b;
+        font-size: 16px;
+        line-height: 1.8;
+      }
+      .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+      .button {
+        display: inline-flex;
+        min-height: 48px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 21px;
+        border: 1px solid #315450;
+        border-radius: 999px;
+        background: #315450;
+        color: #f4f0e6;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform .2s ease, background .2s ease;
+      }
+      .button:hover { transform: translateY(-2px); background: #243f3c; }
+      .button.secondary { background: transparent; color: #315450; }
+      .button.secondary:hover { background: #e5e3d9; }
+      .visual { position: relative; }
+      .visual::before {
+        position: absolute;
+        z-index: -1;
+        top: -8%;
+        right: -10%;
+        width: 72%;
+        aspect-ratio: 1;
+        border: 1px solid rgba(49, 84, 80, .18);
+        border-radius: 50%;
+        content: "";
+      }
+      .visual img {
+        display: block;
+        width: 100%;
+        max-height: 680px;
+        object-fit: contain;
+        filter: drop-shadow(0 24px 30px rgba(28, 53, 50, .16));
+      }
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 22px max(24px, calc((100vw - 1160px) / 2));
+        border-top: 1px solid rgba(49, 84, 80, .2);
+        color: #718079;
+        font-size: 11px;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+      footer a { text-decoration-thickness: 1px; text-underline-offset: 3px; }
+      @media (max-width: 760px) {
+        .topbar { min-height: 50px; padding-inline: 20px; font-size: 10px; }
+        .top-note { max-width: 48%; text-align: right; }
+        main {
+          width: min(520px, calc(100% - 40px));
+          min-height: auto;
+          grid-template-columns: 1fr;
+          gap: 30px;
+          padding: 64px 0 48px;
+        }
+        h1 { font-size: clamp(52px, 14vw, 76px); }
+        .visual { grid-row: 1; }
+        footer { padding-inline: 20px; font-size: 9px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <a class="brand" href="./" data-copy-aria="brandLabel" aria-label="SKALA — úvod">SKALA</a>
+        <div class="top-actions">
+          <span class="top-note" data-copy="topline">Prírodný kameň · Ručná práca</span>
+          <nav class="languages" data-copy-aria="languageNav" aria-label="Výber jazyka">
+            <button type="button" data-language="sk" aria-pressed="true">SK</button>
+            <button type="button" data-language="cs" aria-pressed="false">CZ</button>
+            <button type="button" data-language="en" aria-pressed="false">EN</button>
+            <button type="button" data-language="uk" aria-pressed="false">UK</button>
+          </nav>
+        </div>
+      </header>
+      <main>
+        <section aria-labelledby="title">
+          <p class="eyebrow" data-copy="eyebrow">Kamenné umývadlá na mieru</p>
+          <h1 id="title" data-copy="title">Príroda<br />v každom <em> detaile.</em></h1>
+          <p class="description" data-copy="lede">
+            Každé umývadlo SKALA je originál z prírodného kameňa, ručne opracovaný
+            s dôrazom na kresbu materiálu a čistotu tvaru.
+          </p>
+          <div class="actions">
+            <a class="button" data-copy="discover" href="https://www.instagram.com/skala_sk_/" target="_blank" rel="noreferrer">
+              Objavte SKALA
+            </a>
+            <a class="button secondary" data-copy="about" href="#about">O značke</a>
+          </div>
+        </section>
+        <figure class="visual" data-copy-aria="imageLabel">
+          <img
+            src="./artifacts/stone-washbasins/public/images/hero-basin.webp"
+            data-copy-alt="imageAlt"
+            alt="Umývadlo z prírodného kameňa"
+            fetchpriority="high"
+          />
+        </figure>
+      </main>
+      <footer id="about">
+        <span data-copy="footer">SKALA · Kameň, ktorý zostáva</span>
+        <a href="https://www.instagram.com/skala_sk_/" target="_blank" rel="noreferrer">Instagram</a>
+      </footer>
+    </div>
+    <script>
+      const translations = {
+        sk: {
+          pageTitle: "SKALA — Kamenné umývadlá",
+          description: "SKALA — ručne opracované umývadlá z prírodného kameňa.",
+          brandLabel: "SKALA — úvod",
+          languageNav: "Výber jazyka",
+          topline: "Prírodný kameň · Ručná práca",
+          eyebrow: "Kamenné umývadlá na mieru",
+          title: "Príroda<br />v každom <em>detaile.</em>",
+          lede: "Každé umývadlo SKALA je originál z prírodného kameňa, ručne opracovaný s dôrazom na kresbu materiálu a čistotu tvaru.",
+          discover: "Objavte SKALA",
+          about: "O značke",
+          imageLabel: "Kamenné umývadlo SKALA",
+          imageAlt: "Umývadlo z prírodného kameňa",
+          footer: "SKALA · Kameň, ktorý zostáva",
+        },
+        cs: {
+          pageTitle: "SKALA — Kamenná umyvadla",
+          description: "SKALA — ručně opracovaná umyvadla z přírodního kamene.",
+          brandLabel: "SKALA — úvod",
+          languageNav: "Výběr jazyka",
+          topline: "Přírodní kámen · Ruční práce",
+          eyebrow: "Kamenná umyvadla na míru",
+          title: "Příroda<br />v každém <em>detailu.</em>",
+          lede: "Každé umyvadlo SKALA je originál z přírodního kamene, ručně opracovaný s důrazem na kresbu materiálu a čistotu tvaru.",
+          discover: "Objevte SKALA",
+          about: "O značce",
+          imageLabel: "Kamenné umyvadlo SKALA",
+          imageAlt: "Umyvadlo z přírodního kamene",
+          footer: "SKALA · Kámen, který zůstává",
+        },
+        en: {
+          pageTitle: "SKALA — Stone Washbasins",
+          description: "SKALA — natural stone washbasins, shaped by hand.",
+          brandLabel: "SKALA — home",
+          languageNav: "Language selection",
+          topline: "Natural stone · Handcrafted",
+          eyebrow: "Made-to-order stone washbasins",
+          title: "Nature<br />in every <em>detail.</em>",
+          lede: "Every SKALA washbasin is an original piece of natural stone, shaped by hand with care for the material's grain and the purity of its form.",
+          discover: "Discover SKALA",
+          about: "About us",
+          imageLabel: "SKALA stone washbasin",
+          imageAlt: "Washbasin made from natural stone",
+          footer: "SKALA · Stone that endures",
+        },
+        uk: {
+          pageTitle: "SKALA — Кам’яні умивальники",
+          description: "SKALA — умивальники з натурального каменю, оброблені вручну.",
+          brandLabel: "SKALA — головна",
+          languageNav: "Вибір мови",
+          topline: "Натуральний камінь · Ручна робота",
+          eyebrow: "Кам’яні умивальники на замовлення",
+          title: "Природа<br />в кожній <em>деталі.</em>",
+          lede: "Кожен умивальник SKALA — унікальний виріб із натурального каменю, вручну оброблений із увагою до його текстури та чистоти форми.",
+          discover: "Відкрийте SKALA",
+          about: "Про бренд",
+          imageLabel: "Кам’яний умивальник SKALA",
+          imageAlt: "Умивальник із натурального каменю",
+          footer: "SKALA · Камінь, що залишається",
+        },
+      };
+
+      const description = document.querySelector("#page-description");
+      document.querySelectorAll("[data-language]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const language = button.dataset.language;
+          const copy = translations[language];
+          document.documentElement.lang = language;
+          document.title = copy.pageTitle;
+          description.content = copy.description;
+          document.querySelectorAll("[data-copy]").forEach((element) => {
+            element.innerHTML = copy[element.dataset.copy];
+          });
+          document.querySelectorAll("[data-copy-aria]").forEach((element) => {
+            element.setAttribute("aria-label", copy[element.dataset.copyAria]);
+          });
+          document.querySelectorAll("[data-copy-alt]").forEach((element) => {
+            element.alt = copy[element.dataset.copyAlt];
+          });
+          document.querySelectorAll("[data-language]").forEach((item) => {
+            item.setAttribute("aria-pressed", String(item === button));
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
