@@ -17,6 +17,7 @@ import { SITE_CONTENT_DEFAULTS } from '../lib/siteContentDefaults';
 import { LOCALES, localizeProduct, localizeSiteContent, translate, translateTemplate, type Locale } from '../lib/localization';
 import { formatProductDetailLines, parseProductDetails } from '../lib/productDetails';
 import { CATALOG_CATEGORIES, type CatalogCategoryId } from '../lib/catalogCategories';
+import { readInitialLocale, saveLocalePreference } from '../lib/localePreference';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 const heroProductImage = `${basePath}/images/hero-basin.webp`;
@@ -89,14 +90,7 @@ function getImageUrl(path: string) {
 }
 
 export function HomePage() {
-  const [locale, setLocale] = useState<Locale>(() => {
-    try {
-      const saved = window.localStorage.getItem('skala-locale');
-      return LOCALES.some((item) => item.code === saved) ? saved as Locale : 'sk';
-    } catch {
-      return 'sk';
-    }
-  });
+  const [locale, setLocale] = useState<Locale>(readInitialLocale);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const { isLoaded, userId } = useAuth();
   const { data: owner, isPending: ownerStatusPending } = useGetOwnerStatus({
@@ -128,11 +122,6 @@ export function HomePage() {
   const languagePickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem('skala-locale', locale);
-    } catch {
-      // Keep the selected language for this visit if storage is unavailable.
-    }
     document.documentElement.lang = locale;
   }, [locale]);
 
@@ -361,7 +350,7 @@ export function HomePage() {
                   {LOCALES.find((item) => item.code === locale)?.flag}
                 </button>
                 {languageMenuOpen && <div className="language-picker-menu" role="group" aria-label="Language">
-                  {LOCALES.map((item) => <button key={item.code} type="button" aria-pressed={locale === item.code} onClick={() => { setLocale(item.code); setLanguageMenuOpen(false); }}>
+                  {LOCALES.map((item) => <button key={item.code} type="button" aria-pressed={locale === item.code} onClick={() => { setLocale(item.code); saveLocalePreference(item.code); setLanguageMenuOpen(false); }}>
                     <span aria-hidden="true">{item.flag}</span><span>{item.label}</span>
                   </button>)}
                 </div>}
