@@ -1,13 +1,17 @@
-const siteDescription =
-  'Luxusné kamenné umývadlá SKALA z mramoru, granitu (žuly), labradoritu a pieskovca. Vyrábame aj na objednávku. Každý kus ručne opracujeme s dôrazom na detail.';
-const siteName = 'Kamenné umývadlá na objednávku z prírodného kameňa | SKALA';
+import searchContent from './searchContent.json';
+import type { Locale } from './localization';
+
+const languageTags: Record<Locale, string> = { sk: 'sk-SK', cs: 'cs-CZ', en: 'en', uk: 'uk-UA' };
 
 function setMeta(selector: string, value: string): void {
   const tag = document.querySelector<HTMLMetaElement>(selector);
   if (tag) tag.content = value;
 }
 
-export function applySeoMetadata(): void {
+export function applySeoMetadata(locale: Locale = 'sk'): void {
+  const copy = searchContent[locale];
+  const siteName = copy.title;
+  const siteDescription = copy.description;
   const configuredUrl = import.meta.env.VITE_PUBLIC_SITE_URL?.trim();
   const siteOrigin = configuredUrl
     ? (() => {
@@ -23,11 +27,12 @@ export function applySeoMetadata(): void {
   const socialImageUrl = new URL(`${basePath || ''}/images/og-skala.webp`, siteOrigin).href;
   const logoUrl = new URL(`${basePath || ''}/logo.svg`, siteOrigin).href;
 
-  document.documentElement.lang = 'sk';
+  document.documentElement.lang = locale;
   document.title = siteName;
   setMeta('meta[name="description"]', siteDescription);
   setMeta('meta[property="og:title"]', siteName);
   setMeta('meta[property="og:description"]', siteDescription);
+  setMeta('meta[property="og:locale"]', languageTags[locale].replace('-', '_'));
   setMeta('meta[name="twitter:title"]', siteName);
   setMeta('meta[name="twitter:description"]', siteDescription);
   let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
@@ -63,8 +68,19 @@ export function applySeoMetadata(): void {
           url: canonicalUrl,
           name: siteName,
           description: siteDescription,
-          inLanguage: 'sk-SK',
+          inLanguage: languageTags[locale],
           publisher: { '@id': `${canonicalUrl}#organization` },
+        },
+        {
+          '@type': 'FAQPage',
+          '@id': `${canonicalUrl}#vyber-umyvadla`,
+          url: `${canonicalUrl}#vyber-umyvadla`,
+          inLanguage: languageTags[locale],
+          mainEntity: copy.questions.map(({ question, answer }) => ({
+            '@type': 'Question',
+            name: question,
+            acceptedAnswer: { '@type': 'Answer', text: answer },
+          })),
         },
       ],
     });

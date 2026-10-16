@@ -23,6 +23,7 @@ timeoutMs = 20000
 
 [userenv.shared]
 OWNER_EMAIL = "rozhnyay@gmail.com"
+VITE_PUBLIC_SITE_URL = "https://katalogh-kamianikh-umivalnikiv.replit.app"
 
 [nix]
 channel = "stable-25_05"
