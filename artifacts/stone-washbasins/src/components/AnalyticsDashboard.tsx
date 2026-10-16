@@ -1,5 +1,6 @@
 import { useGetOwnerAnalytics, getGetOwnerAnalyticsQueryKey, type OwnerAnalytics } from '@workspace/api-client-react';
 import { Activity, ArrowDownRight, ArrowUpRight, BarChart3, RefreshCw, ShieldCheck, UsersRound } from 'lucide-react';
+import { CatalogSummary } from './CatalogSummary';
 
 const eventLabels: Record<string, string> = {
   favorite_add: 'Pridanie do obľúbených',
@@ -108,6 +109,16 @@ function ActivityChart({ daily }: { daily: OwnerAnalytics['daily'] }) {
 }
 
 export function AnalyticsDashboard() {
+  return (
+    <>
+      <style>{analyticsStyles}</style>
+      <CatalogSummary />
+      <VisitorAnalytics />
+    </>
+  );
+}
+
+function VisitorAnalytics() {
   const { data, isLoading, isError, refetch, isFetching } = useGetOwnerAnalytics({
     query: { queryKey: getGetOwnerAnalyticsQueryKey() },
   });
@@ -227,6 +238,12 @@ export function AnalyticsDashboard() {
 }
 
 const analyticsStyles = `
+.skala-analytics__inventory { margin-bottom: 24px; }
+.skala-analytics__inventory h2 { font-size: 24px; margin-bottom: 20px; }
+.skala-analytics__inventory h3 { font-size: 14px; font-weight: 600; }
+.skala-analytics__inventory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.skala-analytics__inventory .skala-analytics__metric-value { font-size: clamp(1.4rem, 3vw, 2rem); overflow-wrap: anywhere; line-height: 1.2; }
+@media (max-width: 650px) { .skala-analytics__inventory-grid { grid-template-columns: 1fr; } }
 .skala-analytics {
   --sa-ink: #263d3b;
   --sa-muted: #6e7d76;

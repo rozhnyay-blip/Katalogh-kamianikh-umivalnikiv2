@@ -1,0 +1,46 @@
+{
+  "sk": {
+    "heading": "Prehľad inzerátov",
+    "count": "Počet inzerátov",
+    "countNote": "Všetky aktuálne uložené produkty v katalógu",
+    "total": "Celková hodnota inzerátov",
+    "totalNote": "Súčet cien v EUR, nie tržby ani prijaté platby",
+    "excluded": "Inzeráty bez jednoznačnej ceny v EUR nie sú započítané do sumy:",
+    "loading": "Načítavame počet a hodnotu inzerátov…",
+    "error": "Prehľad inzerátov sa nepodarilo načítať.",
+    "retry": "Skúsiť znova"
+  },
+  "cs": {
+    "heading": "Přehled inzerátů",
+    "count": "Počet inzerátů",
+    "countNote": "Všechny aktuálně uložené produkty v katalogu",
+    "total": "Celková hodnota inzerátů",
+    "totalNote": "Součet cen v EUR, nikoli tržby ani přijaté platby",
+    "excluded": "Inzeráty bez jednoznačné ceny v EUR nejsou započítány do částky:",
+    "loading": "Načítáme počet a hodnotu inzerátů…",
+    "error": "Přehled inzerátů se nepodařilo načíst.",
+    "retry": "Zkusit znovu"
+  },
+  "en": {
+    "heading": "Listing overview",
+    "count": "Number of listings",
+    "countNote": "All products currently saved in the catalogue",
+    "total": "Total listing value",
+    "totalNote": "Sum of EUR prices, not revenue or received payments",
+    "excluded": "Listings without an exact EUR price are excluded from the total:",
+    "loading": "Loading listing count and value…",
+    "error": "The listing overview could not be loaded.",
+    "retry": "Try again"
+  },
+  "uk": {
+    "heading": "Огляд оголошень",
+    "count": "Кількість оголошень",
+    "countNote": "Усі товари, які зараз збережені в каталозі",
+    "total": "Загальна вартість оголошень",
+    "totalNote": "Сума цін у євро, а не дохід чи отримані платежі",
+    "excluded": "Оголошення без однозначної ціни в євро не враховані в сумі:",
+    "loading": "Завантажуємо кількість і вартість оголошень…",
+    "error": "Не вдалося завантажити огляд оголошень.",
+    "retry": "Спробувати знову"
+  }
+}
