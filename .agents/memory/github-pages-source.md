@@ -8,3 +8,9 @@ GitHub Pages may keep publishing a branch-root site through its generated Jekyll
 **Why:** A Pages workflow that targets the wrong branch and an unpushed local change can leave the live site unchanged while local builds pass.
 
 **How to apply:** For Pages work, inspect the deployed URL and recent Actions runs before and after the change; distinguish successful Jekyll branch deployments from the intended app build.
+
+GitHub Pages should redirect visitors to the complete published SKALA site rather than host a separate partial catalog.
+
+**Why:** The user explicitly asked for GitHub-page visitors to reach the full site.
+
+**How to apply:** Keep Pages as an entry point; obtain the current production URL from deployment metadata before changing its redirect.
