@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import searchContent from '../src/lib/searchContent.json' with { type: 'json' };
 
 const configuredSiteUrl = process.env.VITE_PUBLIC_SITE_URL?.trim();
 if (!configuredSiteUrl) {
@@ -47,6 +48,45 @@ const indexPath = resolve(publicDir, 'index.html');
 let html = await readFile(indexPath, 'utf8');
 const socialImageUrl = new URL(`${basePath || ''}/images/og-skala.webp`, parsedUrl.origin).href;
 const logoUrl = new URL(`${basePath || ''}/logo.svg`, parsedUrl.origin).href;
+const copy = searchContent.sk;
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}#organization`,
+      name: 'SKALA',
+      url: siteUrl,
+      description: 'Luxusné kamenné umývadlá z mramoru, granitu, labradoritu a pieskovca. Vyrábame aj na objednávku.',
+      logo: logoUrl,
+      sameAs: ['https://www.instagram.com/skala_sk_/'],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}#website`,
+      url: siteUrl,
+      name: copy.title,
+      description: copy.description,
+      inLanguage: 'sk-SK',
+      publisher: { '@id': `${siteUrl}#organization` },
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${siteUrl}#vyber-umyvadla`,
+      url: `${siteUrl}#vyber-umyvadla`,
+      inLanguage: 'sk-SK',
+      mainEntity: copy.questions.map(({ question, answer }) => ({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: { '@type': 'Answer', text: answer },
+      })),
+    },
+  ],
+};
+html = html.replace(
+  /(<script id="skala-seo-schema" type="application\/ld\+json">)[\s\S]*?(<\/script>)/,
+  (_, open, close) => `${open}${JSON.stringify(schema).replaceAll('<', '\\u003c')}${close}`,
+);
 html = html.replace(
   '<head>',
   `<head>\n    <link rel="canonical" href="${siteUrl}" />\n    <meta property="og:url" content="${siteUrl}" />`,

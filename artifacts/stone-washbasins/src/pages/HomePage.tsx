@@ -18,6 +18,8 @@ import { LOCALES, localizeProduct, localizeSiteContent, translate, translateTemp
 import { formatProductDetailLines, parseProductDetails } from '../lib/productDetails';
 import { CATALOG_CATEGORIES, type CatalogCategoryId } from '../lib/catalogCategories';
 import { readInitialLocale, saveLocalePreference } from '../lib/localePreference';
+import { BuyerGuide } from '../components/BuyerGuide';
+import { applySeoMetadata } from '../lib/seo';
 
 const basePath = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
 const heroProductImage = `${basePath}/images/hero-basin.webp`;
@@ -122,7 +124,7 @@ export function HomePage() {
   const languagePickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.documentElement.lang = locale;
+    applySeoMetadata(locale);
   }, [locale]);
 
   const { data: products = [], isLoading, isError, refetch } = useListProducts();
@@ -630,6 +632,7 @@ export function HomePage() {
             </dl>
           </div>
         </section>
+        <BuyerGuide locale={locale} />
       </main>
 
       <footer className="footer" id="kontakty">

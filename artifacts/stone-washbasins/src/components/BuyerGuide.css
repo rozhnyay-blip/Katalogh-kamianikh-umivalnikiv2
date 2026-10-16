@@ -1,0 +1,8 @@
+.buyer-guide { padding-block: clamp(56px, 7vw, 100px); }
+.buyer-guide-title { font-size: clamp(32px, 4vw, 52px); line-height: 1.12; margin-block: 18px 24px; }
+.buyer-guide-links { display: flex; flex-wrap: wrap; gap: 16px 24px; margin-top: 28px; }
+.buyer-guide-links a { font-size: 13px; font-weight: 600; text-underline-offset: 5px; }
+.buyer-guide-answers { display: grid; gap: 28px; }
+.buyer-guide-answers article { border-top: 1px solid #33565533; padding-top: 20px; }
+.buyer-guide-answers h3 { margin: 0 0 12px; font-size: 17px; line-height: 1.5; font-weight: 600; }
+.buyer-guide-answers p { margin: 0; font-size: 14px; line-height: 1.8; color: #5e6e65; }
