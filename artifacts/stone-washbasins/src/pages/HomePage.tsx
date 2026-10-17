@@ -876,6 +876,14 @@ function ProductCard({
         <span className="product-price">
           {product.price?.trim() ? formatProductPrice(product.price) : translate(locale, 'Cena na vyžiadanie')}
         </span>
+        <p className={`product-inventory ${!product.available ? 'product-inventory--sold' : product.availabilityMode === 'in_stock' ? 'product-inventory--stock' : 'product-inventory--order'}`}>
+          <span className="product-inventory-dot" aria-hidden="true" />
+          {!product.available
+            ? translate(locale, 'Predané')
+            : product.availabilityMode === 'in_stock'
+              ? `${translate(locale, 'Na sklade')} · ${new Intl.NumberFormat(locale).format(product.stockQuantity)} ${translate(locale, product.stockQuantity === 1 ? 'kus' : 'kusov')}`
+              : translate(locale, 'Na objednávku')}
+        </p>
         <div className="product-actions">
           <button
             className="order-link quiet"

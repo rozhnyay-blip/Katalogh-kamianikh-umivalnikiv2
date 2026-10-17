@@ -77,8 +77,22 @@ export interface HealthStatus {
   status: string;
 }
 
+export type ProductAvailabilityMode = typeof ProductAvailabilityMode[keyof typeof ProductAvailabilityMode];
+
+
+export const ProductAvailabilityMode = {
+  in_stock: 'in_stock',
+  made_to_order: 'made_to_order',
+} as const;
+
 export interface Product {
   available: boolean;
+  availabilityMode: ProductAvailabilityMode;
+  /**
+     * @minimum 0
+     * @maximum 9999
+     */
+  stockQuantity: number;
   id: number;
   name: string;
   subtitle: string;
@@ -88,8 +102,22 @@ export interface Product {
   images: string[];
 }
 
+export type ProductInputAvailabilityMode = typeof ProductInputAvailabilityMode[keyof typeof ProductInputAvailabilityMode];
+
+
+export const ProductInputAvailabilityMode = {
+  in_stock: 'in_stock',
+  made_to_order: 'made_to_order',
+} as const;
+
 export interface ProductInput {
   available: boolean;
+  availabilityMode: ProductInputAvailabilityMode;
+  /**
+     * @minimum 0
+     * @maximum 9999
+     */
+  stockQuantity: number;
   /** @minLength 1 */
   name: string;
   /** @minLength 1 */
@@ -106,8 +134,22 @@ export interface ProductInput {
   images: string[];
 }
 
+export type ProductUpdateAvailabilityMode = typeof ProductUpdateAvailabilityMode[keyof typeof ProductUpdateAvailabilityMode];
+
+
+export const ProductUpdateAvailabilityMode = {
+  in_stock: 'in_stock',
+  made_to_order: 'made_to_order',
+} as const;
+
 export interface ProductUpdate {
   available?: boolean;
+  availabilityMode?: ProductUpdateAvailabilityMode;
+  /**
+     * @minimum 0
+     * @maximum 9999
+     */
+  stockQuantity?: number;
   /** @minLength 1 */
   name?: string;
   /** @minLength 1 */

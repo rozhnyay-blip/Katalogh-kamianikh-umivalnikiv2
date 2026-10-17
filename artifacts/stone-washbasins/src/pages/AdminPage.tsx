@@ -199,9 +199,16 @@ function ProductsManager({ onAdd, onEdit }: { onAdd: () => void, onEdit: (p: Pro
                 <td className="text-muted-foreground">{p.kind}</td>
                 <td>{p.price || '-'}</td>
                 <td>
-                  <span className={`px-2 py-1 rounded-full text-[10px] uppercase tracking-wider font-mono ${p.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {p.available ? 'Dostupné' : 'Predané'}
-                  </span>
+                  <div className="flex flex-col items-start gap-1">
+                    <span className={`px-2 py-1 rounded-full text-[10px] uppercase tracking-wider font-mono ${p.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {p.available ? 'Dostupné' : 'Predané'}
+                    </span>
+                    {p.available && (
+                      <span className="text-xs text-muted-foreground">
+                        {p.availabilityMode === 'in_stock' ? `Skladom · ${p.stockQuantity} ks` : 'Na objednávku'}
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td>
                   <div className="flex items-center gap-2">
@@ -507,6 +514,8 @@ function ProductEditor({ product, ownerId, onClose }: {
         price: product.price,
         kind: product.kind,
         available: product.available,
+        availabilityMode: product.availabilityMode,
+        stockQuantity: String(product.stockQuantity),
         images: [...product.images],
         ...parseProductDetails(product.subtitle),
       }
@@ -597,6 +606,8 @@ function ProductEditor({ product, ownerId, onClose }: {
       price: form.price,
       kind: form.kind,
       available: form.available,
+      availabilityMode: form.availabilityMode,
+      stockQuantity: Number(form.stockQuantity),
       images: form.images
     };
 
@@ -751,6 +762,48 @@ function ProductEditor({ product, ownerId, onClose }: {
               <input id="product-price" maxLength={200} type="text" value={form.price} onChange={e => handleField('price', e.target.value)} required disabled={isSaving || isUploading} />
             </div>
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="field">
+              <label htmlFor="product-availability">Dostupnosť</label>
+              <select
+                id="product-availability"
+                value={form.availabilityMode}
+                onChange={(event) => {
+                  const availabilityMode = event.target.value as ProductEditorForm['availabilityMode'];
+                  updateForm((current) => ({
+                    ...current,
+                    availabilityMode,
+                    stockQuantity: availabilityMode === 'in_stock'
+                      ? (Number(current.stockQuantity) > 0 ? current.stockQuantity : '1')
+                      : '0',
+                  }));
+                }}
+                disabled={isSaving || isUploading}
+              >
+                <option value="in_stock">Na sklade</option>
+                <option value="made_to_order">Na objednávku</option>
+              </select>
+            </div>
+            {form.availabilityMode === 'in_stock' && (
+              <div className="field">
+                <label htmlFor="product-stock-quantity">Počet kusov na sklade</label>
+                <input
+                  id="product-stock-quantity"
+                  type="number"
+                  min={1}
+                  max={9999}
+                  step={1}
+                  value={form.stockQuantity}
+                  onChange={(event) => handleField('stockQuantity', event.target.value)}
+                  required
+                  disabled={isSaving || isUploading}
+                />
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground -mt-4">
+            Počet kusov aktualizujte ručne. Dopyt na webe ešte nie je predaj ani rezervácia.
+          </p>
           <div className="field flex flex-row items-center gap-3 pt-2">
             <input 
               type="checkbox" 

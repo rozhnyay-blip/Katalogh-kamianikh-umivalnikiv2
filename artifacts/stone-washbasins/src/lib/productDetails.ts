@@ -19,7 +19,7 @@ export function formatProductDetailLines(subtitle: string): string[] {
     .replace(/\s+(?=(?:Vonkajšie|Vonkajsie|Vnútorné|Vnutorne|Hmotnosť|Hmotnost|Rozmery|Material|Materiál|Strana|Priemer|Výška|Vyska|Šírka|Sirka|Hĺbka|Hlbka)(?::|：|\s|$))/giu, '\n')
     .split(/\n+|\s*[·•|]\s*/u)
     .map((line) => line.trim())
-    .filter(Boolean);
+    .filter((line) => Boolean(line) && !/^(?:Skladom|Na sklade|Skladem|Dostupné|Dostupne|Predané|Predane|Sold|In stock|Na objednávku|Made to order|У наявності|Під замовлення)(?:$|[\s·•|]|[^\p{L}\p{N}])/iu.test(line));
 }
 
 function appendDetail(current: string, next: string): string {

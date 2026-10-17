@@ -784,12 +784,17 @@ export const HealthCheckResponse = zod.object({
 /**
  * @summary List catalog products
  */
+export const listProductsResponseStockQuantityMin = 0;
+export const listProductsResponseStockQuantityMax = 9999;
+
 export const listProductsResponseImagesMax = 10;
 
 
 
 export const ListProductsResponseItem = zod.object({
   "available": zod.boolean(),
+  "availabilityMode": zod.enum(['in_stock', 'made_to_order']),
+  "stockQuantity": zod.number().int().min(listProductsResponseStockQuantityMin).max(listProductsResponseStockQuantityMax),
   "id": zod.number().int(),
   "name": zod.string(),
   "subtitle": zod.string(),
@@ -803,6 +808,9 @@ export const ListProductsResponse = zod.array(ListProductsResponseItem).max(1000
 /**
  * @summary Create a catalog product
  */
+export const createProductBodyStockQuantityMin = 0;
+export const createProductBodyStockQuantityMax = 9999;
+
 
 
 
@@ -814,6 +822,8 @@ export const createProductBodyImagesMax = 10;
 
 export const CreateProductBody = zod.object({
   "available": zod.boolean(),
+  "availabilityMode": zod.enum(['in_stock', 'made_to_order']),
+  "stockQuantity": zod.number().int().min(createProductBodyStockQuantityMin).max(createProductBodyStockQuantityMax),
   "name": zod.string().min(1),
   "subtitle": zod.string().min(1),
   "price": zod.string().min(1),
@@ -821,12 +831,17 @@ export const CreateProductBody = zod.object({
   "images": zod.array(zod.string().min(1)).min(1).max(createProductBodyImagesMax)
 })
 
+export const createProductResponseStockQuantityMin = 0;
+export const createProductResponseStockQuantityMax = 9999;
+
 export const createProductResponseImagesMax = 10;
 
 
 
 export const CreateProductResponse = zod.object({
   "available": zod.boolean(),
+  "availabilityMode": zod.enum(['in_stock', 'made_to_order']),
+  "stockQuantity": zod.number().int().min(createProductResponseStockQuantityMin).max(createProductResponseStockQuantityMax),
   "id": zod.number().int(),
   "name": zod.string(),
   "subtitle": zod.string(),
@@ -843,6 +858,9 @@ export const UpdateProductParams = zod.object({
   "id": zod.coerce.number().int()
 })
 
+export const updateProductBodyStockQuantityMin = 0;
+export const updateProductBodyStockQuantityMax = 9999;
+
 
 
 
@@ -854,6 +872,8 @@ export const updateProductBodyImagesMax = 10;
 
 export const UpdateProductBody = zod.object({
   "available": zod.boolean().optional(),
+  "availabilityMode": zod.enum(['in_stock', 'made_to_order']).optional(),
+  "stockQuantity": zod.number().int().min(updateProductBodyStockQuantityMin).max(updateProductBodyStockQuantityMax).optional(),
   "name": zod.string().min(1).optional(),
   "subtitle": zod.string().min(1).optional(),
   "price": zod.string().min(1).optional(),
@@ -861,12 +881,17 @@ export const UpdateProductBody = zod.object({
   "images": zod.array(zod.string().min(1)).min(1).max(updateProductBodyImagesMax).optional()
 })
 
+export const updateProductResponseStockQuantityMin = 0;
+export const updateProductResponseStockQuantityMax = 9999;
+
 export const updateProductResponseImagesMax = 10;
 
 
 
 export const UpdateProductResponse = zod.object({
   "available": zod.boolean(),
+  "availabilityMode": zod.enum(['in_stock', 'made_to_order']),
+  "stockQuantity": zod.number().int().min(updateProductResponseStockQuantityMin).max(updateProductResponseStockQuantityMax),
   "id": zod.number().int(),
   "name": zod.string(),
   "subtitle": zod.string(),
@@ -902,12 +927,17 @@ export const AppendProductPhotosBody = zod.object({
   "images": zod.array(zod.string().regex(appendProductPhotosBodyImagesItemRegExp)).min(1).max(appendProductPhotosBodyImagesMax)
 })
 
+export const appendProductPhotosResponseStockQuantityMin = 0;
+export const appendProductPhotosResponseStockQuantityMax = 9999;
+
 export const appendProductPhotosResponseImagesMax = 10;
 
 
 
 export const AppendProductPhotosResponse = zod.object({
   "available": zod.boolean(),
+  "availabilityMode": zod.enum(['in_stock', 'made_to_order']),
+  "stockQuantity": zod.number().int().min(appendProductPhotosResponseStockQuantityMin).max(appendProductPhotosResponseStockQuantityMax),
   "id": zod.number().int(),
   "name": zod.string(),
   "subtitle": zod.string(),

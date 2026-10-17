@@ -5,9 +5,16 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ProductInputAvailabilityMode } from './productInputAvailabilityMode';
 
 export interface ProductInput {
   available: boolean;
+  availabilityMode: ProductInputAvailabilityMode;
+  /**
+     * @minimum 0
+     * @maximum 9999
+     */
+  stockQuantity: number;
   /** @minLength 1 */
   name: string;
   /** @minLength 1 */
