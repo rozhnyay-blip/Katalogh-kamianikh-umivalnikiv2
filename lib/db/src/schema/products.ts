@@ -1,5 +1,6 @@
 import { createInsertSchema } from "drizzle-zod";
-import { boolean, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { boolean, check, integer, pgTable, serial, text } from "drizzle-orm/pg-core";
 import { z } from "zod/v4";
 
 export const products = pgTable("products", {
@@ -10,7 +11,14 @@ export const products = pgTable("products", {
   kind: text("kind").notNull(),
   images: text("images").array().notNull(),
   available: boolean("available").notNull().default(true),
-});
+  availabilityMode: text("availability_mode").notNull().default("made_to_order"),
+  stockQuantity: integer("stock_quantity").notNull().default(0),
+}, (table) => [
+  check(
+    "products_stock_availability_consistent",
+    sql`(${table.availabilityMode} = 'in_stock' AND ${table.stockQuantity} >= 1) OR (${table.availabilityMode} = 'made_to_order' AND ${table.stockQuantity} = 0)`,
+  ),
+]);
 
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,

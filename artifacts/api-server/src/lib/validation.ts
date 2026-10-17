@@ -10,6 +10,8 @@ import { MAX_IMAGE_BYTES } from "./imageValidation";
 
 const PRODUCT_FIELDS = [
   "available",
+  "availabilityMode",
+  "stockQuantity",
   "name",
   "subtitle",
   "price",
@@ -30,6 +32,8 @@ const PRODUCT_IMAGE_PATH =
 
 export type ValidatedProduct = {
   available: boolean;
+  availabilityMode: "in_stock" | "made_to_order";
+  stockQuantity: number;
   name: string;
   subtitle: string;
   price: string;
@@ -70,12 +74,27 @@ function validateProductText(
   return trimmed.length >= 1 && trimmed.length <= maxLength ? trimmed : null;
 }
 
+function isValidStockAvailability(
+  availabilityMode: unknown,
+  stockQuantity: unknown,
+): availabilityMode is "in_stock" | "made_to_order" {
+  return (availabilityMode === "in_stock"
+      && typeof stockQuantity === "number"
+      && Number.isSafeInteger(stockQuantity)
+      && stockQuantity >= 1
+      && stockQuantity <= 9999)
+    || (availabilityMode === "made_to_order" && stockQuantity === 0);
+}
+
 export function parseProductInput(value: unknown): ValidatedProduct | null {
   if (!hasOnlyProductFields(value)) {
     return null;
   }
   const parsed = CreateProductBody.safeParse(value);
   if (!parsed.success) {
+    return null;
+  }
+  if (!isValidStockAvailability(parsed.data.availabilityMode, parsed.data.stockQuantity)) {
     return null;
   }
 
@@ -90,6 +109,8 @@ export function parseProductInput(value: unknown): ValidatedProduct | null {
 
   return {
     available: parsed.data.available,
+    availabilityMode: parsed.data.availabilityMode,
+    stockQuantity: parsed.data.stockQuantity,
     name,
     subtitle,
     price,
@@ -106,10 +127,22 @@ export function parseProductUpdate(value: unknown): ValidatedProductUpdate | nul
   if (!parsed.success || Object.keys(value).length === 0) {
     return null;
   }
+  const hasAvailabilityMode = parsed.data.availabilityMode !== undefined;
+  const hasStockQuantity = parsed.data.stockQuantity !== undefined;
+  if (hasAvailabilityMode !== hasStockQuantity) {
+    return null;
+  }
+  if (hasAvailabilityMode && !isValidStockAvailability(parsed.data.availabilityMode, parsed.data.stockQuantity)) {
+    return null;
+  }
 
   const update: ValidatedProductUpdate = { hasChanges: true };
   if (parsed.data.available !== undefined) {
     update.available = parsed.data.available;
+  }
+  if (parsed.data.availabilityMode !== undefined && parsed.data.stockQuantity !== undefined) {
+    update.availabilityMode = parsed.data.availabilityMode;
+    update.stockQuantity = parsed.data.stockQuantity;
   }
   if (parsed.data.name !== undefined) {
     const text = validateProductText(parsed.data.name, 200);

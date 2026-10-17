@@ -7,6 +7,7 @@ import {
   parseOrderInput,
   parseProductInput,
   parseProductPhotosInput,
+  parseProductUpdate,
   parseUploadRequest,
   validateImagePath,
 } from "./validation";
@@ -25,6 +26,8 @@ const secondImagePath =
 test("product validation trims bounded text and accepts catalog fields", () => {
   const product = parseProductInput({
     available: false,
+    availabilityMode: "in_stock",
+    stockQuantity: 1,
     name: "  Stone basin  ",
     subtitle: "  Hand-finished  ",
     price: "  1200 EUR ",
@@ -34,12 +37,53 @@ test("product validation trims bounded text and accepts catalog fields", () => {
 
   assert.deepEqual(product, {
     available: false,
+    availabilityMode: "in_stock",
+    stockQuantity: 1,
     name: "Stone basin",
     subtitle: "Hand-finished",
     price: "1200 EUR",
     kind: "stone",
     images: [imagePath],
   });
+});
+
+test("inventory validation requires a positive stock count or zero for made-to-order", () => {
+  const base = {
+    available: true,
+    name: "Basin",
+    subtitle: "Hand-finished",
+    price: "1200 EUR",
+    kind: "stone",
+    images: [imagePath],
+  };
+  assert.deepEqual(
+    parseProductInput({ ...base, availabilityMode: "in_stock", stockQuantity: 3 })?.stockQuantity,
+    3,
+  );
+  assert.deepEqual(
+    parseProductInput({ ...base, availabilityMode: "made_to_order", stockQuantity: 0 })?.availabilityMode,
+    "made_to_order",
+  );
+  for (const inventory of [
+    { availabilityMode: "in_stock", stockQuantity: 0 },
+    { availabilityMode: "in_stock", stockQuantity: -1 },
+    { availabilityMode: "in_stock", stockQuantity: 1.5 },
+    { availabilityMode: "in_stock", stockQuantity: 10000 },
+    { availabilityMode: "made_to_order", stockQuantity: 1 },
+    { availabilityMode: "unknown", stockQuantity: 0 },
+  ]) {
+    assert.equal(parseProductInput({ ...base, ...inventory }), null);
+  }
+});
+
+test("inventory updates require both fields and enforce consistent values", () => {
+  assert.equal(parseProductUpdate({ availabilityMode: "in_stock" }), null);
+  assert.equal(parseProductUpdate({ stockQuantity: 2 }), null);
+  assert.equal(parseProductUpdate({ availabilityMode: "in_stock", stockQuantity: 0 }), null);
+  assert.deepEqual(
+    parseProductUpdate({ availabilityMode: "in_stock", stockQuantity: 2 }),
+    { hasChanges: true, availabilityMode: "in_stock", stockQuantity: 2 },
+  );
 });
 
 test("product validation rejects duplicate, remote, and overlong image/text input", () => {

@@ -5,6 +5,8 @@ export type ProductEditorForm = {
   price: string;
   kind: string;
   available: boolean;
+  availabilityMode: 'in_stock' | 'made_to_order';
+  stockQuantity: string;
   images: string[];
 } & ProductDetailsFields;
 
@@ -15,7 +17,8 @@ export type NewProductDraft = {
 
 type DraftStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
-const DRAFT_VERSION = 2;
+const DRAFT_VERSION = 3;
+const PREVIOUS_DRAFT_VERSION = 2;
 const LEGACY_DRAFT_VERSION = 1;
 const DRAFT_KEY_PREFIX = 'skala:new-product-draft:v1:';
 
@@ -25,6 +28,8 @@ export function createEmptyProductForm(): ProductEditorForm {
     price: '',
     kind: '',
     available: true,
+    availabilityMode: 'made_to_order',
+    stockQuantity: '0',
     images: [],
     ...createEmptyProductDetails(),
   };
@@ -48,6 +53,42 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isProductEditorForm(value: unknown): value is ProductEditorForm {
+  if (!isRecord(value)) return false;
+  return typeof value.name === 'string'
+    && value.name.length <= 200
+    && typeof value.price === 'string'
+    && value.price.length <= 200
+    && typeof value.kind === 'string'
+    && value.kind.length <= 200
+    && typeof value.material === 'string'
+    && value.material.length <= 500
+    && typeof value.dimensions === 'string'
+    && value.dimensions.length <= 500
+    && typeof value.weight === 'string'
+    && value.weight.length <= 500
+    && typeof value.additionalDetails === 'string'
+    && value.additionalDetails.length <= 500
+    && typeof value.available === 'boolean'
+    && (value.availabilityMode === 'in_stock' || value.availabilityMode === 'made_to_order')
+    && typeof value.stockQuantity === 'string'
+    && /^(?:0|[1-9]\d{0,3})$/.test(value.stockQuantity)
+    && (value.availabilityMode === 'in_stock' ? Number(value.stockQuantity) >= 1 : value.stockQuantity === '0')
+    && Array.isArray(value.images)
+    && value.images.length <= 10
+    && value.images.every((image) => typeof image === 'string' && image.length > 0 && image.length <= 2048);
+}
+
+function isPreviousProductEditorForm(value: unknown): value is {
+  name: string;
+  price: string;
+  kind: string;
+  available: boolean;
+  images: string[];
+  material: string;
+  dimensions: string;
+  weight: string;
+  additionalDetails: string;
+} {
   if (!isRecord(value)) return false;
   return typeof value.name === 'string'
     && value.name.length <= 200
@@ -105,12 +146,20 @@ export function readNewProductDraft(
     let form: ProductEditorForm | null = null;
     if (value.version === DRAFT_VERSION && isProductEditorForm(value.form)) {
       form = value.form;
+    } else if (value.version === PREVIOUS_DRAFT_VERSION && isPreviousProductEditorForm(value.form)) {
+      form = {
+        ...value.form,
+        availabilityMode: 'made_to_order',
+        stockQuantity: '0',
+      };
     } else if (value.version === LEGACY_DRAFT_VERSION && isLegacyProductEditorForm(value.form)) {
       form = {
         name: value.form.name,
         price: value.form.price,
         kind: value.form.kind,
         available: value.form.available,
+        availabilityMode: 'made_to_order',
+        stockQuantity: '0',
         images: [...value.form.images],
         ...parseProductDetails(value.form.subtitle),
       };

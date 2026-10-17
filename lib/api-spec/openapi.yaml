@@ -544,10 +544,17 @@ components:
         - status
     Product:
       type: object
-      required: [id, name, subtitle, price, kind, images, available]
+      required: [id, name, subtitle, price, kind, images, available, availabilityMode, stockQuantity]
       properties:
         available:
           type: boolean
+        availabilityMode:
+          type: string
+          enum: [in_stock, made_to_order]
+        stockQuantity:
+          type: integer
+          minimum: 0
+          maximum: 9999
         id:
           type: integer
         name:
@@ -565,10 +572,17 @@ components:
             type: string
     ProductInput:
       type: object
-      required: [name, subtitle, price, kind, images, available]
+      required: [name, subtitle, price, kind, images, available, availabilityMode, stockQuantity]
       properties:
         available:
           type: boolean
+        availabilityMode:
+          type: string
+          enum: [in_stock, made_to_order]
+        stockQuantity:
+          type: integer
+          minimum: 0
+          maximum: 9999
         name:
           type: string
           minLength: 1
@@ -593,6 +607,13 @@ components:
       properties:
         available:
           type: boolean
+        availabilityMode:
+          type: string
+          enum: [in_stock, made_to_order]
+        stockQuantity:
+          type: integer
+          minimum: 0
+          maximum: 9999
         name:
           type: string
           minLength: 1
